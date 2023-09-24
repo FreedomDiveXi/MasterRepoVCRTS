@@ -12,6 +12,8 @@ public class Registration {
     private JPanel QuestionBox;
     private JLabel UsernameLabel;
     private JLabel PasswordLabel;
+    private JButton CompletionButton;
+    private JPanel Confirmation;
 
 //    public static void main(String[] args) {
 //        JFrame frame = new JFrame("Registration");

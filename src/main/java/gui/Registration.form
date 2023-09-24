@@ -17,6 +17,8 @@
         <rowspec value="center:max(d;4px):noGrow"/>
         <rowspec value="top:4dlu:noGrow"/>
         <rowspec value="center:max(d;4px):noGrow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:max(d;4px):noGrow"/>
         <colspec value="fill:873px:noGrow"/>
         <constraints border-constraint="Center"/>
         <properties/>
@@ -76,6 +78,22 @@
                 <constraints/>
                 <properties>
                   <text value=""/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <grid id="413ae" binding="Confirmation" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+            <constraints>
+              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="8d9ac" class="javax.swing.JButton" binding="CompletionButton">
+                <constraints/>
+                <properties>
+                  <text value="Button"/>
                 </properties>
               </component>
             </children>
