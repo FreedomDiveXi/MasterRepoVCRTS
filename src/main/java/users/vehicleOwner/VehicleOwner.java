@@ -8,9 +8,11 @@ public class VehicleOwner {
     private String password;
     private ArrayList<Vehicle> vechicleList;
 
+
     public VehicleOwner(String vehicleOwnerId, String password) {
         this.vehicleOwnerId = vehicleOwnerId;
         this.password = password;
+
     }
 
     public String getVehicleOwnerId() {

@@ -16,6 +16,7 @@ public class Vehicle {
         this.vehicleModel = vehicleModel;
         this.vehicleMake = vehicleMake;
         this.vehicleYear = vehicleYear;
+
     }
 
     public String getVehicleModel() {
