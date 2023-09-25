@@ -18,11 +18,11 @@ public class VehicleOwnerView {
     private JLabel headerText2;
     private JLabel headerText3;
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("VehicleOwnerView");
-        frame.setContentPane(new VehicleOwnerView().mainFrame);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
+//    public static void main(String[] args) {
+//        JFrame frame = new JFrame("VehicleOwnerView");
+//        frame.setContentPane(new VehicleOwnerView().mainFrame);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.pack();
+//        frame.setVisible(true);
+//    }
 }
