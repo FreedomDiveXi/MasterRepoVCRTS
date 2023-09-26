@@ -9,6 +9,7 @@ public class Job {
     private int jobID;
     private LocalTime jobDurationTime;
     private LocalDate jobDeadline;
+    private boolean jobCompletion;
 
     /**
      * if no deadline is provided will use this constructor method
@@ -16,11 +17,13 @@ public class Job {
      * @param jobOwnerName
      * @param jobID
      * @param jobDurationTime
+     * @param jobCompletion
      */
-    public Job(String jobOwnerName, int jobID, LocalTime jobDurationTime) {
+    public Job(String jobOwnerName, int jobID, LocalTime jobDurationTime, boolean jobCompletion) {
         this.jobOwnerName = jobOwnerName;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
+        jobCompletion = false;
 
     }
 
@@ -32,12 +35,14 @@ public class Job {
      * @param jobID
      * @param jobDurationTime
      * @param jobDeadline
+     * @param jobCompletion
      */
-    public Job(String jobOwnerName, int jobID, LocalTime jobDurationTime, LocalDate jobDeadline) {
+    public Job(String jobOwnerName, int jobID, LocalTime jobDurationTime, LocalDate jobDeadline, boolean jobCompletion) {
         this.jobOwnerName = jobOwnerName;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
         this.jobDeadline = jobDeadline;
+        jobCompletion = false;
+
     }
 }
-
