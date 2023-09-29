@@ -12,7 +12,7 @@ public class VehicleOwner {
     public VehicleOwner(String vehicleOwnerId, String vehicleOwnerPassword) {
         this.vehicleOwnerId = vehicleOwnerId;
         this.vehicleOwnerPassword = vehicleOwnerPassword;
-
+        this.vechicleList = new ArrayList<Vehicle>();
     }
 
     public String getVehicleOwnerId() {
