@@ -5,13 +5,13 @@ import java.util.ArrayList;
 public class VehicleOwner {
 
     private String vehicleOwnerId;
-    private String vehiclePassword;
+    private String vehicleOwnerPassword;
     private ArrayList<Vehicle> vechicleList;
 
 
-    public VehicleOwner(String vehicleOwnerId, String vehiclePassword) {
+    public VehicleOwner(String vehicleOwnerId, String vehicleOwnerPassword) {
         this.vehicleOwnerId = vehicleOwnerId;
-        this.vehiclePassword = vehiclePassword;
+        this.vehicleOwnerPassword = vehicleOwnerPassword;
 
     }
 
@@ -20,7 +20,7 @@ public class VehicleOwner {
     }
 
     public String getVehiclePassword() {
-        return vehiclePassword;
+        return vehicleOwnerPassword;
     }
 
     public ArrayList<Vehicle> getVechicleList() {
