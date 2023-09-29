@@ -18,7 +18,12 @@ public class Vehicle {
         this.vehicleMake = vehicleMake;
         this.vehicleYear = vehicleYear;
         this.inUse = false;
-
+    }
+    public boolean isInUse() {
+        return inUse;
+    }
+    public void setInUse(boolean inUse) {
+        this.inUse = inUse;
     }
 
     public String getVehicleModel() {
@@ -33,8 +38,5 @@ public class Vehicle {
         return vehicleYear;
     }
 
-    public boolean getInUse(){
-        return inUse;
-    }
 
 }
