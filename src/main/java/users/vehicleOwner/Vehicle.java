@@ -4,6 +4,7 @@ public class Vehicle {
     private String vehicleModel;
     private String vehicleMake;
     private int vehicleYear;
+    private boolean inUse;
 
     /**
      * method will create a new vehicle object
@@ -16,6 +17,7 @@ public class Vehicle {
         this.vehicleModel = vehicleModel;
         this.vehicleMake = vehicleMake;
         this.vehicleYear = vehicleYear;
+        this.inUse = false;
 
     }
 
@@ -30,4 +32,9 @@ public class Vehicle {
     public int getVehicleYear() {
         return vehicleYear;
     }
+
+    public boolean getInUse(){
+        return inUse;
+    }
+
 }

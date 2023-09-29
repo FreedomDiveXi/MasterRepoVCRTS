@@ -45,4 +45,16 @@ public class Job {
         jobCompletion = false;
 
     }
+
+    public int getJobID() {
+        return jobID;
+    }
+
+    public boolean isJobCompletion() {
+        return jobCompletion;
+    }
+
+    public void setJobCompletion(boolean jobCompletion) {
+        this.jobCompletion = jobCompletion;
+    }
 }
