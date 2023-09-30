@@ -47,7 +47,7 @@ public class StartPage extends JFrame{
             panel.revalidate();
             panel.repaint();
 
-            question1 = new JLabel("Create a new username: ");
+            question1 = new JLabel("Create a new username (_ is not allowed): ");
             username = new JTextField(50);
             String usernameString = username.getText();
             question2 = new JLabel("Create a new password: ");
