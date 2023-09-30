@@ -27,8 +27,7 @@ public class StartPage extends JFrame{
         buttonYes = new JButton("Yes");
         buttonNo = new JButton("No");
 
-=======
->>>>>>> main
+
         panel = new JPanel();
         panel.add(question1);
         panel.add(buttonYes);
@@ -41,8 +40,6 @@ public class StartPage extends JFrame{
         buttonYes.addActionListener(yesListener);
 
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
-
-
     }
 
     // assumes they have no account yet.

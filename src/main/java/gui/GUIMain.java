@@ -1,10 +1,12 @@
 package gui;
 
+import java.io.IOException;
+
 import javax.swing.JFrame;
 
 public class GUIMain {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException{
 
         JFrame start = new StartPage();
         start.setTitle("Welcome");
