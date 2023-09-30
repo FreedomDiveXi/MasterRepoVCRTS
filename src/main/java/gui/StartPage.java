@@ -1,16 +1,19 @@
 package gui;
 
-import users.vehicleOwner.VehicleOwner;
-
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-public class StartPage extends JFrame{
+import static utils.GuiHelper.showGui;
+
+public class StartPage extends JFrame {
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 500;
+    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
+    PrintWriter printUser = new PrintWriter(writerUser);
     private JLabel question1;
     private JLabel question2;
     private JButton buttonYes;
@@ -19,8 +22,6 @@ public class StartPage extends JFrame{
     private JPanel panel;
     private JTextField username;
     private JPasswordField password;
-    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
-    PrintWriter printUser = new PrintWriter(writerUser);
 
     public StartPage() throws IOException {
         question1 = new JLabel("Are you a new user?");
@@ -37,6 +38,8 @@ public class StartPage extends JFrame{
         //buttonYes.setLocation(100,100); needs fixing of positioning
 
         ActionListener yesListener = new AddNewUserListener();
+        ActionListener noLister = new ReturningUser();
+        buttonNo.addActionListener(noLister);
         buttonYes.addActionListener(yesListener);
 
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
@@ -44,7 +47,7 @@ public class StartPage extends JFrame{
 
     // assumes they have no account yet.
     class AddNewUserListener implements ActionListener {
-        public void actionPerformed(ActionEvent event){
+        public void actionPerformed(ActionEvent event) {
             panel.remove(question1);
             panel.remove(buttonYes);
             panel.remove(buttonNo);
@@ -83,31 +86,25 @@ public class StartPage extends JFrame{
 
                 writerUser.close();
                 printUser.close();
-            }
-            catch(Exception e){
-                JOptionPane.showMessageDialog(null, e+"");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e + "");
             }
             dispose();
 
             Registration registration = new Registration();
             JFrame registrationFrame = new JFrame("Registration");
-            registrationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            registrationFrame.setContentPane(registration.mainFrame);
-            registrationFrame.pack();
-            registrationFrame.setVisible(true);
+            showGui(registrationFrame, registration.mainFrame);
         }
     }
 
     class ReturningUser implements ActionListener {
-        public void actionPerformed(ActionEvent event){
+        public void actionPerformed(ActionEvent event) {
             dispose();
 
             VehicleOwnerView vehiclePage = new VehicleOwnerView();
             JFrame vehicleFrame = new JFrame("VehicleView");
-            vehicleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            vehicleFrame.setContentPane(vehiclePage.mainFrame);
-            vehicleFrame.pack();
-            vehicleFrame.setVisible(true);
+            showGui(vehicleFrame, vehiclePage.mainFrame);
+
         }
     }
 }
