@@ -1,5 +1,7 @@
 package gui;
 
+import users.vehicleOwner.VehicleOwner;
+
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -22,7 +24,10 @@ public class StartPage extends JFrame{
         //buttonYes.setLocation(100,100); needs fixing of positioning
 
         ActionListener yesListener = new AddNewUserListener();
+        ActionListener noListener = new ReturningUser();
+
         buttonYes.addActionListener(yesListener);
+        buttonNo.addActionListener(noListener);
 
         panel = new JPanel();
         panel.add(question1);
@@ -31,26 +36,34 @@ public class StartPage extends JFrame{
         add(panel);
 
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
+
+
     }
 
+    // assumes they have no account yet.
     class AddNewUserListener implements ActionListener {
         public void actionPerformed(ActionEvent event){
-            panel.remove(question1);
-            panel.remove(buttonYes);
-            panel.remove(buttonNo);
-            panel.revalidate();
-            panel.repaint();
+            dispose();
 
-            question1 = new JLabel("Create a new username: ");
-            username = new JTextField(50);
-            question2 = new JLabel("Create a new password: ");
-            password = new JTextField(50);
+            Registration registration = new Registration();
+            JFrame registrationFrame = new JFrame("Registration");
+            registrationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            registrationFrame.setContentPane(registration.mainFrame);
+            registrationFrame.pack();
+            registrationFrame.setVisible(true);
+        }
+    }
 
-            panel.add(question1);
-            panel.add(username);
-            panel.add(question2);
-            panel.add(password);
-            add(panel);
+    class ReturningUser implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            dispose();
+
+            VehicleOwnerView vehiclePage = new VehicleOwnerView();
+            JFrame vehicleFrame = new JFrame("VehicleView");
+            vehicleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            vehicleFrame.setContentPane(vehiclePage.mainFrame);
+            vehicleFrame.pack();
+            vehicleFrame.setVisible(true);
         }
     }
 }

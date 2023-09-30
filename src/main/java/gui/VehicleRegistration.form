@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="gui.VehicleRegistration">
-  <grid id="27dc6" binding="MainFrame" layout-manager="BorderLayout" hgap="0" vgap="0">
+  <grid id="27dc6" binding="mainFrame" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
       <xy x="20" y="20" width="666" height="400"/>
     </constraints>
@@ -26,16 +26,17 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="27d49" class="javax.swing.JLabel">
+          <component id="27d49" class="javax.swing.JLabel" binding="modelLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
             </constraints>
             <properties>
+              <labelFor value="d1c99"/>
               <text value="Enter your vehicle model"/>
             </properties>
           </component>
-          <component id="d1c99" class="javax.swing.JTextField" binding="ModelTextField">
+          <component id="d1c99" class="javax.swing.JTextField" binding="modelTextField">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -46,16 +47,17 @@
               <text value=""/>
             </properties>
           </component>
-          <component id="caab" class="javax.swing.JLabel">
+          <component id="caab" class="javax.swing.JLabel" binding="makerLabel">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
             </constraints>
             <properties>
+              <labelFor value="a4075"/>
               <text value="Enter your vehicle maker"/>
             </properties>
           </component>
-          <component id="a4075" class="javax.swing.JTextField" binding="MakerTextField">
+          <component id="a4075" class="javax.swing.JTextField" binding="makerTextField">
             <constraints>
               <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -66,16 +68,17 @@
               <text value=""/>
             </properties>
           </component>
-          <component id="40b21" class="javax.swing.JLabel">
+          <component id="40b21" class="javax.swing.JLabel" binding="yearLabel">
             <constraints>
               <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
             </constraints>
             <properties>
+              <labelFor value="ea937"/>
               <text value="Enter your vehicle year"/>
             </properties>
           </component>
-          <component id="ea937" class="javax.swing.JTextField" binding="YearTextField">
+          <component id="ea937" class="javax.swing.JTextField" binding="yearTextField">
             <constraints>
               <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -93,7 +96,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="d2915" class="javax.swing.JButton" binding="CompletionButton">
+          <component id="d2915" class="javax.swing.JButton" binding="completeButton">
             <constraints/>
             <properties>
               <text value="Complete"/>

@@ -12,11 +12,5 @@ public class JobOwnerView {
     private JLabel headerText;
     private JButton exportDataButton;
 
-//    public static void main(String[] args) {
-//        JFrame frame = new JFrame("JobOwnerView");
-//        frame.setContentPane(new JobOwnerView().mainFrame);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.pack();
-//        frame.setVisible(true);
-//    }
+
 }

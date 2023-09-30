@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="gui.Registration">
-  <grid id="27dc6" binding="MainFrame" layout-manager="BorderLayout" hgap="0" vgap="0">
+  <grid id="27dc6" binding="mainFrame" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
       <xy x="20" y="20" width="876" height="665"/>
     </constraints>
@@ -24,41 +24,47 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="7ad2f" class="javax.swing.JLabel" binding="UsernameLabel">
+          <component id="7ad2f" class="javax.swing.JLabel" binding="usernameLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms defaultalign-horz="false"/>
             </constraints>
             <properties>
+              <labelFor value="adbe9"/>
               <text value="Please enter a username"/>
             </properties>
           </component>
-          <component id="adbe9" class="javax.swing.JTextField" binding="UsernameField">
+          <component id="adbe9" class="javax.swing.JTextField" binding="usernameTextField">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
               <forms defaultalign-horz="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <text value=""/>
+            </properties>
           </component>
-          <component id="e6c2b" class="javax.swing.JLabel" binding="PasswordLabel">
+          <component id="e6c2b" class="javax.swing.JLabel" binding="passwordLabel">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
             </constraints>
             <properties>
+              <labelFor value="14fc"/>
               <text value="Please enter a password"/>
             </properties>
           </component>
-          <component id="14fc" class="javax.swing.JTextField" binding="PasswordField">
+          <component id="14fc" class="javax.swing.JTextField" binding="passwordTextField">
             <constraints>
               <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
               <forms defaultalign-horz="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <text value=""/>
+            </properties>
           </component>
           <grid id="b768a" binding="QuestionBox" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
             <constraints>
@@ -68,13 +74,13 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="ffb40" class="javax.swing.JLabel" binding="CheckboxLabel">
+              <component id="ffb40" class="javax.swing.JLabel" binding="checkBoxLabel">
                 <constraints/>
                 <properties>
                   <text value="Are you a job owner?"/>
                 </properties>
               </component>
-              <component id="bd05f" class="javax.swing.JCheckBox" binding="CheckboxValue">
+              <component id="bd05f" class="javax.swing.JCheckBox" binding="checkboxValue">
                 <constraints/>
                 <properties>
                   <text value=""/>
@@ -90,10 +96,10 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="8d9ac" class="javax.swing.JButton" binding="CompletionButton">
+              <component id="8d9ac" class="javax.swing.JButton" binding="nextPageButton">
                 <constraints/>
                 <properties>
-                  <text value="Button"/>
+                  <text value="-&gt;"/>
                 </properties>
               </component>
             </children>

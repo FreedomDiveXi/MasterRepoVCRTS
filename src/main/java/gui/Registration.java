@@ -3,23 +3,17 @@ package gui;
 import javax.swing.*;
 
 public class Registration {
-    private JPanel MainFrame;
+    JPanel mainFrame;
     private JPanel CenterMainFrame;
-    private JTextField UsernameField;
-    private JTextField PasswordField;
-    private JCheckBox CheckboxValue;
-    private JLabel CheckboxLabel;
+    private JTextField usernameTextField;
+    private JTextField passwordTextField;
+    private JCheckBox checkboxValue;
+    private JLabel checkBoxLabel;
     private JPanel QuestionBox;
-    private JLabel UsernameLabel;
-    private JLabel PasswordLabel;
-    private JButton CompletionButton;
+    private JLabel usernameLabel;
+    private JLabel passwordLabel;
+    private JButton nextPageButton;
     private JPanel Confirmation;
 
-//    public static void main(String[] args) {
-//        JFrame frame = new JFrame("Registration");
-//        frame.setContentPane(new Registration().MainFrame);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.pack();
-//        frame.setVisible(true);
-//    }
+
 }

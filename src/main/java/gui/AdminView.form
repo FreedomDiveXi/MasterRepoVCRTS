@@ -17,7 +17,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="34373" class="javax.swing.JLabel" binding="HeaderText">
+          <component id="34373" class="javax.swing.JLabel" binding="headerText">
             <constraints border-constraint="Center"/>
             <properties>
               <horizontalAlignment value="0"/>
