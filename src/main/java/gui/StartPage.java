@@ -1,7 +1,5 @@
 package gui;
 
-import users.vehicleOwner.VehicleOwner;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -27,7 +25,6 @@ public class StartPage extends JFrame{
         buttonYes = new JButton("Yes");
         buttonNo = new JButton("No");
 
-
         panel = new JPanel();
         panel.add(question1);
         panel.add(buttonYes);
@@ -42,7 +39,6 @@ public class StartPage extends JFrame{
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
     }
 
-    // assumes they have no account yet.
     class AddNewUserListener implements ActionListener {
         public void actionPerformed(ActionEvent event){
             panel.remove(question1);
@@ -87,27 +83,6 @@ public class StartPage extends JFrame{
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
             }
-            dispose();
-
-            Registration registration = new Registration();
-            JFrame registrationFrame = new JFrame("Registration");
-            registrationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            registrationFrame.setContentPane(registration.mainFrame);
-            registrationFrame.pack();
-            registrationFrame.setVisible(true);
-        }
-    }
-
-    class ReturningUser implements ActionListener {
-        public void actionPerformed(ActionEvent event){
-            dispose();
-
-            VehicleOwnerView vehiclePage = new VehicleOwnerView();
-            JFrame vehicleFrame = new JFrame("VehicleView");
-            vehicleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            vehicleFrame.setContentPane(vehiclePage.mainFrame);
-            vehicleFrame.pack();
-            vehicleFrame.setVisible(true);
         }
     }
 }
