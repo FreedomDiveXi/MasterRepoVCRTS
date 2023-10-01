@@ -3,7 +3,7 @@ package gui;
 import javax.swing.*;
 
 public class VehicleRegistration {
-    private JPanel mainFrame;
+     JPanel mainFrame;
     private JPanel CenterMainFrame;
     private JTextField modelTextField;
     private JTextField makerTextField;
