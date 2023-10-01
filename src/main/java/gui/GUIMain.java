@@ -4,15 +4,11 @@ import controller.VehicleOwnerController;
 import users.vehicleOwner.VehicleOwner;
 
 import javax.swing.*;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class GUIMain {
     private static GUIMain instance;
     private final JFrame mainWindow;
-    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
-    PrintWriter printUser = new PrintWriter(writerUser);
     private VehicleOwner auxVehicleUser;
     private VehicleOwnerController vehicleController = VehicleOwnerController.getInstance();
 //    private JobOwnerController controller = JobOwnerController.getInstance();
