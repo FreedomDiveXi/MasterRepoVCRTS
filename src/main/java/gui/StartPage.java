@@ -13,6 +13,10 @@ public class StartPage extends JFrame{
     private JLabel question2;
     private JButton buttonYes;
     private JButton buttonNo;
+    private JButton buttonData;
+    private JButton buttonNewData;
+    private JButton buttonJob;
+    private JButton buttonVehicle;
     private JButton goNext;
     private JPanel panel;
     private JTextField username;
@@ -20,6 +24,7 @@ public class StartPage extends JFrame{
     FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
     PrintWriter printUser = new PrintWriter(writerUser);
 
+    //This is the constructor as well as the starting point to the ojects inside the main JFrame
     public StartPage() throws IOException {
         question1 = new JLabel("Are you a new user?");
         buttonYes = new JButton("Yes");
@@ -39,7 +44,9 @@ public class StartPage extends JFrame{
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
     }
 
+    //This is the action caller for new users to register
     class AddNewUserListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent event){
             panel.remove(question1);
             panel.remove(buttonYes);
@@ -64,13 +71,13 @@ public class StartPage extends JFrame{
 
             ActionListener newUser = new submitNewUserListener();
             goNext.addActionListener(newUser);
-
         }
     }
 
+    //This is the action for the user to continue to the next part by asking for job or vehicle as well as inputting the log in info into the database
     class submitNewUserListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent event) {
-
             try {
                 writerUser.write(username.getText());
                 printUser.print("_");
@@ -83,6 +90,34 @@ public class StartPage extends JFrame{
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
             }
+
+            panel.remove(question1);
+            panel.remove(username);
+            panel.remove(question2);
+            panel.remove(password);
+            panel.remove(goNext);
+
+            question1 = new JLabel("Do you want to look at your existing jobs and vehicles or would you like to add a new job/vehicle?");
+            buttonData = new JButton("Your previous information");
+            buttonNewData = new JButton("Submit a new job/vehicle");
+            
+            panel.add(question1);
+            panel.add(buttonData);
+            panel.add(buttonNewData);
+            
+            ActionListener newData = new newDataListener();
+            buttonNewData.addActionListener(newData);
         }
     }
+    
+   class newDataListener implements ActionListener {
+       @Override
+       public void actionPerformed(ActionEvent event) {
+           panel.remove(question1);
+           panel.remove(buttonData);
+           panel.remove(buttonNewData);
+           
+           question1 = 
+       }
+   }
 }
