@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 
 //todo
-public class VehicleOwnerController implements JobVehicleInterface<Vehicle> {
+public class VehicleOwnerController {
 
     private static VehicleOwnerController instance;
     private ArrayList<Vehicle> globalVehicleList;
@@ -33,7 +33,7 @@ public class VehicleOwnerController implements JobVehicleInterface<Vehicle> {
     /**
      * will create a new user, and will append it to the global user list.
      */
-    @Override
+
     public VehicleOwner createUser(String id, String password) {
         VehicleOwner newUser = new VehicleOwner(id, password);
         addToGlobalList(newUser);
@@ -58,7 +58,6 @@ public class VehicleOwnerController implements JobVehicleInterface<Vehicle> {
         globalVehicleList.add(item);
     }
 
-    @Override
     public void updateStatus(Vehicle vehicleInUse) {
         if (!vehicleInUse.isInUse())
             vehicleInUse.setInUse(true);

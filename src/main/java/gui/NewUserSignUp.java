@@ -3,11 +3,15 @@ package gui;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 
 public class NewUserSignUp extends JFrame {
+    FileWriter writeUser = new FileWriter("UserDataBase.txt", true);
+    PrintWriter printUser = new PrintWriter(writeUser);
 
     JPanel mainFrame;
     private JPanel header;
@@ -44,7 +48,13 @@ public class NewUserSignUp extends JFrame {
             try {
                 // assumes that we're only making vehicle people
                 GUIMain ref = GUIMain.getInstance();
-                ref.registerVehicleUser(usernameTextField.getText(), Arrays.toString(passwordTextField.getPassword()));
+//                ref.registerVehicleUser(usernameTextField.getText(), Arrays.toString(passwordTextField.getPassword()));
+                writeUser.write(usernameTextField.getText());
+                printUser.print("_fk");
+                writeUser.write(Arrays.toString(passwordTextField.getPassword()));
+                printUser.println();
+                writeUser.close();
+                printUser.close();
                 ref.setContentPane(new VehicleRegistration().mainFrame);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
