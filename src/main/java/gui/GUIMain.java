@@ -1,32 +1,63 @@
 package gui;
-import java.io.IOException;
+
+import controller.VehicleOwnerController;
+import users.vehicleOwner.VehicleOwner;
+
 import javax.swing.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class GUIMain {
+    private static GUIMain instance;
     private final JFrame mainWindow;
+    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
+    PrintWriter printUser = new PrintWriter(writerUser);
+    private VehicleOwner auxVehicleUser;
+    private VehicleOwnerController vehicleController = VehicleOwnerController.getInstance();
+//    private JobOwnerController controller = JobOwnerController.getInstance();
+
 
     /**
      * singleton pattern
      * ensures we only have access to one Jframe at a time
      */
-    private GUIMain () throws IOException {
+    private GUIMain() throws IOException {
         mainWindow = new JFrame();
-        mainWindow.setContentPane(new Registration().mainFrame);
+        mainWindow.setContentPane(new StartPage().mainFrame);
+
         mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainWindow.pack();
         mainWindow.setVisible(true);
     }
-    private static GUIMain instance;
+
     public static GUIMain getInstance() throws IOException {
-        if(instance == null)
+        if (instance == null)
             instance = new GUIMain();
         return instance;
     }
+
+    public void registerVehicleUser(String userName, String password) {
+        auxVehicleUser = vehicleController.createUser(userName, password);
+    }
+
+    public void registerUserVehicle(String model, String maker, String year) {
+        vehicleController.createNewVehicle(auxVehicleUser, model, maker, Integer.parseInt(year));
+    }
+
+    public void registerNewJobOwner(String userName, String password) {
+    }
+
+    public void registerNewJob() {
+
+    }
+
 
     // allows to set a new view in the frame.
     public void setContentPane(JPanel panel) {
         mainWindow.setContentPane(panel);
         mainWindow.revalidate();
         mainWindow.repaint();
-    }}
+    }
+}
 

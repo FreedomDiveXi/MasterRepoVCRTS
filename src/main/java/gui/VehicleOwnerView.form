@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="gui.VehicleOwnerView">
-  <grid id="27dc6" binding="mainFrame" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="mainFrame" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="true" same-size-vertically="true" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="650" height="413"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="278ec" binding="header" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="278ec" binding="header" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="true" same-size-vertically="true" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="646" height="86"/>
+          </grid>
         </constraints>
         <properties>
           <font/>
         </properties>
         <border type="none"/>
         <children>
-          <component id="f1ecc" class="javax.swing.JLabel" binding="headerText">
+          <component id="f1ecc" class="javax.swing.JLabel" binding="headerTextTop">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -31,7 +33,7 @@
               <verticalTextPosition value="0"/>
             </properties>
           </component>
-          <component id="d7356" class="javax.swing.JLabel" binding="headerText2">
+          <component id="d7356" class="javax.swing.JLabel" binding="headerTextMiddle">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -42,7 +44,7 @@
               <text value="You've helped X users so far!"/>
             </properties>
           </component>
-          <component id="39aca" class="javax.swing.JLabel" binding="headerText3">
+          <component id="39aca" class="javax.swing.JLabel" binding="headerTextBottom">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -57,7 +59,9 @@
       </grid>
       <grid id="11d8" binding="body" layout-manager="BorderLayout" hgap="0" vgap="10">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="646" height="133"/>
+          </grid>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -67,7 +71,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="a8288" class="javax.swing.JButton" binding="newVechicle">
+              <component id="a8288" class="javax.swing.JButton" binding="newVechicleButton">
                 <constraints border-constraint="North"/>
                 <properties>
                   <text value="Have a new vehicle to register?"/>
@@ -81,7 +85,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="5dd67" class="javax.swing.JButton" binding="activeJobs">
+              <component id="5dd67" class="javax.swing.JButton" binding="activeJobsButton">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -89,7 +93,7 @@
                   <text value="Active Tasks"/>
                 </properties>
               </component>
-              <component id="e5bef" class="javax.swing.JButton" binding="history">
+              <component id="e5bef" class="javax.swing.JButton" binding="historyButton">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -111,15 +115,17 @@
       </grid>
       <grid id="c7192" binding="footer" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="646" height="48"/>
+          </grid>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="d943a" class="javax.swing.JButton" binding="exportData">
+          <component id="d943a" class="javax.swing.JButton" binding="exportDataButton">
             <constraints/>
             <properties>
-              <text value="ExportData"/>
+              <text value="Export Data"/>
             </properties>
           </component>
         </children>
