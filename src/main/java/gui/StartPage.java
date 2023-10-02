@@ -40,7 +40,7 @@ public class StartPage extends JFrame {
         public void actionPerformed(ActionEvent event) {
             try {
                 GUIMain ref = GUIMain.getInstance();
-                ref.setContentPane(new NewUserSignUp().mainFrame);
+                ref.setContentPane(new ReturningUser().mainFrame);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
