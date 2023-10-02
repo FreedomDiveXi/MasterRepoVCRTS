@@ -1,6 +1,9 @@
 package gui;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
 
 public class NewUserSignUp extends JFrame {
@@ -19,6 +22,21 @@ public class NewUserSignUp extends JFrame {
     private JCheckBox checkboxValue;
     private JPanel bottom;
 
-    // on submission this logic will trigger
+    NewUserSignUp(){
+        nextPageButton.addActionListener(new VehicleRegistrationPage());
+    }
 
+    // on submission this logic will trigger
+    class VehicleRegistrationPage implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            try {
+                GUIMain ref = GUIMain.getInstance();
+                ref.setContentPane(new VehicleRegistration().mainFrame);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
 }
