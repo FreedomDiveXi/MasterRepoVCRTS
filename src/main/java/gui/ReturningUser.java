@@ -17,6 +17,25 @@ public class ReturningUser extends JFrame {
     private JLabel passwordLabel;
     private JButton loginButton;
 
-    // on submission will run login logic
+    ReturningUser() {
 
+        loginButton.addActionListener(new ReturningUserPage());
+
+
+    }
+
+    // on submission will run login logic
+    class ReturningUserPage implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                GUIMain ref = GUIMain.getInstance();
+                ref.setContentPane(new JobOwnerApplication().mainFrame);
+
+            } catch (IOException t) {
+                throw new RuntimeException(t);
+            }
+
+        }
+    }
 }
