@@ -1,7 +1,7 @@
 package gui;
 
 import javax.swing.*;
-public class JobOwnerView {
+public class JobOwnerView extends JFrame {
     private JPanel mainFrame;
     private JPanel Header;
     private JPanel Body;
@@ -11,6 +11,5 @@ public class JobOwnerView {
     private JButton newJob;
     private JLabel headerText;
     private JButton exportDataButton;
-
 
 }

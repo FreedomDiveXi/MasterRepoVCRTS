@@ -17,23 +17,6 @@ public class ReturningUser extends JFrame {
     private JLabel passwordLabel;
     private JButton loginButton;
 
-    ReturningUser() {
-        loginButton.addActionListener(new GoToUserPage());
-    }
-
-    // on submission this logic will trigger
-    class GoToUserPage implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-            try {
-                GUIMain ref = GUIMain.getInstance();
-                ref.setContentPane(new VehicleOwnerView().mainFrame);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-
-        }
-    }
+    // on submission will run login logic
 
 }

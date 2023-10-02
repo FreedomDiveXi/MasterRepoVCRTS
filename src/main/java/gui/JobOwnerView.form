@@ -18,6 +18,7 @@
           <component id="b92d7" class="javax.swing.JLabel" binding="headerText">
             <constraints border-constraint="Center"/>
             <properties>
+              <horizontalAlignment value="0"/>
               <horizontalTextPosition value="0"/>
               <text value="Welcome (JOB OWNER) you've posted X jobs so far, keep it up!"/>
             </properties>

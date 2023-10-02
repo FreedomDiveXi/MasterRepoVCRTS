@@ -19,23 +19,4 @@ public class VehicleRegistration extends JFrame {
     private JLabel vehicleYearTextLabel;
 
 
-    VehicleRegistration() {
-        completeButton.addActionListener(new GoToNextPage());
-    }
-
-    // on submission this logic will trigger
-    class GoToNextPage implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                GUIMain ref = GUIMain.getInstance();
-                ref.setContentPane(new VehicleOwnerView().mainFrame);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-    }
-
-
 }

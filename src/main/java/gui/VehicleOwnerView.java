@@ -2,8 +2,8 @@ package gui;
 
 import javax.swing.*;
 
-public class VehicleOwnerView {
-    private JPanel mainFrame;
+public class VehicleOwnerView extends JFrame{
+    JPanel mainFrame;
     private JPanel header;
     private JLabel headerTextTop;
     private JLabel headerTextMiddle;
@@ -11,9 +11,7 @@ public class VehicleOwnerView {
     private JPanel body;
     private JButton newVechicleButton;
     private JPanel innerCenterBody;
-    private JButton activeJobsButton;
     private JButton historyButton;
-    private JButton findAJobButton;
     private JPanel footer;
     private JButton exportDataButton;
 }
