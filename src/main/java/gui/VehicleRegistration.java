@@ -18,5 +18,16 @@ public class VehicleRegistration extends JFrame {
     private JLabel vehicleMakerLabel;
     private JLabel vehicleYearTextLabel;
 
+    class VehicaleUserApplicationPage implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            try {
+                GUIMain ref = GUIMain.getInstance();
+                ref.setContentPane(new ReturningUser().mainFrame);
 
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
 }

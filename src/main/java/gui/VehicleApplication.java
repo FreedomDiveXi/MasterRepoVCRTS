@@ -2,7 +2,7 @@ package gui;
 
 import javax.swing.*;
 
-public class VehicleOwnerView extends JFrame{
+public class VehicleApplication extends JFrame{
     JPanel mainFrame;
     private JPanel header;
     private JLabel headerTextTop;
