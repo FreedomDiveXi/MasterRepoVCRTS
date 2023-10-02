@@ -31,7 +31,11 @@ public class NewUserSignUp extends JFrame {
         public void actionPerformed(ActionEvent event) {
             try {
                 GUIMain ref = GUIMain.getInstance();
-                ref.setContentPane(new VehicleRegistration().mainFrame);
+                if(checkboxValue.isSelected()){
+                    ref.setContentPane(new JobOwnerApplication().mainFrame);
+                }else{
+                    ref.setContentPane(new VehicleRegistration().mainFrame);
+                }
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
