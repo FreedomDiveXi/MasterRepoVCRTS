@@ -30,7 +30,7 @@ public class ReturningUser extends JFrame {
         public void actionPerformed(ActionEvent e) {
             try {
                 GUIMain ref = GUIMain.getInstance();
-                ref.setContentPane(new JobOwnerApplication().mainFrame);
+                ref.setContentPane(new JobApplication().mainFrame);
 
             } catch (IOException t) {
                 throw new RuntimeException(t);

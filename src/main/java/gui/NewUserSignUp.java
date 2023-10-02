@@ -22,7 +22,7 @@ public class NewUserSignUp extends JFrame {
     private JCheckBox checkboxValue;
     private JPanel bottom;
 
-    NewUserSignUp(){
+    NewUserSignUp() {
         nextPageButton.addActionListener(new VehicleRegistrationPage());
     }
 
@@ -31,9 +31,9 @@ public class NewUserSignUp extends JFrame {
         public void actionPerformed(ActionEvent event) {
             try {
                 GUIMain ref = GUIMain.getInstance();
-                if(checkboxValue.isSelected()){
-                    ref.setContentPane(new JobOwnerApplication().mainFrame);
-                }else{
+                if (checkboxValue.isSelected()) {
+                    ref.setContentPane(new JobApplication().mainFrame);
+                } else {
                     ref.setContentPane(new VehicleRegistration().mainFrame);
                 }
 

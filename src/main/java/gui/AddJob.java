@@ -5,27 +5,28 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-public class JobApplication extends JFrame {
+public class AddJob {
     JPanel mainFrame;
-    private JPanel Header;
-    private JPanel Body;
+    private JPanel header;
+    private JPanel body;
     private JPanel footer;
-    private JButton history;
-    private JButton activeJobs;
-    private JButton newJob;
-    private JLabel headerText;
-    private JButton exportDataButton;
+    private JTextField deadlineTextField;
+    private JTextArea jobDescription;
+    private JLabel deadlineLabel;
+    private JLabel jobDescriptionLabel;
+    private JButton submitJobButton;
 
-    public JobApplication() {
-        newJob.addActionListener(new ActionListener() {
+    public AddJob() {
+        submitJobButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     GUIMain ref = GUIMain.getInstance();
-                    ref.setContentPane(new AddJob().mainFrame);
+                    ref.setContentPane(new JobApplication().mainFrame);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+
             }
         });
     }
