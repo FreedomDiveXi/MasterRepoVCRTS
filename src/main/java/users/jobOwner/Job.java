@@ -45,4 +45,14 @@ public class Job {
         jobCompletion = false;
 
     }
+    
+    @Override
+    public String toString() {
+        return "Job{" +
+                "jobID=" + jobID +
+                ", jobDurationTime=" + jobDurationTime +
+                ", jobDeadline=" + (jobDeadline != null ? jobDeadline : "No deadline") +
+                ", completed=" + completed +
+                '}';
+    }
 }
