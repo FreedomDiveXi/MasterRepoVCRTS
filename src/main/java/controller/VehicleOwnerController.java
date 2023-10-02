@@ -87,6 +87,9 @@ public class VehicleOwnerController {
             printVehicle.print(" : ");
             writeVehicle.write(newVehicle.getDateTimeNow().toString());
             printVehicle.println();
+
+            writeVehicle.close();
+            printVehicle.close();
         }
         catch(Exception e){
             JOptionPane.showMessageDialog(null, e+"");
