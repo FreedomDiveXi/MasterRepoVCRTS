@@ -1,4 +1,4 @@
-package users.vehiclePerson;
+package users.vehicleOwner;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,11 +18,11 @@ public class Vehicle {
      * method will create a new vehicle object
      */
     public Vehicle(String vehicleModel, String vehicleMake, int vehicleYear) {
+        creationTimeStamp = now;
         this.vehicleModel = vehicleModel;
         this.vehicleMake = vehicleMake;
         this.vehicleYear = vehicleYear;
         this.inUse = false;
-        this.creationTimeStamp = now;
     }
 
     public boolean isInUse() {
@@ -31,20 +31,6 @@ public class Vehicle {
 
     public void setInUse(boolean inUse) {
         this.inUse = inUse;
-    }
-
-    //todo add remaining pieces of information
-    public String getVehicleDetails() {
-
-        StringJoiner joiner = new StringJoiner(":");
-        joiner.add(getVehicleMake())
-                .add(getVehicleModel())
-                .add(Integer.toString(getVehicleYear()));
-        if (isInUse())
-            joiner.add("True");
-
-        joiner.add("False");
-        return joiner.toString();
     }
 
     public String getVehicleModel() {
@@ -66,6 +52,25 @@ public class Vehicle {
 
     public LocalDateTime getRawCreationTimeStamp() {
         return creationTimeStamp;
+    }
+
+    //todo add remaining pieces of information
+    public String getVehicleDetails() {
+
+        StringJoiner joiner = new StringJoiner(":");
+        joiner.add(getCreationTimeStamp())
+                .add(getVehicleModel())
+                .add(getVehicleMake())
+                .add(Integer.toString(getVehicleYear()));
+        if (isInUse()) {
+
+            joiner.add("True");
+        } else {
+
+            joiner.add("False");
+        }
+
+        return joiner.toString();
     }
 
 }

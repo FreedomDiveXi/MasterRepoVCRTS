@@ -1,15 +1,16 @@
-package users.jobPerson;
+package users.jobOwner;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 
 public class Job {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
     LocalDateTime now = LocalDateTime.now();
-    private String jobId;
     private LocalDateTime creationTimeStamp;
+    private String jobId;
     private String jobDurationTime;
     private String jobDeadline;
     private boolean completed;
@@ -24,12 +25,11 @@ public class Job {
      * sets completed to default.
      */
     public Job(String jobDuration, String deadline) {
+        creationTimeStamp = now;
         this.jobId = getUniqueId();
         this.jobDurationTime = jobDuration;
         this.jobDeadline = deadline;
         this.completed = false;
-        this.creationTimeStamp = now;
-
     }
 
     private String getUniqueId() {
@@ -64,5 +64,21 @@ public class Job {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public String getJobDetails() {
+        StringJoiner joiner = new StringJoiner(":");
+        joiner.add(getCreationTimeStamp())
+                .add(getJobId())
+                .add(getJobDurationTime())
+                .add(getJobDeadline());
+        if (isCompleted()) {
+
+            joiner.add("True");
+        } else {
+
+            joiner.add("False");
+        }
+        return joiner.toString();
     }
 }

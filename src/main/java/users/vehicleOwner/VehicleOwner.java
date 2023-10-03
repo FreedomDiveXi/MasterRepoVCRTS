@@ -1,4 +1,4 @@
-package users.vehiclePerson;
+package users.vehicleOwner;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,48 +10,38 @@ public class VehicleOwner {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
     LocalDateTime now = LocalDateTime.now();
     private LocalDateTime creationTimeStamp;
-    private String vehicleOwnerUniqueId;
+    private String userUniqueId;
     private String vehicleOwnerUsername;
     private String vehicleOwnerPassword;
-    private ArrayList<Vehicle> vechicleList;
+    private ArrayList<Vehicle> vehicleList;
 
     public VehicleOwner(String vehicleOwnerId, String vehicleOwnerPassword) {
         creationTimeStamp = now;
-        vehicleOwnerUniqueId = getUniqueId();
+        userUniqueId = getUniqueId();
         this.vehicleOwnerUsername = vehicleOwnerId;
         this.vehicleOwnerPassword = vehicleOwnerPassword;
-        this.vechicleList = new ArrayList<Vehicle>();
+        this.vehicleList = new ArrayList<Vehicle>();
     }
 
     public String getVehicleOwnerUsername() {
         return vehicleOwnerUsername;
     }
 
-    public String getVehiclePassword() {
+    public String getVehicleOwnerPassword() {
         return vehicleOwnerPassword;
     }
 
     public ArrayList<Vehicle> getVehicleList() {
-        return vechicleList;
+        return vehicleList;
     }
 
-    //todo temp solution can be cleaner
-    public String getUserDetails() {
-
-        StringJoiner joiner = new StringJoiner(":");
-        joiner.add(getVehicleOwnerUsername())
-                .add(getVehiclePassword())
-                .add(getVehicleList().toString());
-
-        return joiner.toString();
-    }
-
-
-    // gets the formatted
+    // formats the local date time into a string
     public String getCreationTimeStamp() {
         return dtf.format(creationTimeStamp);
     }
 
+    // meant for later instances in which we want to have to work with the
+    // actual local data time type
     public LocalDateTime getRawCreationTimeStamp() {
         return creationTimeStamp;
     }
@@ -59,6 +49,19 @@ public class VehicleOwner {
     private String getUniqueId() {
         return UUID.randomUUID().toString();
     }
+
+    public String getUserDetails() {
+
+        StringJoiner joiner = new StringJoiner(":");
+        joiner.add(getCreationTimeStamp())
+                .add(getUniqueId())
+                .add(getVehicleOwnerUsername())
+                .add(getVehicleOwnerPassword())
+                .add(getVehicleList().toString());
+
+        return joiner.toString();
+    }
+
 
 }
 
