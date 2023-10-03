@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="gui.JobOwnerView">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="gui.JobApplication">
   <grid id="27dc6" binding="mainFrame" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="50" bottom="10" right="50"/>
     <constraints>
@@ -18,6 +18,7 @@
           <component id="b92d7" class="javax.swing.JLabel" binding="headerText">
             <constraints border-constraint="Center"/>
             <properties>
+              <horizontalAlignment value="0"/>
               <horizontalTextPosition value="0"/>
               <text value="Welcome (JOB OWNER) you've posted X jobs so far, keep it up!"/>
             </properties>
@@ -79,6 +80,12 @@
             <properties>
               <horizontalTextPosition value="11"/>
               <text value="Export data"/>
+            </properties>
+          </component>
+          <component id="34e9d" class="javax.swing.JButton" binding="signOutButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <text value="Sign out"/>
             </properties>
           </component>
         </children>

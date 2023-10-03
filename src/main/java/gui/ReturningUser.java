@@ -18,22 +18,24 @@ public class ReturningUser extends JFrame {
     private JButton loginButton;
 
     ReturningUser() {
-        loginButton.addActionListener(new GoToUserPage());
+
+        loginButton.addActionListener(new ReturningUserPage());
+
+
     }
 
-    // on submission this logic will trigger
-    class GoToUserPage implements ActionListener {
+    // on submission will run login logic
+    class ReturningUserPage implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-
             try {
                 GUIMain ref = GUIMain.getInstance();
-                ref.setContentPane(new VehicleOwnerView().mainFrame);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                ref.setContentPane(new StartPage().mainFrame);
+
+            } catch (IOException t) {
+                throw new RuntimeException(t);
             }
 
         }
     }
-
 }
