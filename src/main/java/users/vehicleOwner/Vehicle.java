@@ -1,10 +1,13 @@
 package users.vehicleOwner;
 
+import java.time.*;
+
 public class Vehicle {
     private String vehicleModel;
     private String vehicleMake;
     private int vehicleYear;
     private boolean inUse;
+    private LocalDateTime dateTimeNow;
 
     /**
      * method will create a new vehicle object
@@ -18,6 +21,7 @@ public class Vehicle {
         this.vehicleMake = vehicleMake;
         this.vehicleYear = vehicleYear;
         this.inUse = false;
+        this.dateTimeNow = LocalDateTime.now();
     }
     public boolean isInUse() {
         return inUse;
@@ -38,5 +42,6 @@ public class Vehicle {
         return vehicleYear;
     }
 
+    public LocalDateTime getDateTimeNow() { return dateTimeNow; }
 
 }

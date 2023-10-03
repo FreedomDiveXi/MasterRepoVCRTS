@@ -3,7 +3,7 @@ public class Owner {
 
     private String ownerID;
     private String ownerInfo;
-    private String residancyString;
+    private String residencyString;
 
     // Getter for ownerID
     public String getOwnerID() {
@@ -25,14 +25,14 @@ public class Owner {
         this.ownerInfo = ownerInfo;
     }
 
-    // Getter for residancyString
-    public String getResidancyString() {
-        return residancyString;
+    // Getter for residencyString
+    public String getResidencyString() {
+        return residencyString;
     }
 
-    // Setter for residancyString
-    public void setResidancyString(String residancyString) {
-        this.residancyString = residancyString;
+    // Setter for residencyString
+    public void setResidencyString(String residencyString) {
+        this.residencyString = residencyString;
     }
 
 }
