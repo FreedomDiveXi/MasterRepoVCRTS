@@ -52,7 +52,7 @@ public class VehicleOwner {
 
     public String getUserDetails() {
 
-        StringJoiner joiner = new StringJoiner(":");
+        StringJoiner joiner = new StringJoiner("||");
         joiner.add(getCreationTimeStamp())
                 .add(getUniqueId())
                 .add(getVehicleOwnerUsername())

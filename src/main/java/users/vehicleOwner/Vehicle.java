@@ -57,16 +57,14 @@ public class Vehicle {
     //todo add remaining pieces of information
     public String getVehicleDetails() {
 
-        StringJoiner joiner = new StringJoiner(":");
+        StringJoiner joiner = new StringJoiner("||");
         joiner.add(getCreationTimeStamp())
                 .add(getVehicleModel())
                 .add(getVehicleMake())
                 .add(Integer.toString(getVehicleYear()));
         if (isInUse()) {
-
             joiner.add("True");
         } else {
-
             joiner.add("False");
         }
 
