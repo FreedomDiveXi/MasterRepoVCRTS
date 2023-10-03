@@ -3,108 +3,97 @@ package controller;
 import users.vehicleOwner.Vehicle;
 import users.vehicleOwner.VehicleOwner;
 
-import javax.swing.*;
-import java.util.*;
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
-/**
- * Our vehicle objects for now live as a singular entities.
- * The controller is meant to bridge them together.
- * That way we can separate the data as much as possible from function/behavior
- * things (except for essential things).
- * So that way we don't have to directly work with the direct object.
- */
-
-//todo
 public class VehicleOwnerController {
-
     private static VehicleOwnerController instance;
-    private ArrayList<Vehicle> globalVehicleList;
-    private ArrayList<VehicleOwner> globalUserList;
-    FileWriter writeUser;
-    {
-        try {
-            writeUser = new FileWriter("UserDataBase.txt", true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    PrintWriter printUser = new PrintWriter(writeUser);
-    FileWriter writeVehicle;
-    {
-        try {
-            writeVehicle = new FileWriter("VehicleDataBase.txt", true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    PrintWriter printVehicle = new PrintWriter(writeVehicle);
+    private final String VEHICLE_USER_DATABASE = "VehicleOwnerDataBase.txt";
+    private final String VEHICLE_DATABASE = "VehicleDataBase.txt";
+    private final ArrayList<Vehicle> globalVehicleList;
+    private final ArrayList<VehicleOwner> globalVehicleUserList;
+    FileWriter writeUser = new FileWriter(VEHICLE_USER_DATABASE, true);
+    PrintWriter printUser = new PrintWriter(writeUser, true);
+    FileWriter writeVehicle = new FileWriter(VEHICLE_DATABASE, true);
+    PrintWriter printVehicle = new PrintWriter(writeVehicle, true);
+
 
     // singleton pattern to ensure there is only one instance of the vehicle controller.
-    private VehicleOwnerController() {
+    private VehicleOwnerController() throws IOException {
+        globalVehicleList = new ArrayList<Vehicle>();
+        globalVehicleUserList = new ArrayList<VehicleOwner>();
     }
 
-    public static VehicleOwnerController getInstance() {
+    public static VehicleOwnerController getInstance() throws IOException {
         if (instance == null)
             instance = new VehicleOwnerController();
         return instance;
     }
 
     /**
-     * will create a new user, and will append it to the global user list.
+     * will create a new user, and will append it to the global user list and
+     * will write to user database.
      */
-
-    public VehicleOwner createUser(String id, String password) {
-        try {
-            writeUser.write(id);
-            printUser.print(" : ");
-            writeUser.write(password);
-            printUser.println();
-        }
-        catch(Exception e){
-            JOptionPane.showMessageDialog(null, e+"");
-        }
+    public VehicleOwner createUser(String id, String password) throws IOException {
         VehicleOwner newUser = new VehicleOwner(id, password);
         addToGlobalList(newUser);
+        try {
+            writeToVehicleUserFile(addToGlobalList(newUser));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return newUser;
     }
 
     /**
      * will create a new vehicle, and will append it to the global vehicle list.
      */
-    public Vehicle createNewVehicle(VehicleOwner user, String model, String make, int year) {
+    public Vehicle createNewVehicle(VehicleOwner user, String model, String make, int year) throws IOException {
         Vehicle newVehicle = new Vehicle(model, make, year);
         addToGlobalList(newVehicle);
-        user.getVechicleList().add(newVehicle);
-        try {
-            writeVehicle.write(user.getVehicleOwnerId());
-            printVehicle.print(" : ");
-            writeVehicle.write(model);
-            printVehicle.print(" : ");
-            writeVehicle.write(make);
-            printVehicle.print(" : ");
-            writeVehicle.write(year);
-            printVehicle.print(" : ");
-            writeVehicle.write(newVehicle.getDateTimeNow().toString());
-            printVehicle.println();
+        user.getVehicleList().add(newVehicle);
 
-            writeVehicle.close();
-            printVehicle.close();
+        try {
+            writeToVehicleFile(addToGlobalList(newVehicle));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        catch(Exception e){
-            JOptionPane.showMessageDialog(null, e+"");
-        }
+
         return newVehicle;
     }
 
-    public void addToGlobalList(VehicleOwner item) {
-        globalUserList.add(item);
+    public void writeToVehicleUserFile(ArrayList<VehicleOwner> vehicleOwners) throws IOException {
+        for (VehicleOwner currentUser : vehicleOwners) {
+            writeUser.write(currentUser.getUserDetails());
+            printUser.println();
+        }
+        // no point in closing since the user can add a new vehicle and want
+        // to update the users info with the most up-to-date values
     }
 
-    public void addToGlobalList(Vehicle item) {
-        globalVehicleList.add(item);
+    public void writeToVehicleFile(ArrayList<Vehicle> vehicles) throws IOException {
+        for (Vehicle currentVehicle : globalVehicleList) {
+            writeVehicle.write(currentVehicle.getVehicleDetails());
+            printVehicle.println();
+        }
+        // no point in closing since the user can add a new vehicle and want
+        // to update the users info with the most up-to-date values
     }
 
+    public ArrayList<VehicleOwner> addToGlobalList(VehicleOwner user) {
+        globalVehicleUserList.add(user);
+        return globalVehicleUserList;
+    }
+
+    public ArrayList<Vehicle> addToGlobalList(Vehicle vehicle) {
+        globalVehicleList.add(vehicle);
+        return globalVehicleList;
+    }
+
+    // when the prof gives us the algo that adds assigns jobs to vehicle
+    // will use this to update the status of a vehicle.
     public void updateStatus(Vehicle vehicleInUse) {
         if (!vehicleInUse.isInUse())
             vehicleInUse.setInUse(true);

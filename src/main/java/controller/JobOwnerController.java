@@ -3,59 +3,95 @@ package controller;
 import users.jobOwner.Job;
 import users.jobOwner.JobOwner;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
-/**
- * Our job objects for now live as a singular entities.
- * The controller is meant to bridge them together.
- * That way we can separate the data as much as possible from function/behavior things (except for essential things).
- * So that way we don't have to directly work with the direct object.
- */
-
-//todo
 public class JobOwnerController {
 
     private static JobOwnerController instance;
-    private ArrayList<Job> globalJobList;
-    private ArrayList<JobOwner> globalUserList;
+    private final String JOB_OWNER_DATABASE = "JobOwnerDataBase.txt";
+    private final String JOB_DATABASE = "JobDataBase.txt";
+    private final ArrayList<Job> globalJobList;
+    private final ArrayList<JobOwner> globalJobUserList;
+    FileWriter writeUser = new FileWriter(JOB_OWNER_DATABASE, true);
+    PrintWriter printUser = new PrintWriter(writeUser, true);
+    FileWriter writeJob = new FileWriter(JOB_DATABASE, true);
+    PrintWriter printJob = new PrintWriter(writeJob, true);
 
-    private JobOwnerController() {
+    // singleton pattern to ensure there is only one instance of the vehicle controller.
+    private JobOwnerController() throws IOException {
+        globalJobList = new ArrayList<Job>();
+        globalJobUserList = new ArrayList<JobOwner>();
     }
 
-    public static JobOwnerController getInstance() {
+    public static JobOwnerController getInstance() throws IOException {
         if (instance == null)
             instance = new JobOwnerController();
         return instance;
     }
 
     /**
-     * will create a new user, and will append it to the global user list.
+     * will create a new user, and will append it to the global user list and
+     * will write to job user database.
      */
-
     public JobOwner createUser(String id, String password) {
         JobOwner newUser = new JobOwner(id, password);
         addToGlobalList(newUser);
+        try {
+            writeToJobUserFile(addToGlobalList(newUser));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return newUser;
     }
 
     /**
      * will create a new job, and will append it to the global job list.
+     * will be assuming that every job only has a job duration and a job
+     * deadline
      */
-    public Job createNewJob(JobOwner user, int jobID, LocalTime jobDurationTime, LocalDate jobDeadline) {
-        Job newJob = new Job(jobID, jobDurationTime, jobDeadline);
+
+    public Job createNewJob(JobOwner user, String jobDuration,
+                            String deadline) {
+        Job newJob = new Job(jobDuration, deadline);
         addToGlobalList(newJob);
         user.getJobList().add(newJob);
+        try {
+            writeToJobFile(addToGlobalList(newJob));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return newJob;
     }
 
-    public void addToGlobalList(JobOwner item) {
-        globalUserList.add(item);
+    public void writeToJobUserFile(ArrayList<JobOwner> jobOwners) throws IOException {
+        for (JobOwner currentUser : globalJobUserList) {
+            writeUser.write(currentUser.getJobOwnerDetails());
+            printUser.println();
+        }
+        // no point in closing since the user can add a new vehicle and want
+        // to update the users info with the most up-to-date values
     }
 
-    public void addToGlobalList(Job item) {
+    public void writeToJobFile(ArrayList<Job> jobs) throws IOException {
+        for (Job currentVehicle : globalJobList) {
+            writeJob.write(currentVehicle.getJobDetails());
+            printJob.println();
+        }
+        // no point in closing since the user can add a new vehicle and want
+        // to update the users info with the most up-to-date values
+    }
+
+    public ArrayList<JobOwner> addToGlobalList(JobOwner item) {
+        globalJobUserList.add(item);
+        return globalJobUserList;
+    }
+
+    public ArrayList<Job> addToGlobalList(Job item) {
         globalJobList.add(item);
+        return globalJobList;
     }
 
     public void updateStatus(Job jobCompleted) {

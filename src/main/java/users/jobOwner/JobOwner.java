@@ -1,4 +1,4 @@
-package users.jobOwner;
+package users.jobPerson;
 
 import java.util.ArrayList;
 
@@ -18,12 +18,15 @@ public class JobOwner {
     public String getJobOwnerId() {
         return jobOwnerId;
     }
+
     public String getJobPassword() {
         return jobPassword;
     }
+
     public ArrayList<Job> getJobList() {
         return jobList;
     }
+
     public ArrayList<Job> getJobHistory() {
         return jobHistory;
     }

@@ -1,53 +1,63 @@
-package users.jobOwner;
+package users.jobPerson;
 
-import java.time.LocalTime;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 
 public class Job {
-
-    private int jobID;
-    private LocalTime jobDurationTime;
-    private LocalDate jobDeadline;
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    LocalDateTime now = LocalDateTime.now();
+    private String jobId;
+    private LocalDateTime creationTimeStamp;
+    private String jobDurationTime;
+    private String jobDeadline;
     private boolean completed;
 
     /**
-     * if no deadline is provided will use this constructor method
-     *
-     * @param jobID
-     * @param jobDurationTime
+     * for now based on the specifications a job can only submit the job
+     * duration and the job deadline. for now a simple string is more than
+     * enough.
+     * On every instance it will generate a new unique ID.
+     * Will time stamp the object when it's created onto the actual job item
+     * itself so that we know when the job is created.
+     * sets completed to default.
      */
-    public Job( int jobID, LocalTime jobDurationTime) {
-
-        this.jobID = jobID;
-        this.jobDurationTime = jobDurationTime;
+    public Job(String jobDuration, String deadline) {
+        this.jobId = getUniqueId();
+        this.jobDurationTime = jobDuration;
+        this.jobDeadline = deadline;
         this.completed = false;
+        this.creationTimeStamp = now;
+
     }
 
-    /**
-     * overloaded method to provide an optional case in which we can create a
-     * job with a deadline
-     *
-     * @param jobID
-     * @param jobDurationTime
-     * @param jobDeadline
-     */
-    public Job(int jobID, LocalTime jobDurationTime, LocalDate jobDeadline) {
-        this.jobID = jobID;
-        this.jobDurationTime = jobDurationTime;
-        this.jobDeadline = jobDeadline;
-        this.completed = false;
+    private String getUniqueId() {
+        return UUID.randomUUID().toString();
     }
 
-    public int getJobID() {
-        return jobID;
+    public String getJobId() {
+        return jobId;
     }
-    public LocalTime getJobDurationTime() {
+
+    // gets the date in which
+    public String getCreationTimeStamp() {
+        return dtf.format(creationTimeStamp);
+    }
+
+    public LocalDateTime getRawCreationTimeStamp() {
+        return creationTimeStamp;
+    }
+
+    public String getJobDurationTime() {
         return jobDurationTime;
     }
-    public LocalDate getJobDeadline() {
+
+    public String getJobDeadline() {
         return jobDeadline;
     }
 
+    // returns the current status of a job
     public boolean isCompleted() {
         return completed;
     }
