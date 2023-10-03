@@ -15,6 +15,7 @@ public class JobApplication extends JFrame {
     private JButton newJob;
     private JLabel headerText;
     private JButton exportDataButton;
+    private JButton signOutButton;
 
     public JobApplication() {
         newJob.addActionListener(new ActionListener() {
@@ -23,6 +24,17 @@ public class JobApplication extends JFrame {
                 try {
                     GUIMain ref = GUIMain.getInstance();
                     ref.setContentPane(new AddJob().mainFrame);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        signOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    GUIMain ref = GUIMain.getInstance();
+                    ref.setContentPane(new StartPage().mainFrame);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }

@@ -82,6 +82,12 @@
               <text value="Export data"/>
             </properties>
           </component>
+          <component id="34e9d" class="javax.swing.JButton" binding="signOutButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <text value="Sign out"/>
+            </properties>
+          </component>
         </children>
       </grid>
     </children>

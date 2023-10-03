@@ -22,7 +22,7 @@ public class StartPage extends JFrame {
     }
 
     // on the click of the returning user this will trigger
-    class ReturningUserPage implements ActionListener {
+    static class ReturningUserPage implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             try {
                 GUIMain ref = GUIMain.getInstance();
@@ -36,7 +36,7 @@ public class StartPage extends JFrame {
     }
 
     // on click of new user this will trigger
-    class NewUserPage implements ActionListener {
+    static class NewUserPage implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             try {
                 GUIMain ref = GUIMain.getInstance();

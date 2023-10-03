@@ -10,23 +10,29 @@ public class AddJob {
     private JPanel header;
     private JPanel body;
     private JPanel footer;
-    private JTextField deadlineTextField;
-    private JTextArea jobDescription;
-    private JLabel deadlineLabel;
-    private JLabel jobDescriptionLabel;
+    private JTextField jobDurationTextField;
+    private JLabel jobDurationLabel;
+    private JLabel jobDeadlineLabel;
     private JButton submitJobButton;
+    private JTextField jobDeadlineTextField;
 
     public AddJob() {
         submitJobButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    GUIMain ref = GUIMain.getInstance();
-                    ref.setContentPane(new JobApplication().mainFrame);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
 
+                if (
+                        !jobDeadlineTextField.getText().isEmpty() && !jobDurationTextField.getText().isEmpty()
+                ) {
+                    try {
+                        GUIMain ref = GUIMain.getInstance();
+                        ref.registerNewJob(jobDeadlineTextField.getText(),
+                                jobDurationTextField.getText());
+                        ref.setContentPane(new JobApplication().mainFrame);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
             }
         });
     }

@@ -36,7 +36,7 @@ public class JobOwnerController {
      * will create a new user, and will append it to the global user list and
      * will write to job user database.
      */
-    public JobOwner createUser(String id, String password) {
+    public JobOwner createUser(String id, String password) throws IOException {
         JobOwner newUser = new JobOwner(id, password);
         try {
             writeToJobUserFile(addToGlobalList(newUser));
@@ -82,12 +82,14 @@ public class JobOwnerController {
         // to update the users info with the most up-to-date values
         updateJobUserFile(globalJobUserList);
     }
+
     public void updateJobUserFile(ArrayList<JobOwner> list) throws IOException {
         for (JobOwner currentUser : list) {
             writeUser.write(currentUser.getUserDetails());
             printUser.println();
         }
     }
+
     public void updateJobFile(ArrayList<Job> list) throws IOException {
         for (Job currentJob : list) {
             writeUser.write(currentJob.getJobDetails());
@@ -104,6 +106,7 @@ public class JobOwnerController {
         globalJobList.add(item);
         return globalJobList;
     }
+
     public ArrayList<Job> getGlobalVehicleList() {
         return globalJobList;
     }
@@ -111,6 +114,7 @@ public class JobOwnerController {
     public ArrayList<JobOwner> getGlobalJobUserList() {
         return globalJobUserList;
     }
+
     // when the prof gives us the algo that adds assigns jobs to vehicle
     // will use this to update the status of a job.
     public void updateStatus(Job jobCompleted) {

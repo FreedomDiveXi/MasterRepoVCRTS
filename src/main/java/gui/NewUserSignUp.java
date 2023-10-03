@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class NewUserSignUp extends JFrame {
@@ -29,16 +31,32 @@ public class NewUserSignUp extends JFrame {
     // on submission this logic will trigger
     class VehicleRegistrationPage implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            try {
-                GUIMain ref = GUIMain.getInstance();
-                if (checkboxValue.isSelected()) {
-                    ref.setContentPane(new JobApplication().mainFrame);
-                } else {
-                    ref.setContentPane(new VehicleRegistration().mainFrame);
-                }
+            // converts char [] into a string
+            String string_op = Stream
+                    .of(passwordTextField.getPassword())
+                    .map(String::new)
+                    .collect(Collectors.joining());
 
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (!usernameTextField.getText().isEmpty() && !string_op.isEmpty()) {
+                try {
+
+                    // if the text fields are not filled, nothing will happen.
+                    GUIMain ref = GUIMain.getInstance();
+                    // if the job owner is selected will show that view, if not
+                    // will continue to the vehicle registration
+                    if (checkboxValue.isSelected()) {
+                        ref.registerNewJobUser(usernameTextField.getText(),
+                                string_op);
+                        ref.setContentPane(new JobApplication().mainFrame);
+                    } else {
+                        ref.registerNewVehicleUser(usernameTextField.getText(), string_op);
+                        ref.setContentPane(new AddVehicle().mainFrame);
+                    }
+
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         }

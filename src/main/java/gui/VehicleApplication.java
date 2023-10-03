@@ -17,15 +17,24 @@ public class VehicleApplication extends JFrame {
     private JButton historyButton;
     private JPanel footer;
     private JButton exportDataButton;
+    private JButton signOutButton;
 
 
     public VehicleApplication() {
-        newVechicleButton.addActionListener(new ActionListener() {
+        newVechicleButton.addActionListener(e -> {
+            try {
+                GUIMain ref = GUIMain.getInstance();
+                ref.setContentPane(new AddVehicle().mainFrame);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        signOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     GUIMain ref = GUIMain.getInstance();
-                    ref.setContentPane(new AddVehicle().mainFrame);
+                    ref.setContentPane(new StartPage().mainFrame);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
