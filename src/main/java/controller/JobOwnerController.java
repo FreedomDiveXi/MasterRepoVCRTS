@@ -38,7 +38,6 @@ public class JobOwnerController {
      */
     public JobOwner createUser(String id, String password) {
         JobOwner newUser = new JobOwner(id, password);
-        addToGlobalList(newUser);
         try {
             writeToJobUserFile(addToGlobalList(newUser));
         } catch (IOException e) {
@@ -56,7 +55,6 @@ public class JobOwnerController {
     public Job createNewJob(JobOwner user, String jobDuration,
                             String deadline) {
         Job newJob = new Job(jobDuration, deadline);
-        addToGlobalList(newJob);
         user.getJobList().add(newJob);
         try {
             writeToJobFile(addToGlobalList(newJob));
@@ -67,8 +65,8 @@ public class JobOwnerController {
     }
 
     public void writeToJobUserFile(ArrayList<JobOwner> jobOwners) throws IOException {
-        for (JobOwner currentUser : globalJobUserList) {
-            writeUser.write(currentUser.getJobOwnerDetails());
+        for (JobOwner currentUser : jobOwners) {
+            writeUser.write(currentUser.getUserDetails());
             printUser.println();
         }
         // no point in closing since the user can add a new vehicle and want
@@ -76,12 +74,25 @@ public class JobOwnerController {
     }
 
     public void writeToJobFile(ArrayList<Job> jobs) throws IOException {
-        for (Job currentVehicle : globalJobList) {
+        for (Job currentVehicle : jobs) {
             writeJob.write(currentVehicle.getJobDetails());
             printJob.println();
         }
         // no point in closing since the user can add a new vehicle and want
         // to update the users info with the most up-to-date values
+        updateJobUserFile(globalJobUserList);
+    }
+    public void updateJobUserFile(ArrayList<JobOwner> list) throws IOException {
+        for (JobOwner currentUser : list) {
+            writeUser.write(currentUser.getUserDetails());
+            printUser.println();
+        }
+    }
+    public void updateJobFile(ArrayList<Job> list) throws IOException {
+        for (Job currentJob : list) {
+            writeUser.write(currentJob.getJobDetails());
+            printUser.println();
+        }
     }
 
     public ArrayList<JobOwner> addToGlobalList(JobOwner item) {
@@ -93,13 +104,21 @@ public class JobOwnerController {
         globalJobList.add(item);
         return globalJobList;
     }
+    public ArrayList<Job> getGlobalVehicleList() {
+        return globalJobList;
+    }
 
+    public ArrayList<JobOwner> getGlobalJobUserList() {
+        return globalJobUserList;
+    }
+    // when the prof gives us the algo that adds assigns jobs to vehicle
+    // will use this to update the status of a job.
     public void updateStatus(Job jobCompleted) {
         if (!jobCompleted.isCompleted())
             jobCompleted.setCompleted(true);
         jobCompleted.setCompleted((false));
     }
 
-    // note-implement job history post-completion
+    // todo implement job history post-completion
 
 }

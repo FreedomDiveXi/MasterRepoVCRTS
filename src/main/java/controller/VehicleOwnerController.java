@@ -88,6 +88,12 @@ public class VehicleOwnerController {
             printUser.println();
         }
     }
+    public void updateVehicleFile(ArrayList<Vehicle> list) throws IOException {
+        for (Vehicle currentVehicle : list) {
+            writeUser.write(currentVehicle.getVehicleDetails());
+            printUser.println();
+        }
+    }
 
     public ArrayList<VehicleOwner> addToGlobalList(VehicleOwner user) {
         globalVehicleUserList.add(user);

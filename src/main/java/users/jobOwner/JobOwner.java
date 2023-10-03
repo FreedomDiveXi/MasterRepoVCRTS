@@ -56,8 +56,8 @@ public class JobOwner {
         return UUID.randomUUID().toString();
     }
 
-    public String getJobOwnerDetails() {
-        StringJoiner joiner = new StringJoiner(":");
+    public String getUserDetails() {
+        StringJoiner joiner = new StringJoiner("||");
         joiner.add(getCreationTimeStamp())
                 .add(getUniqueId())
                 .add(getJobOwnerUsername())

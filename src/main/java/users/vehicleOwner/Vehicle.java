@@ -54,7 +54,6 @@ public class Vehicle {
         return creationTimeStamp;
     }
 
-    //todo add remaining pieces of information
     public String getVehicleDetails() {
 
         StringJoiner joiner = new StringJoiner("||");
