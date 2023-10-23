@@ -14,6 +14,8 @@ public class StartPage extends JFrame{
     private JLabel question2;
     private JLabel question3;
     private JLabel question4;
+    private JCheckBox jobOwnerBox;
+    private JCheckBox vehicleOwnerBox;
     private JButton buttonYes;
     private JButton buttonNo;
     private JButton buttonData;
@@ -24,6 +26,7 @@ public class StartPage extends JFrame{
     private JButton submitVehicle;
     private JButton goNext;
     private JButton goBack;
+    private JButton buttonController;
     private JPanel panel;
     private JTextField username;
     private JTextField jobInformation1;
@@ -40,25 +43,37 @@ public class StartPage extends JFrame{
     PrintWriter printVehicle = new PrintWriter(writerVehicle);
     FileWriter writerJob = new FileWriter("JobDataBase.txt", true);
     PrintWriter printJob = new PrintWriter(writerJob);
+    private UserList tempUserList;
+    private static final int INITIAL_COMPLETE_TIME = 0;
+    private int completeTime;
 
     //This is the constructor as well as the starting point to the objects inside the main JFrame
     public StartPage() throws IOException {
     	setSize(FRAME_WIDTH, FRAME_HEIGHT);
+    	completeTime = INITIAL_COMPLETE_TIME;
     	
-    	introduction = new JLabel("This application allows users to ");
+    	introduction = new JLabel("This application allows users to complete certain tasks that requires an immense amount of power that you simply don't have " +
+    								"or input your ownn unoccupied car, so we can utilize the computational power that a car has.");
         question1 = new JLabel("Are you a new user?");
         buttonYes = new JButton("Yes");
         buttonNo = new JButton("No");
+        question2 = new JLabel("Are you the admin/VC Controller?");
+        buttonController = new JButton("Controller");
+        
 
         panel = new JPanel();
         panel.add(introduction);
         panel.add(question1);
         panel.add(buttonYes);
         panel.add(buttonNo);
+        panel.add(question2);
+        panel.add(buttonController);
         add(panel);
 
         ActionListener yesListener = new AddNewUserListener();
         buttonYes.addActionListener(yesListener);
+        ActionListener controllerListener = new ControllerListener();
+        buttonController.addActionListener(controllerListener);
     }
 
     //This is the action caller for new users to register
@@ -73,18 +88,40 @@ public class StartPage extends JFrame{
             username = new JTextField(50);
             question2 = new JLabel("Create a new password: ");
             password = new JPasswordField(50);
+            question3 = new JLabel("Are you a job owner or vehicle owner? Choose only one.");
+            jobOwnerBox = new JCheckBox("Job Owner", false);
+            vehicleOwnerBox = new JCheckBox("Vehicle Owner", false);
             goNext = new JButton("Continue");
 
             panel.add(question1);
             panel.add(username);
             panel.add(question2);
             panel.add(password);
+            panel.add(question3);
+            panel.add(jobOwnerBox);
+            panel.add(vehicleOwnerBox);
             panel.add(goNext);
             add(panel);
 
             ActionListener nextPage = new nextPageListener();
             goNext.addActionListener(nextPage);
         }
+    }
+    
+    //The controller action caller 
+    class ControllerListener implements ActionListener {
+    	@Override
+    	public void actionPerformed(ActionEvent event) {
+    		panel.removeAll();
+    		panel.revalidate();
+    		panel.repaint();
+    		
+    		question1 = new JLabel("Completion Time :" + completeTime);
+    		buttonData = new JButton("Calculate completion time");
+    		
+    		ActionListener calculate = new calculateTimeListener();
+    		buttonData.addActionListener(calculate);
+    	}
     }
     
     //Continue button which add the user log in and asks if they want to see existing info or add new info 
@@ -95,7 +132,7 @@ public class StartPage extends JFrame{
                 writerUser.write(username.getText());
                 printUser.print(" : ");
                 writerUser.write(password.getText());
-                printUser.println();
+                printUser.println();   
 
                 writerUser.close();
                 printUser.close();
@@ -104,11 +141,21 @@ public class StartPage extends JFrame{
                 JOptionPane.showMessageDialog(null, e+"");
             }
         	
+        	User newUser = new User(username.getText(), password.getText());
+        	if (jobOwnerBox.isSelected()) {
+        		JobOwner newJobUser = new JobOwner(newUser.getUsername(), newUser.getPassword());
+        		tempUserList.add(newJobUser);
+        	}
+        	else {
+        		VehicleOwner newVehicleUser = new VehicleOwner(newUser.getUsername(), newUser.getPassword());
+        		tempUserList.add(newVehicleUser);
+        	}
+        	
         	panel.removeAll();
             panel.revalidate();
             panel.repaint();
 
-            question1 = new JLabel("Do you want to look at your existing jobs and vehicles or would you like to add a new job/vehicle?");
+            question1 = new JLabel("Do you want to look at your existing jobs or vehicles or would you like to add a new job/vehicle?");
             buttonData = new JButton("Your previous information");
             buttonNewData = new JButton("Submit a new job/vehicle");
             goBack = new JButton("Return to previous page");
@@ -162,9 +209,9 @@ public class StartPage extends JFrame{
             
             question1 = new JLabel("Client ID");
             jobInformation1 = new JTextField(50);
-            question2 = new JLabel("Approximatly how long will this job/task take, please just type in this format days:hours:mins?");
+            question2 = new JLabel("Approximatly how long will this job take, please just type in the total amount of hours?");
             jobInformation2 = new JTextField(50);
-            question3 = new JLabel("If needed what is this job/task deadline, please type in this formate month:day:year");
+            question3 = new JLabel("If needed what is this job's deadline, please type in this formate month:day:year");
             jobInformation3 = new JTextField(50);
             submitJob = new JButton("Submit");
             goBack = new JButton("Return to previous page");
@@ -278,6 +325,14 @@ public class StartPage extends JFrame{
     		vehicleInformation2.setText("");
     		vehicleInformation3.setText("");
     		vehicleInformation4.setText("");
+    	}
+    }
+    
+    //This is the action  listener for calculation complete time within controller
+    class calculateTimeListener implements ActionListener {
+    	@Override
+    	public void actionPerformed(ActionEvent event) {
+    		
     	}
     }
 }
