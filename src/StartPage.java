@@ -118,6 +118,9 @@ public class StartPage extends JFrame{
     		
     		question1 = new JLabel("Completion Time :" + completeTime);
     		buttonData = new JButton("Calculate completion time");
+
+            panel.add(question1);
+    		panel.add(buttonData);
     		
     		ActionListener calculate = new calculateTimeListener();
     		buttonData.addActionListener(calculate);
