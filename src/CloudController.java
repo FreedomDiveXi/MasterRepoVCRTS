@@ -6,16 +6,9 @@ import java.util.Queue;
 
 public class CloudController {
 
-    // this class will be responsible for most of the processing gui logic.
-    // one major assumption is that the controller is not responsible for the 
-    // creation of either respected owners. the controller is only given access
-    // to the users information via method calling
+    // controller now does everything
 
-    VehicleOwner vehicleOwnerTest;
-    JobOwner jobOwnerTest;
-    Job jobtest;
-    Vehicle vehicletest;
-
+    private ArrayList<Vehicle> allVehicles = new ArrayList<>();
     private ArrayList<Vehicle> availableVehicles = new ArrayList<>();
     private ArrayList<Vehicle> inUseVehicles = new ArrayList<>();
 
@@ -25,7 +18,10 @@ public class CloudController {
     private Queue<Job> activeJobs = new LinkedList<Job>();
 
     // as the jobs are completed will store them into a simple list
+    // this would go to the server and print it into a text file
     private ArrayList<Job> completedJobs = new ArrayList<Job>();
+
+    int completionTime = 0;
 
     // returns active vehicles
     public ArrayList<Vehicle> getActiveVehicles() {
@@ -46,35 +42,45 @@ public class CloudController {
         return !getAvailableJobs().isEmpty();
     }
 
-    // starts the job thats first in line.
-    public Job startJob() {
+    public Job createJob(String jobId, String jobDuration){
+        return new Job(Integer.parseInt(jobId),Integer.parseInt(jobDuration));
+    }
+
+    public void addToAvailableList(Job job){
+        availableJobs.add(job);
+    }
+
+    // starts the jobs all at once.
+    public String startProcessing() {
         // first migrate
         while(!availableJobs.isEmpty()){
-            //
             if(!activeJobs.isEmpty()){
-                Job aux = activeJobs.remove();
-                // property of the aux's time duration will get added to the
-                // last jobs time duration
-                // 10 15 --20--
-                // 10 15 35
-                // --20---
-                // 20 --10--
-                // 20 30
+                // if its not empty we pop the available jobs
+                Job aux = availableJobs.remove();
 
+                completionTime += aux.getJobDurationTime();
+
+                aux.setExecutionTime(completionTime);
+                
                 activeJobs.add(aux);
-
             }else{
                 // if its empty simply add it
-                activeJobs.add(activeJobs.remove());
+                Job aux = availableJobs.remove();
+                completionTime += aux.getJobDurationTime();
+                aux.setExecutionTime(aux.getJobDurationTime());
+                activeJobs.add(aux);
             }
         }
-        // once acitve jobs are updated pop the first job in the list
-        // begin the work on the first in line job
-        // 20 --40 60--
-        // 60 120
-        // 50
-        return activeJobs.remove();
+        System.out.println(activeJobs.toString());
+
+        while(!activeJobs.isEmpty()){
+            System.out.println(activeJobs.remove().getjobExecutionTime());
+        }
+        System.out.println(activeJobs.toString());
+        return "complete";
     }
+
+    //todo method that returns the job algo processing string
 
     // responsible for generating a random number 1-3 iff theres enough 
     // availableVehicles 
@@ -107,9 +113,9 @@ public class CloudController {
     }
 
 
-    //todo *** may be redudant since only one job will be processed at a time
+    //todo *** may be redudant since only one job will be processed at a time till further notice
     // a method already exists to see what jobs are next up on the list
-    public void seeProgressOfJob() {
+    public void seeProgressOfJobs() {
     }
 
     //todo ***
@@ -123,10 +129,6 @@ public class CloudController {
     // it to another available vehicle
     public void reassignJob(Vehicle vehicle) {
     }
-
-
-
-
 
     // leave till further notice
     //todo ***

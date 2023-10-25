@@ -2,22 +2,28 @@ import java.util.ArrayList;
 
 public class Vehicle {
     private int vehicleId;
+    private String vehicleOwner;
     private String make;
     private String model;
     private int year;
 
     private static ArrayList<Integer> currentVehicleIds = new ArrayList<>();
 
-    public Vehicle(int vehicleId, String make, String model, int year) {
+    public Vehicle(String vehicleOwner, int vehicleId, String make, String model, int year) {
         if (isUniqueId(vehicleId)) {
             this.vehicleId = vehicleId;
             currentVehicleIds.add(vehicleId);
         } else {
             throw new IllegalArgumentException("Duplicate vehicleId, please input a number other than " + vehicleId);
         }
+        this.vehicleOwner = vehicleOwner;
         this.make = make;
         this.model = model;
         this.year = year;
+    }
+
+    public String getVehicleOwner(){
+        return vehicleOwner;
     }
 
 	public int getVehicleId() {

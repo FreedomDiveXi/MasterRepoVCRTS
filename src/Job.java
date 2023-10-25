@@ -5,8 +5,9 @@ import java.time.format.DateTimeFormatter;
 public class Job {
     private String jobOwnerName;
     private int jobID;
-    private String jobDurationTime;
-    private int jobDeadline;
+    private int jobDurationTime;
+    private int executionTime;
+    private String jobDeadline; // date
     private boolean jobCompletion;
 
     /**
@@ -18,12 +19,11 @@ public class Job {
      * @param jobDurationTime
      * @param jobCompletion
      */
-    public Job(String jobOwnerName, int jobID, String jobDurationTime, boolean jobCompletion) {
-        this.jobOwnerName = jobOwnerName;
+    public Job(int jobID, int jobDurationTime) {
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
+        this.executionTime = 0;
         jobCompletion = false;
-
     }
 
     /**
@@ -36,11 +36,12 @@ public class Job {
      * @param jobDeadline
      * @param jobCompletion
      */
-    public Job(String jobOwnerName, int jobID, String jobDurationTime, String jobDeadline, boolean jobCompletion) {
+    public Job(int jobID, int jobDurationTime, String deadline) {
         this.jobOwnerName = jobOwnerName;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
-        this.jobDeadline = jobDeadline;
+        this.executionTime = 0;
+
         jobCompletion = false;
 
     }
@@ -62,11 +63,11 @@ public void setJobID(int jobID) {
     this.jobID = jobID;
 }
 
-public String getJobDurationTime() {
+public int getJobDurationTime() {
     return jobDurationTime;
 }
 
-public void setJobDurationTime(String jobDurationTime) {
+public void setJobDurationTime(int jobDurationTime) {
     this.jobDurationTime = jobDurationTime;
 }
 
@@ -85,11 +86,13 @@ public boolean isJobCompletion() {
 public void setJobCompletion(boolean jobCompletion) {
     this.jobCompletion = jobCompletion;
 }
-      public String getDescription() {
-            return description;
-        }
-        
-    public void setDescription(String description) {
-            this.description = description;
-        }
+
+public int getjobExecutionTime(){
+    return executionTime;
+}
+
+public void setExecutionTime(int executeTime){
+    this.executionTime += executeTime;
+}
+
 }
