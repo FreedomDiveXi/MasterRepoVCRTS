@@ -1,5 +1,3 @@
-package users.jobOwner;
-
 import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -7,19 +5,20 @@ import java.time.format.DateTimeFormatter;
 public class Job {
     private String jobOwnerName;
     private int jobID;
-    private LocalTime jobDurationTime;
-    private LocalDate jobDeadline;
+    private String jobDurationTime;
+    private int jobDeadline;
     private boolean jobCompletion;
 
     /**
      * if no deadline is provided will use this constructor method
+     * somethingg
      *
      * @param jobOwnerName
      * @param jobID
      * @param jobDurationTime
      * @param jobCompletion
      */
-    public Job(String jobOwnerName, int jobID, LocalTime jobDurationTime, boolean jobCompletion) {
+    public Job(String jobOwnerName, int jobID, String jobDurationTime, boolean jobCompletion) {
         this.jobOwnerName = jobOwnerName;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
@@ -37,7 +36,7 @@ public class Job {
      * @param jobDeadline
      * @param jobCompletion
      */
-    public Job(String jobOwnerName, int jobID, LocalTime jobDurationTime, LocalDate jobDeadline, boolean jobCompletion) {
+    public Job(String jobOwnerName, int jobID, String jobDurationTime, String jobDeadline, boolean jobCompletion) {
         this.jobOwnerName = jobOwnerName;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
@@ -63,19 +62,19 @@ public void setJobID(int jobID) {
     this.jobID = jobID;
 }
 
-public LocalTime getJobDurationTime() {
+public String getJobDurationTime() {
     return jobDurationTime;
 }
 
-public void setJobDurationTime(LocalTime jobDurationTime) {
+public void setJobDurationTime(String jobDurationTime) {
     this.jobDurationTime = jobDurationTime;
 }
 
-public LocalDate getJobDeadline() {
+public String getJobDeadline() {
     return jobDeadline;
 }
 
-public void setJobDeadline(LocalDate jobDeadline) {
+public void setJobDeadline(String jobDeadline) {
     this.jobDeadline = jobDeadline;
 }
 
