@@ -43,7 +43,6 @@ public class StartPage extends JFrame{
     PrintWriter printVehicle = new PrintWriter(writerVehicle);
     FileWriter writerJob = new FileWriter("JobDataBase.txt", true);
     PrintWriter printJob = new PrintWriter(writerJob);
-    private UserList tempUserList;
     private static final int INITIAL_COMPLETE_TIME = 0;
     private int completeTime;
 
@@ -60,7 +59,6 @@ public class StartPage extends JFrame{
         question2 = new JLabel("Are you the admin/VC Controller?");
         buttonController = new JButton("Controller");
         
-
         panel = new JPanel();
         panel.add(introduction);
         panel.add(question1);
@@ -116,10 +114,8 @@ public class StartPage extends JFrame{
     		panel.revalidate();
     		panel.repaint();
     		
-    		question1 = new JLabel("Completion Time :" + completeTime);
     		buttonData = new JButton("Calculate completion time");
-
-            panel.add(question1);
+    		
     		panel.add(buttonData);
     		
     		ActionListener calculate = new calculateTimeListener();
@@ -143,16 +139,6 @@ public class StartPage extends JFrame{
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
             }
-        	
-        	User newUser = new User(username.getText(), password.getText());
-        	if (jobOwnerBox.isSelected()) {
-        		JobOwner newJobUser = new JobOwner(newUser.getUsername(), newUser.getPassword());
-        		tempUserList.add(newJobUser);
-        	}
-        	else {
-        		VehicleOwner newVehicleUser = new VehicleOwner(newUser.getUsername(), newUser.getPassword());
-        		tempUserList.add(newVehicleUser);
-        	}
         	
         	panel.removeAll();
             panel.revalidate();
@@ -336,6 +322,13 @@ public class StartPage extends JFrame{
     	@Override
     	public void actionPerformed(ActionEvent event) {
     		
+    		question1 = new JLabel("Job ID: " );
+    		question2 = new JLabel("Duration: " );
+    		question3 = new JLabel("The completion time for the jobs: " );
+    		
+    		panel.add(question1);
+    		panel.add(question2);
+    		panel.add(question3);
     	}
     }
 }
