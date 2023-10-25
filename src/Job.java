@@ -86,4 +86,11 @@ public boolean isJobCompletion() {
 public void setJobCompletion(boolean jobCompletion) {
     this.jobCompletion = jobCompletion;
 }
+      public String getDescription() {
+            return description;
+        }
+        
+    public void setDescription(String description) {
+            this.description = description;
+        }
 }
