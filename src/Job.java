@@ -45,4 +45,45 @@ public class Job {
         jobCompletion = false;
 
     }
+
+    // Getter and Setter methods
+public String getJobOwnerName() {
+    return jobOwnerName;
+}
+
+public void setJobOwnerName(String jobOwnerName) {
+    this.jobOwnerName = jobOwnerName;
+}
+
+public int getJobID() {
+    return jobID;
+}
+
+public void setJobID(int jobID) {
+    this.jobID = jobID;
+}
+
+public LocalTime getJobDurationTime() {
+    return jobDurationTime;
+}
+
+public void setJobDurationTime(LocalTime jobDurationTime) {
+    this.jobDurationTime = jobDurationTime;
+}
+
+public LocalDate getJobDeadline() {
+    return jobDeadline;
+}
+
+public void setJobDeadline(LocalDate jobDeadline) {
+    this.jobDeadline = jobDeadline;
+}
+
+public boolean isJobCompletion() {
+    return jobCompletion;
+}
+
+public void setJobCompletion(boolean jobCompletion) {
+    this.jobCompletion = jobCompletion;
+}
 }
