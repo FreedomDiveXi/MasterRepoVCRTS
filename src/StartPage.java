@@ -14,6 +14,7 @@ public class StartPage extends JFrame{
     private JLabel question2;
     private JLabel question3;
     private JLabel question4;
+    private JLabel question5;
     private JCheckBox jobOwnerBox;
     private JCheckBox vehicleOwnerBox;
     private JButton buttonYes;
@@ -32,10 +33,12 @@ public class StartPage extends JFrame{
     private JTextField jobInformation1;
     private JTextField jobInformation2;
     private JTextField jobInformation3;
+    private JTextField jobInformation4;
     private JTextField vehicleInformation1;
     private JTextField vehicleInformation2;
     private JTextField vehicleInformation3;
     private JTextField vehicleInformation4;
+    private JTextField vehicleInformation5;
     private JPasswordField password;
     FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
     PrintWriter printUser = new PrintWriter(writerUser);
@@ -43,7 +46,6 @@ public class StartPage extends JFrame{
     PrintWriter printVehicle = new PrintWriter(writerVehicle);
     FileWriter writerJob = new FileWriter("JobDataBase.txt", true);
     PrintWriter printJob = new PrintWriter(writerJob);
-    private UserList tempUserList;
     private static final int INITIAL_COMPLETE_TIME = 0;
     private int completeTime;
 
@@ -60,7 +62,6 @@ public class StartPage extends JFrame{
         question2 = new JLabel("Are you the admin/VC Controller?");
         buttonController = new JButton("Controller");
         
-
         panel = new JPanel();
         panel.add(introduction);
         panel.add(question1);
@@ -116,10 +117,8 @@ public class StartPage extends JFrame{
     		panel.revalidate();
     		panel.repaint();
     		
-    		question1 = new JLabel("Completion Time :" + completeTime);
     		buttonData = new JButton("Calculate completion time");
-
-            panel.add(question1);
+    		
     		panel.add(buttonData);
     		
     		ActionListener calculate = new calculateTimeListener();
@@ -143,16 +142,6 @@ public class StartPage extends JFrame{
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
             }
-        	
-        	User newUser = new User(username.getText(), password.getText());
-        	if (jobOwnerBox.isSelected()) {
-        		JobOwner newJobUser = new JobOwner(newUser.getUsername(), newUser.getPassword());
-        		tempUserList.add(newJobUser);
-        	}
-        	else {
-        		VehicleOwner newVehicleUser = new VehicleOwner(newUser.getUsername(), newUser.getPassword());
-        		tempUserList.add(newVehicleUser);
-        	}
         	
         	panel.removeAll();
             panel.revalidate();
@@ -212,10 +201,12 @@ public class StartPage extends JFrame{
             
             question1 = new JLabel("Client ID");
             jobInformation1 = new JTextField(50);
-            question2 = new JLabel("Approximatly how long will this job take, please just type in the total amount of hours?");
+            question2 = new JLabel("Job ID");
             jobInformation2 = new JTextField(50);
-            question3 = new JLabel("If needed what is this job's deadline, please type in this formate month:day:year");
+            question3 = new JLabel("Approximatly how long will this job take, please just type in the total amount of hours?");
             jobInformation3 = new JTextField(50);
+            question4 = new JLabel("If needed what is this job's deadline, please type in this formate month:day:year");
+            jobInformation4 = new JTextField(50);
             submitJob = new JButton("Submit");
             goBack = new JButton("Return to previous page");
             
@@ -225,6 +216,8 @@ public class StartPage extends JFrame{
             panel.add(jobInformation2);
             panel.add(question3);
             panel.add(jobInformation3);
+            panel.add(question4);
+            panel.add(jobInformation4);
             panel.add(submitJob);
             panel.add(goBack);
             
@@ -248,6 +241,8 @@ public class StartPage extends JFrame{
                 writerJob.write(jobInformation2.getText());
                 printJob.print(" : ");
                 writerJob.write(jobInformation3.getText());
+                printJob.print(" : ");
+                writerJob.write(jobInformation4.getText());
                 printJob.println();
 
                 writerJob.close();
@@ -260,6 +255,7 @@ public class StartPage extends JFrame{
     		jobInformation1.setText("");
     		jobInformation2.setText("");
     		jobInformation3.setText("");
+    		jobInformation4.setText("");
     	}
     }
 
@@ -273,12 +269,14 @@ public class StartPage extends JFrame{
             
             question1 = new JLabel("Owner ID");
             vehicleInformation1 = new JTextField(50);
-            question2 = new JLabel("What is the vehicle's model?");
+            question2 = new JLabel("Vehicle ID");
             vehicleInformation2 = new JTextField(50);
-            question3 = new JLabel("What is the vehicle's make/brand?");
+            question3 = new JLabel("What is the vehicle's model?");
             vehicleInformation3 = new JTextField(50);
-            question4 = new JLabel("What is the vehicle's year");
+            question4 = new JLabel("What is the vehicle's make/brand?");
             vehicleInformation4 = new JTextField(50);
+            question5 = new JLabel("What is the vehicle's year");
+            vehicleInformation5 = new JTextField(50);
             submitVehicle = new JButton("Submit");
             goBack = new JButton("Return to previous page");
             
@@ -290,6 +288,8 @@ public class StartPage extends JFrame{
             panel.add(vehicleInformation3);
             panel.add(question4);
             panel.add(vehicleInformation4);
+            panel.add(question5);
+            panel.add(vehicleInformation5);
             panel.add(submitVehicle);
             panel.add(goBack);
             
@@ -315,6 +315,8 @@ public class StartPage extends JFrame{
                 writerVehicle.write(vehicleInformation3.getText());
                 printVehicle.print(" : ");
                 writerVehicle.write(vehicleInformation4.getText());
+                printVehicle.print(" : ");
+                writerVehicle.write(vehicleInformation5.getText());
                 printVehicle.println();
 
                 writerVehicle.close();
@@ -328,6 +330,7 @@ public class StartPage extends JFrame{
     		vehicleInformation2.setText("");
     		vehicleInformation3.setText("");
     		vehicleInformation4.setText("");
+    		vehicleInformation5.setText("");
     	}
     }
     
@@ -336,6 +339,13 @@ public class StartPage extends JFrame{
     	@Override
     	public void actionPerformed(ActionEvent event) {
     		
+    		question1 = new JLabel("Job ID: " );
+    		question2 = new JLabel("Duration: " );
+    		question3 = new JLabel("The completion time for the jobs: " );
+    		
+    		panel.add(question1);
+    		panel.add(question2);
+    		panel.add(question3);
     	}
     }
 }
