@@ -3,29 +3,54 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class CloudController {
+    /**
+     * the vehicle controller is responsible for the processing logic of the jobs and vehicles.
+     * it's responsible for the creation of all users and items (job and vehicle respectively).
+     * it's responsible for connecting to the server to update the users or items database respectively for future
+     * milestones.
+     */
 
-    // todo *** documentation
     // todo ** testing
     // todo * verification for job, vehicle, users for their ids
 
-    // controller now does everything
-    private ArrayList<Vehicle> availableVehicles = new ArrayList<Vehicle>();
-    private ArrayList<Vehicle> inUseVehicles = new ArrayList<Vehicle>();
-
-    // FIFO data structure to store the newly created jobs as they come in
-    private Queue<Job> availableJobs = new LinkedList<Job>();
-    private Queue<Job> activeJobs = new LinkedList<Job>();
-
-    // nice ways to store all completed and all vehicles regardless of status
-    private ArrayList<Job> completedJobs = new ArrayList<Job>();
-    private ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
-    private final UserList allUsers = new UserList();
-
-    // used to store the total time it took to process jobs
-    private int totalCompletionTime= 0;
+    private final int COMPLETION_TIME_DEFAULT_VALUE = 0;
+    private ArrayList<Vehicle> availableVehicles;
+    private ArrayList<Vehicle> inUseVehicles;
+    private Queue<Job> availableJobs;
+    private Queue<Job> activeJobs;
+    private ArrayList<Job> completedJobs;
+    private ArrayList<Vehicle> allVehicles;
+    private final UserList allUsers;
+    private int totalCompletionTime;
     private JobOwner currentJobOwner;
     private VehicleOwner currentVehicleOwner;
 
+    public CloudController(){
+        availableVehicles = new ArrayList<Vehicle>();
+        inUseVehicles = new ArrayList<Vehicle>();
+        availableJobs = new LinkedList<Job>();
+        activeJobs = new LinkedList<Job>();
+
+        completedJobs = new ArrayList<Job>();
+        allVehicles = new ArrayList<Vehicle>();
+        allUsers = new UserList();
+
+        currentJobOwner = null;
+        currentVehicleOwner = null;
+
+        // used to store the total time it took to process jobs
+        totalCompletionTime = COMPLETION_TIME_DEFAULT_VALUE;
+    }
+
+    /**
+     * this constructor will create a job owner. Each time we create a job owner we store a reference of the job owner
+     * and append the owner to the user list
+     * @param username String value provided by gui
+     * @param password String value provided by gui
+     * @param companyName String value provided by gui
+     * @param contactNumber String value provided by gui
+     * @return returns the created job owner
+     */
     public JobOwner createJobOwner(String username, String password, String companyName, String contactNumber){
         JobOwner temp = new JobOwner(username,password,companyName,contactNumber);
         setCurrentJobOwner(temp);
@@ -33,6 +58,13 @@ public class CloudController {
         return temp;
     }
 
+    /**
+     * this constructor will create a vehicle owner. Each time we create a vehicle owner
+     * we store a reference of the vehicle owner and append the owner to the user list
+     * @param username String value provided by gui
+     * @param password String value provided by gui
+     * @return returns the created vehicle owner
+     */
     public VehicleOwner createVehicleUser(String username, String password){
         VehicleOwner temp = new VehicleOwner(username,password);
         setCurrentVehicleOwner(temp);
@@ -40,8 +72,15 @@ public class CloudController {
         return temp;
     }
 
-
-    // case we don't have a deadline
+    /**
+     * Creates and returns the newly created job without a deadline.
+     * On creation, we append job to available job list, assign vehicles to job and append the job to the current
+     * job owner
+     * @param jobOwnerName String value provided by gui
+     * @param jobId String value provided by gui
+     * @param jobDurationTime String value provided by gui
+     * @return returns the created job without a deadline.
+     */
     public Job createJob(String jobOwnerName, String jobId, String jobDurationTime){
         Job newJob = new Job(jobOwnerName,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime));
         addJobToList(getAvailableJobs(), newJob);
@@ -50,7 +89,16 @@ public class CloudController {
         getCurrentJobOwner().addJob(newJob); // add the job to the job user
         return newJob;
     }
-    // case where we have a deadline
+
+    /**
+     * Creates and returns the newly created job with a deadline.
+     * On creation, we append job to available job list, assign vehicles to job and append the job to the current
+     * job owner
+     * @param jobOwnerName String value provided by gui
+     * @param jobId String value provided by gui
+     * @param jobDurationTime String value provided by gui
+     * @return returns the created job with a deadline.
+     */
     public Job createJob(String jobOwnerName, String jobId, String jobDurationTime, String jobDeadline){
         Job newJob = new Job(jobOwnerName,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime), jobDeadline);
         addJobToList(getAvailableJobs(), newJob);
@@ -60,35 +108,63 @@ public class CloudController {
         return newJob;
     }
 
-    //creates a vehicle
+    /**
+     * Creates and returns the newly created vehicle.
+     * On creation, appends created vehicle to the all vehicle list, appends the vehicle to the available vehicle list.
+     * It appends the new vehicle onto the vehicle owners vehicle list.
+     * @param vehicleOwner String provided by gui
+     * @param vehicleId String provided by gui
+     * @param model String provided by gui
+     * @param make String provided by gui
+     * @param year String provided by gui
+     * @return returns the newly created vehicle
+     */
     public Vehicle createVehicle(String vehicleOwner, String vehicleId,String model, String make, String year){
         // similar to the
         Vehicle newVehicle = new Vehicle(vehicleOwner, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year));
 
-        // vehicle stored in global and available lists
         addVehicleToList(getAllVehicles(), newVehicle);
         addVehicleToList(getAvailableVehicles(), newVehicle);
 
-        getCurrentVehicleOwner().addVehicleToVehicleUserList(newVehicle); // appends the vehicle to the current user signed in
+        getCurrentVehicleOwner().addVehicleToVehicleUserList(newVehicle); // appends the vehicle to the current user
         return newVehicle;
     }
 
-    // on job creation will assign the vehicles to a job
+    /**
+     * Assigns a job to vehicle(s). The number of vehicles that go to a job will be determined by a redundancy that the
+     * system creates. This method is run on job creation automatically.
+     * If there are no available vehicles it does not assign a vehicle to the job.
+     * Every time we assign a job to vehicle, we remove that vehicle from the available vehicle list and onto the in
+     * use vehicle list. It also copies a image of the job onto the vehicle itself. The job also stores an image of the
+     * assigned vehicle
+     * @param job Job object provided by method calling
+     */
     public void assignJobToVehicle(Job job) {
-        int numVehicles = generateRedundancy(); // will generate a # 0 - 3 based on available vehicles
+        int numVehicles = generateRedundancy();
 
         while(numVehicles > 0 ){
             int lastElement = availableVehicles.size()-1;
-            Vehicle aux = availableVehicles.remove(lastElement); // aux vehicle
+            Vehicle assignedVehicle = availableVehicles.remove(lastElement); // aux vehicle
 
-            aux.setAssignedJob(job);
-            job.addAssignedVehicle(aux);
-            removeVehicleFromList(getAvailableVehicles(), aux); // when vehicle assigned removed from available list
-            addVehicleToList(getInUseVehicles(), aux);
+            assignedVehicle.setAssignedJob(job);
+            job.addAssignedVehicle(assignedVehicle);
+
+            removeVehicleFromList(getAvailableVehicles(), assignedVehicle); // when vehicle assigned removed from available list
+            addVehicleToList(getInUseVehicles(), assignedVehicle);
             numVehicles--;
         }
     }
-    // starts the jobs all at once.
+
+    /**
+     * This will begin processing all the jobs within the available job list, and returns a list of strings containing
+     * each jobs execution information.
+     * It first starts the job migration, which moves the available jobs onto the active job list. Then the active job
+     * list will begin processing removing each job from the list at a time. Each time we remove a job, we move the job
+     * into the completed job list, and we release/remove the vehicle(s) associated with the job. Resets total completion
+     * time when done processing jobs in active job list.
+     * @return returns a processed job string.
+     */
+
     public  ArrayList<String> startProcessing() {
         // first migrate the available vehicles to the active job list
         startJobMigration();
@@ -103,23 +179,42 @@ public class CloudController {
             releaseVehicles(currentJob);
         }
         jobProcessData.add("--------\nTotal time to execute all jobs: " + totalCompletionTime + " hours");
-        setTotalCompletionTime(0);
+        setTotalCompletionTime(COMPLETION_TIME_DEFAULT_VALUE);
 
         return jobProcessData;
     }
 
-    // migrates the jobs from the availble job list onto the active job list updating each jobs execution time based
-    // on jobs ahead of them in queue
+    /**
+     * Migrates the jobs from available job list to the active job list so that it can be processed.
+     * Only jobs associated with a vehicle will be migrated onto the active job list.
+     * If the current job happens to have no vehicles associated to it, we try and add a vehicle. If it still doesn't
+     * have a vehicle we return the job back onto the available job list
+     */
     private void startJobMigration(){
         while(isJobsPresent()){
             Job currentAvailableJob = getAvailableJobs().remove();
+
+            // if there are any vehicles adds any if possible
+            if(currentAvailableJob.getAssignedVehicles().isEmpty())
+                assignJobToVehicle(currentAvailableJob);
+
+            // if it couldn't add a vehicle it goes back onto the available job list
+            if(currentAvailableJob.getAssignedVehicles().isEmpty()){
+                addJobToList(getAvailableJobs(), currentAvailableJob);
+                continue;
+            }
+
             totalCompletionTime += currentAvailableJob.getJobDurationTime();
             currentAvailableJob.setExecutionTime(totalCompletionTime);
             addJobToList(getActiveJobs(),currentAvailableJob);
         }
     }
 
-    // returns a string of the jobs current data.
+    /**
+     * Returns a formatted processed job data. Method is exclusive to the job processing algorithmn.
+     * @param job Job object passed by method calling.
+     * @return  Returns the processed job data in a formatted String
+     */
     private String formatActiveJobData(Job job){
         String jobData = """
             ==============
@@ -128,6 +223,7 @@ public class CloudController {
             Job Duration: %s hours
         """.formatted(job.getJobOwnerName(), job.getJobID(), job.getJobDurationTime());
 
+        // will show a deadline if the job has one.
         if (!job.getJobDeadline().isEmpty()) {
             jobData += "\nJob Deadline: " + job.getJobDeadline();
         }
@@ -136,35 +232,28 @@ public class CloudController {
         return jobData;
     }
 
+    /**
+     * Release/removes the vehicles associated to a job. On removal, will remove the vehicle from the in use vehicle
+     * list, removes the assigned job from the vehicle, then moves the vehicle back onto the available vehicle
+     * list
+     * @param job job object
+     */
     private void releaseVehicles(Job job){
         while(!job.getAssignedVehicles().isEmpty()){
             int lastElement = job.getAssignedVehicles().size()-1;
-            Vehicle temp = job.getAssignedVehicles().remove(lastElement);
+            Vehicle assignedVehicle = job.getAssignedVehicles().remove(lastElement);
 
-            removeVehicleFromList(getInUseVehicles(), temp); // removes vehicle from in InUseList
-            temp.removeAssignedJob();
-            addVehicleToList(getAvailableVehicles(), temp);
+            removeVehicleFromList(getInUseVehicles(), assignedVehicle);
+            assignedVehicle.removeAssignedJob();
+            addVehicleToList(getAvailableVehicles(), assignedVehicle);
         }
     }
 
-    // case we have to add a job to a queue
-    public void addJobToList(Queue<Job> jobQueue, Job job){
-        jobQueue.add(job);
-    }
-    // case we have to add a job to a list
-    public void addJobToList(ArrayList<Job> jobList, Job job){
-        jobList.add(job);
-    }
-
-    public void addVehicleToList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
-        vehicleList.add(vehicle);
-    }
-    // removes a vehicle based on its vehicle Id as its unique and dependent on user input
-    public void removeVehicleFromList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
-        vehicleList.removeIf(n-> n.getVehicleId() == vehicle.getVehicleId());
-    }
-
-    // responsible for generating a random number 0-3 based on # of availableVehicles
+    /**
+     * generates the redundancy of the job. Used to know how many vehicles go to a job. Generating a value from
+     * 0-3 based on the total amount of vehicles available.
+     * @return returns a value 0-3
+     */
     public int generateRedundancy() {
         if(availableVehicles.isEmpty())
             return 0;
@@ -173,18 +262,81 @@ public class CloudController {
         return (int)Math.floor(Math.random() * (3-1 + 1 ) + 1);
     }
 
+    /**
+     * Adds a job to a job queue.
+     * @param jobQueue Job queue list
+     * @param job Job object.
+     */
+    public void addJobToList(Queue<Job> jobQueue, Job job){
+        jobQueue.add(job);
+    }
+
+    /**
+     * Adds a job to a job list.
+     * @param jobList Job array list
+     * @param job Job object.
+     */
+    public void addJobToList(ArrayList<Job> jobList, Job job){
+        jobList.add(job);
+    }
+
+    /**
+     * adds a vehicle to a list.
+     * @param vehicleList vehicle array list
+     * @param vehicle vehicle object
+     */
+    public void addVehicleToList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
+        vehicleList.add(vehicle);
+    }
+
+    /**
+     * removes a vehicle from a list. It will remove a vehicle based on the vehicles ID.
+     * @param vehicleList passed in vehicle list
+     * @param vehicle passed in vehicle object
+     */
+    public void removeVehicleFromList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
+        vehicleList.removeIf(n-> n.getVehicleId() == vehicle.getVehicleId());
+    }
+
+    //todo
+    /**
+     * a cool idea would that based on the jobOwners total owned jobs, we can have something that says.
+     * "50% of your owned jobs have been completed!"
+     * and then when all the jobs in their list are done we can show a string that says.
+     * "Hooray all your jobs are completed! 🥳🥳🥳".
+     */
+    public void seeProgressOfJobs() {
+    }
+
+    //todo leave till further notice
+    public void seeAllDataBases() {
+    }
+
+    //todo leave till further notice
+    public void updateDatabaseToServer() {
+    }
+
+    // todo leave till further notice
+    public void updateCheckpoint() {
+    }
+
+    // Getters /setters
     public Queue<Job> getAvailableJobs() {
         return availableJobs;
     }
+
     public ArrayList<Vehicle> getAvailableVehicles(){
         return availableVehicles;
     }
+
     public Queue<Job> getActiveJobs() {
         return activeJobs;
     }
+
     public ArrayList<Vehicle> getInUseVehicles(){
         return inUseVehicles;
     }
+
     public ArrayList<Job> getCompletedJobs() {
         return completedJobs;
     }
@@ -219,28 +371,7 @@ public class CloudController {
         this.totalCompletionTime = totalCompletionTime;
     }
 
-    // will return true if there are some jobs in the available job list ready to process
     public boolean isJobsPresent(){
         return !getAvailableJobs().isEmpty();
-    }
-
-    // user stuff
-    //todo ***
-    public void seeProgressOfJobs() {
-    }
-
-    //todo ***
-    public void seeAllDataBases() {
-    }
-
-    //todo **
-    public void updateDatabaseToServer() {
-    }
-
-    // todo leave till further notice
-    public void updateCheckpoint() {
-        // based on the time. 10
-        // 10 secs after 5 seconds we run this method
-        // this means this method will run at the halfway mark to keep things simple.
     }
 }
