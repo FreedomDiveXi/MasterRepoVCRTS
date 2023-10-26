@@ -4,14 +4,13 @@ import java.util.Queue;
 
 public class CloudController {
 
+    // todo *** documentation
     // todo ** testing
-    // todo ** create methods to be able to create users.
     // todo * verification for job, vehicle, users for their ids
-    // todo * create a setter/getter for totalCompletionTime
 
     // controller now does everything
-    private ArrayList<Vehicle> availableVehicles = new ArrayList<>();
-    private ArrayList<Vehicle> inUseVehicles = new ArrayList<>();
+    private ArrayList<Vehicle> availableVehicles = new ArrayList<Vehicle>();
+    private ArrayList<Vehicle> inUseVehicles = new ArrayList<Vehicle>();
 
     // FIFO data structure to store the newly created jobs as they come in
     private Queue<Job> availableJobs = new LinkedList<Job>();
@@ -19,16 +18,36 @@ public class CloudController {
 
     // nice ways to store all completed and all vehicles regardless of status
     private ArrayList<Job> completedJobs = new ArrayList<Job>();
-    private ArrayList<Vehicle> allVehicles = new ArrayList<>();
+    private ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
+    private final UserList allUsers = new UserList();
 
     // used to store the total time it took to process jobs
     private int totalCompletionTime= 0;
+    private JobOwner currentJobOwner;
+    private VehicleOwner currentVehicleOwner;
+
+    public JobOwner createJobOwner(String username, String password, String companyName, String contactNumber){
+        JobOwner temp = new JobOwner(username,password,companyName,contactNumber);
+        setCurrentJobOwner(temp);
+        getUsers().add(temp); // adds user's to the user list
+        return temp;
+    }
+
+    public VehicleOwner createVehicleUser(String username, String password){
+        VehicleOwner temp = new VehicleOwner(username,password);
+        setCurrentVehicleOwner(temp);
+        getUsers().add(temp); // adds user's to the user list
+        return temp;
+    }
+
 
     // case we don't have a deadline
     public Job createJob(String jobOwnerName, String jobId, String jobDurationTime){
         Job newJob = new Job(jobOwnerName,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime));
         addJobToList(getAvailableJobs(), newJob);
         assignJobToVehicle(newJob);
+
+        getCurrentJobOwner().addJob(newJob); // add the job to the job user
         return newJob;
     }
     // case where we have a deadline
@@ -36,6 +55,8 @@ public class CloudController {
         Job newJob = new Job(jobOwnerName,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime), jobDeadline);
         addJobToList(getAvailableJobs(), newJob);
         assignJobToVehicle(newJob);
+
+        getCurrentJobOwner().addJob(newJob); // add the job to the job user
         return newJob;
     }
 
@@ -43,10 +64,12 @@ public class CloudController {
     public Vehicle createVehicle(String vehicleOwner, String vehicleId,String model, String make, String year){
         // similar to the
         Vehicle newVehicle = new Vehicle(vehicleOwner, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year));
-        // since a vehicle has been created we want it to be stored in the available and in all vehicles
-        // its just nice to have just in case we need to reference all the vehicle regardless of status
+
+        // vehicle stored in global and available lists
         addVehicleToList(getAllVehicles(), newVehicle);
         addVehicleToList(getAvailableVehicles(), newVehicle);
+
+        getCurrentVehicleOwner().addVehicleToVehicleUserList(newVehicle); // appends the vehicle to the current user signed in
         return newVehicle;
     }
 
@@ -80,7 +103,7 @@ public class CloudController {
             releaseVehicles(currentJob);
         }
         jobProcessData.add("--------\nTotal time to execute all jobs: " + totalCompletionTime + " hours");
-        totalCompletionTime = 0;
+        setTotalCompletionTime(0);
 
         return jobProcessData;
     }
@@ -168,6 +191,34 @@ public class CloudController {
     public ArrayList<Vehicle> getAllVehicles() {
         return allVehicles;
     }
+
+    public JobOwner getCurrentJobOwner() {
+        return currentJobOwner;
+    }
+
+    public void setCurrentJobOwner(JobOwner currentJobOwner) {
+        this.currentJobOwner = currentJobOwner;
+    }
+
+    public VehicleOwner getCurrentVehicleOwner() {
+        return currentVehicleOwner;
+    }
+
+    public void setCurrentVehicleOwner(VehicleOwner currentVehicleOwner) {
+        this.currentVehicleOwner = currentVehicleOwner;
+    }
+
+    public UserList getUsers() {
+        return allUsers;
+    }
+    public int getTotalCompletionTime() {
+        return totalCompletionTime;
+    }
+
+    public void setTotalCompletionTime(int totalCompletionTime) {
+        this.totalCompletionTime = totalCompletionTime;
+    }
+
     // will return true if there are some jobs in the available job list ready to process
     public boolean isJobsPresent(){
         return !getAvailableJobs().isEmpty();
