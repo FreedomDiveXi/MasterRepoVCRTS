@@ -82,4 +82,7 @@ public void addAssignedVehicle(Vehicle vehicle){
 public void removeAssignedVehicle(Vehicle vehicle){
         assignedVehicles.removeIf(n -> n.getVehicleId() == vehicle.getVehicleId());
 }
+public ArrayList<Vehicle> getAssignedVehicles() {
+    return assignedVehicles;
+}
 }
