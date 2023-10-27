@@ -38,6 +38,7 @@ public class JobOwner extends User {
         return contactNumber;
     }
 
+
     public void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
     }

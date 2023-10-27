@@ -1,49 +1,46 @@
-import java.time.LocalTime;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class Job {
     private String jobOwnerName;
     private int jobID;
     private int jobDurationTime;
-    private int executionTime;
     private String jobDeadline; // date
+    private int executionTime;
     private boolean jobCompletion;
+
+    private ArrayList<Vehicle> assignedVehicles;
 
     /**
      * if no deadline is provided will use this constructor method
      * somethingg
      *
-     * @param jobOwnerName
      * @param jobID
      * @param jobDurationTime
-     * @param jobCompletion
      */
-    public Job(int jobID, int jobDurationTime) {
+    public Job(String jobOwnerName, int jobID, int jobDurationTime) {
+        this.jobOwnerName = jobOwnerName;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
         this.executionTime = 0;
         jobCompletion = false;
+        assignedVehicles = new ArrayList<>();
     }
 
     /**
      * overloaded method to provide an optional case in which we can create a
      * job with a deadline
      *
-     * @param jobOwnerName
      * @param jobID
      * @param jobDurationTime
-     * @param jobDeadline
-     * @param jobCompletion
      */
-    public Job(int jobID, int jobDurationTime, String deadline) {
+    public Job(String jobOwnerName, int jobID, int jobDurationTime, String jobDeadline) {
         this.jobOwnerName = jobOwnerName;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
+        this.jobDeadline = jobDeadline;
         this.executionTime = 0;
-
         jobCompletion = false;
-
+        assignedVehicles = new ArrayList<>();
     }
 
     // Getter and Setter methods
@@ -51,32 +48,16 @@ public String getJobOwnerName() {
     return jobOwnerName;
 }
 
-public void setJobOwnerName(String jobOwnerName) {
-    this.jobOwnerName = jobOwnerName;
-}
-
 public int getJobID() {
     return jobID;
-}
-
-public void setJobID(int jobID) {
-    this.jobID = jobID;
 }
 
 public int getJobDurationTime() {
     return jobDurationTime;
 }
 
-public void setJobDurationTime(int jobDurationTime) {
-    this.jobDurationTime = jobDurationTime;
-}
-
 public String getJobDeadline() {
     return jobDeadline;
-}
-
-public void setJobDeadline(String jobDeadline) {
-    this.jobDeadline = jobDeadline;
 }
 
 public boolean isJobCompletion() {
@@ -87,7 +68,7 @@ public void setJobCompletion(boolean jobCompletion) {
     this.jobCompletion = jobCompletion;
 }
 
-public int getjobExecutionTime(){
+public int getJobExecutionTime(){
     return executionTime;
 }
 
@@ -95,4 +76,13 @@ public void setExecutionTime(int executeTime){
     this.executionTime += executeTime;
 }
 
+public void addAssignedVehicle(Vehicle vehicle){
+        assignedVehicles.add(vehicle);
+}
+public void removeAssignedVehicle(Vehicle vehicle){
+        assignedVehicles.removeIf(n -> n.getVehicleId() == vehicle.getVehicleId());
+}
+public ArrayList<Vehicle> getAssignedVehicles() {
+    return assignedVehicles;
+}
 }
