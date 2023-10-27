@@ -338,14 +338,23 @@ public class StartPage extends JFrame{
     class calculateTimeListener implements ActionListener {
     	@Override
     	public void actionPerformed(ActionEvent event) {
+    		JFrame jobCompletionController = new JFrame();
+    		JPanel panel2 = new JPanel();
     		
-    		question1 = new JLabel("Job ID: " );
+    		question1 = new JLabel("Job ID:");
     		question2 = new JLabel("Duration: " );
     		question3 = new JLabel("The completion time for the jobs: " );
     		
-    		panel.add(question1);
-    		panel.add(question2);
-    		panel.add(question3);
+    		panel2.add(question1);
+    		panel2.add(question2);
+    		panel2.add(question3);
+    		jobCompletionController.add(panel2);
+    		
+    		jobCompletionController.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+    		jobCompletionController.setTitle("Controller list of current completed jobs' ID and completion time");
+    		jobCompletionController.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    		jobCompletionController.setVisible(true);
+    		
     	}
     }
 }
