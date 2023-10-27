@@ -65,7 +65,7 @@ public class CloudController {
      * @param password String value provided by gui
      * @return returns the created vehicle owner
      */
-    public VehicleOwner createVehicleUser(String username, String password){
+    public VehicleOwner createVehicleOwner(String username, String password){
         VehicleOwner temp = new VehicleOwner(username,password);
         setCurrentVehicleOwner(temp);
         getUsers().add(temp); // adds user's to the user list
@@ -76,13 +76,13 @@ public class CloudController {
      * Creates and returns the newly created job without a deadline.
      * On creation, we append job to available job list, assign vehicles to job and append the job to the current
      * job owner
-     * @param jobOwnerName String value provided by gui
+     * @param clientId String value provided by gui
      * @param jobId String value provided by gui
      * @param jobDurationTime String value provided by gui
      * @return returns the created job without a deadline.
      */
-    public Job createJob(String jobOwnerName, String jobId, String jobDurationTime){
-        Job newJob = new Job(jobOwnerName,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime));
+    public Job createJob(String clientId, String jobId, String jobDurationTime){
+        Job newJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime));
         addJobToList(getAvailableJobs(), newJob);
         assignJobToVehicle(newJob);
 
@@ -94,13 +94,13 @@ public class CloudController {
      * Creates and returns the newly created job with a deadline.
      * On creation, we append job to available job list, assign vehicles to job and append the job to the current
      * job owner
-     * @param jobOwnerName String value provided by gui
+     * @param clientId String value provided by gui
      * @param jobId String value provided by gui
      * @param jobDurationTime String value provided by gui
      * @return returns the created job with a deadline.
      */
-    public Job createJob(String jobOwnerName, String jobId, String jobDurationTime, String jobDeadline){
-        Job newJob = new Job(jobOwnerName,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime), jobDeadline);
+    public Job createJob(String clientId, String jobId, String jobDurationTime, String jobDeadline){
+        Job newJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime), jobDeadline);
         addJobToList(getAvailableJobs(), newJob);
         assignJobToVehicle(newJob);
 
@@ -112,16 +112,16 @@ public class CloudController {
      * Creates and returns the newly created vehicle.
      * On creation, appends created vehicle to the all vehicle list, appends the vehicle to the available vehicle list.
      * It appends the new vehicle onto the vehicle owners vehicle list.
-     * @param vehicleOwner String provided by gui
-     * @param vehicleId String provided by gui
+     * @param ownerId String provided by gui
+     * @param vehicleId String provided by gui MUST BE A NUMBER
      * @param model String provided by gui
      * @param make String provided by gui
      * @param year String provided by gui
-     * @return returns the newly created vehicle
+     * @return returns the newly created vehicle MUST BE A NUMBER
      */
-    public Vehicle createVehicle(String vehicleOwner, String vehicleId,String model, String make, String year){
+    public Vehicle createVehicle(String ownerId, String vehicleId,String model, String make, String year){
         // similar to the
-        Vehicle newVehicle = new Vehicle(vehicleOwner, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year));
+        Vehicle newVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year));
 
         addVehicleToList(getAllVehicles(), newVehicle);
         addVehicleToList(getAvailableVehicles(), newVehicle);
@@ -195,13 +195,14 @@ public class CloudController {
             Job currentAvailableJob = getAvailableJobs().remove();
 
             // if there are any vehicles adds any if possible
-            if(currentAvailableJob.getAssignedVehicles().isEmpty())
+            if(currentAvailableJob.getAssignedVehicles().isEmpty()){
                 assignJobToVehicle(currentAvailableJob);
+            }
 
             // if it couldn't add a vehicle it goes back onto the available job list
             if(currentAvailableJob.getAssignedVehicles().isEmpty()){
                 addJobToList(getAvailableJobs(), currentAvailableJob);
-                continue;
+                break;
             }
 
             totalCompletionTime += currentAvailableJob.getJobDurationTime();
@@ -224,7 +225,7 @@ public class CloudController {
         """.formatted(job.getJobOwnerName(), job.getJobID(), job.getJobDurationTime());
 
         // will show a deadline if the job has one.
-        if (!job.getJobDeadline().isEmpty()) {
+        if (job.getJobDeadline() != null) {
             jobData += "\nJob Deadline: " + job.getJobDeadline();
         }
 
