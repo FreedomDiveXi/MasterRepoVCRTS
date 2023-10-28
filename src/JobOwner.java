@@ -2,8 +2,6 @@ import java.util.ArrayList;
 
 public class JobOwner extends User {
     private ArrayList<Job> ownedJobs;
-    private String companyName;
-    private String contactNumber;
 
     public JobOwner(String username, String password) {
         super(username, password);
