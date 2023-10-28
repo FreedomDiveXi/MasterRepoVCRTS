@@ -48,6 +48,9 @@ public class StartPage extends JFrame{
     PrintWriter printJob = new PrintWriter(writerJob);
     private static final int INITIAL_COMPLETE_TIME = 0;
     private int completeTime;
+    CloudController run = new CloudController();
+    boolean jobCheck = false;
+    boolean vehicleCheck = false;
 
     //This is the constructor as well as the starting point to the objects inside the main JFrame
     public StartPage() throws IOException {
@@ -85,7 +88,7 @@ public class StartPage extends JFrame{
             panel.revalidate();
             panel.repaint();
 
-            question1 = new JLabel("Create a new username (: is not allowed): ");
+            question1 = new JLabel("Create a new username (':' is not allowed): ");
             username = new JTextField(50);
             question2 = new JLabel("Create a new password: ");
             password = new JPasswordField(50);
@@ -103,9 +106,14 @@ public class StartPage extends JFrame{
             panel.add(vehicleOwnerBox);
             panel.add(goNext);
             add(panel);
-
-            ActionListener nextPage = new nextPageListener();
-            goNext.addActionListener(nextPage);
+            
+            jobCheck = jobOwnerBox.isSelected();
+            vehicleCheck = vehicleOwnerBox.isSelected();
+            if (jobCheck!=vehicleCheck) {
+            	ActionListener nextPage = new nextPageListener();
+                goNext.addActionListener(nextPage);
+            }
+            else {}
         }
     }
     
@@ -142,6 +150,13 @@ public class StartPage extends JFrame{
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
             }
+        	
+        	if (jobCheck = true) {
+        		run.createJobOwner(username.getText(), password.getText());
+        	}
+        	else {
+        		run.createVehicleOwner(username.getText(), password.getText());
+        	}
         	
         	panel.removeAll();
             panel.revalidate();
@@ -252,6 +267,13 @@ public class StartPage extends JFrame{
                 JOptionPane.showMessageDialog(null, e+"");
             }
     		
+    		if (jobDeadline.getText().equals("")) {
+    			run.createJob(clientID.getText(), jobID.getText(), jobDuration.getText());
+    		}
+    		else {
+    			run.createJob(clientID.getText(), jobID.getText(), jobDuration.getText(), jobDeadline.getText());
+    		}
+    		
     		clientID.setText("");
     		jobID.setText("");
     		jobDuration.setText("");
@@ -326,6 +348,8 @@ public class StartPage extends JFrame{
                 JOptionPane.showMessageDialog(null, e+"");
             }
     		
+    		run.createVehicle(ownerID.getText(), vehicleID.getText(), vehicleModel.getText(), vehicleMake.getText(), vehicleYear.getText());
+    		
     		ownerID.setText("");
     		vehicleID.setText("");
     		vehicleModel.setText("");
@@ -341,13 +365,14 @@ public class StartPage extends JFrame{
     		JFrame jobCompletionController = new JFrame();
     		JPanel panel2 = new JPanel();
     		
-    		question1 = new JLabel("Job ID:");
-    		question2 = new JLabel("Duration: " );
-    		question3 = new JLabel("The completion time for the jobs: " );
+    		String output = "";
+    		ArrayList<String> tempList = run.startProcessing();
+    		for (String current:tempList) {
+    			output += current;
+    		}
+    		question1 = new JLabel(output);
     		
     		panel2.add(question1);
-    		panel2.add(question2);
-    		panel2.add(question3);
     		jobCompletionController.add(panel2);
     		
     		jobCompletionController.setSize(FRAME_WIDTH, FRAME_HEIGHT);
