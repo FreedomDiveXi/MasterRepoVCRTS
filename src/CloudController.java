@@ -47,12 +47,10 @@ public class CloudController {
      * and append the owner to the user list
      * @param username String value provided by gui
      * @param password String value provided by gui
-     * @param companyName String value provided by gui
-     * @param contactNumber String value provided by gui
      * @return returns the created job owner
      */
-    public JobOwner createJobOwner(String username, String password, String companyName, String contactNumber){
-        JobOwner temp = new JobOwner(username,password,companyName,contactNumber);
+    public JobOwner createJobOwner(String username, String password){
+        JobOwner temp = new JobOwner(username,password);
         setCurrentJobOwner(temp);
         getUsers().add(temp); // adds user's to the user list
         return temp;
