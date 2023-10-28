@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
-public class jobTest {
+public class JobTest {
 
     private Job job;
     private Vehicle vehicle1;
@@ -13,8 +13,8 @@ public class jobTest {
     @BeforeEach
     public void setup() {
         job = new Job("John", 101, 5);
-        vehicle1 = new Vehicle(1);
-        vehicle2 = new Vehicle(2);
+        vehicle1 = new Vehicle("Jane", 3, "Toyota", "Corolla", 2020);
+        vehicle2 = new Vehicle("Doe", 4, "Honda", "Accord", 2021);
     }
 
     @Test
@@ -72,4 +72,24 @@ public class jobTest {
         assertFalse(assignedVehicles.contains(vehicle1));
         assertTrue(assignedVehicles.contains(vehicle2));
     }
+    
+     @Test
+    public void testAssignVehicleToJob() {
+        assertTrue(job.getAssignedVehicles().isEmpty());
+
+        job.addAssignedVehicle(vehicle1);
+        job.addAssignedVehicle(vehicle2);
+
+        assertEquals(2, job.getAssignedVehicles().size());
+        assertTrue(job.getAssignedVehicles().contains(vehicle1));
+        assertTrue(job.getAssignedVehicles().contains(vehicle2));
+        assertEquals(job, vehicle1.getAssignedJob());
+        assertEquals(job, vehicle2.getAssignedJob());
+
+        job.removeAssignedVehicle(vehicle1);
+        assertNull(vehicle1.getAssignedJob());
+        assertEquals(1, job.getAssignedVehicles().size());
+        assertTrue(job.getAssignedVehicles().contains(vehicle2));
+    }
+}
 }
