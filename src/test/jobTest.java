@@ -92,4 +92,3 @@ public class JobTest {
         assertTrue(job.getAssignedVehicles().contains(vehicle2));
     }
 }
-}
