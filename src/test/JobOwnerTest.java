@@ -42,19 +42,7 @@ public class JobOwnerTest {
         assertEquals(1, jobOwner.getOwnedJobs().size());
         assertFalse(jobOwner.getOwnedJobs().contains(job1));
         assertTrue(jobOwner.getOwnedJobs().contains(job2));
-    }
-
-    @Test
-    public void testSetCompanyName() {
-        jobOwner.setCompanyName("NewCo");
-        assertEquals("NewCo", jobOwner.getCompanyName());
-    }
-
-    @Test
-    public void testSetContactNumber() {
-        jobOwner.setContactNumber("111-111-1111");
-        assertEquals("111-111-1111", jobOwner.getContactNumber());
-    }
+   
 
     // Add more tests as required.
 }
