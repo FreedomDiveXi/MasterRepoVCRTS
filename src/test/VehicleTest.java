@@ -1,54 +1,45 @@
-package test;
-import static org.junit.Assert.*;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import Vehicle;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
 
 public class VehicleTest {
 
-		@Before
-		public void setUp() throws Exception {
-		}
+    private Vehicle vehicle1;
+    private Vehicle vehicle2;
 
-		@After
-		public void tearDown() throws Exception {
-		}
+    @BeforeEach
+    public void setup() {
+        vehicle1 = new Vehicle("John", 1, "Toyota", "Camry", 2020);
+        vehicle2 = new Vehicle("Jane", 2, "Honda", "Civic", 2021);
+    }
 
-	    @Test
-	    public void testCreateVehicleWithUniqueID() {
-	        Vehicle vehicle = new Vehicle(1, "Toyota", "Camry", 2018);
-	        assertEquals(1, vehicle.getVehicleId());
-	    }
+    @Test
+    public void testVehicleConstructor() {
+        assertEquals("John", vehicle1.getVehicleOwner());
+        assertEquals(1, vehicle1.getVehicleId());
+        assertEquals("Toyota", vehicle1.getMake());
+        assertEquals("Camry", vehicle1.getModel());
+        assertEquals(2020, vehicle1.getYear());
+        assertNull(vehicle1.getAssignedJob());
 
-	    @Test
-	    public void testCreateVehicleWithDuplicateID() {
-	        Vehicle vehicle1 = new Vehicle(2, "Toyota", "Camry", 2019);
-	        try {
-	            Vehicle vehicle2 = new Vehicle(2, "Toyota", "Avalon", 2019);
-	            fail("Expected IllegalArgumentException for duplicate vehicleId");
-	        } catch (IllegalArgumentException e) {
-	            assertEquals("Duplicate vehicleId, please input a number other than 2", e.getMessage());
-	        }
-	    }
+        assertEquals("Jane", vehicle2.getVehicleOwner());
+        assertEquals(2, vehicle2.getVehicleId());
+    }
+ @Test
+    public void testDuplicateVehicleId() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Vehicle vehicle3 = new Vehicle("Doe", 1, "Ford", "Mustang", 2022);
+        });
+    }
 
-	    @Test
-	    public void testGetMake() {
-	        Vehicle vehicle = new Vehicle(3, "Toyota", "Camry", 2020);
-	        assertEquals("Toyota", vehicle.getMake());
-	    }
+    @Test
+    public void testAssignJobToVehicle() {
+        Job job = new Job("Doe", 101, 5);
+        vehicle1.setAssignedJob(job);
+        assertEquals(job, vehicle1.getAssignedJob());
 
-	    @Test
-	    public void testGetModel() {
-	        Vehicle vehicle = new Vehicle(4, "Toyota", "Camry", 2021);
-	        assertEquals("Camry", vehicle.getModel());
-	    }
-
-	    @Test
-	    public void testGetYear() {
-	        Vehicle vehicle = new Vehicle(5, "Toyota", "Camry", 2022);
-	        assertEquals(2022, vehicle.getYear());
-	    }
-	}
+        vehicle1.removeAssignedJob();
+        assertNull(vehicle1.getAssignedJob());
+    }
+}
