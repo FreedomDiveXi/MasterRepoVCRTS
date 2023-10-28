@@ -107,14 +107,23 @@ public class StartPage extends JFrame{
             panel.add(goNext);
             add(panel);
             
-            jobCheck = jobOwnerBox.isSelected();
-            vehicleCheck = vehicleOwnerBox.isSelected();
-            if (jobCheck!=vehicleCheck) {
-            	ActionListener nextPage = new nextPageListener();
-                goNext.addActionListener(nextPage);
-            }
-            else {}
+            
+            ActionListener checkBoxListener = new nextPageListener();
+            goNext.addActionListener(checkBoxListener);
         }
+    }
+    
+    //This is the chekcbox listener to differentiate the job owner and vehicle owner with no errors
+    class checkBoxListener implements ActionListener {
+    	@Override
+    	public void actionPerformed(ActionEvent event) {
+    		jobCheck = jobOwnerBox.isSelected();
+    		vehicleCheck = vehicleOwnerBox.isSelected();
+    		if (jobCheck!=vehicleCheck) {
+    			ActionListener nextPageListener = new nextPageListener();
+                goNext.addActionListener(nextPageListener);
+    		}
+    	}
     }
     
     //The controller action caller 
@@ -154,7 +163,7 @@ public class StartPage extends JFrame{
         	if (jobCheck = true) {
         		run.createJobOwner(username.getText(), password.getText());
         	}
-        	else {
+        	if (vehicleCheck = true) {
         		run.createVehicleOwner(username.getText(), password.getText());
         	}
         	
@@ -220,7 +229,7 @@ public class StartPage extends JFrame{
             jobID = new JTextField(50);
             question3 = new JLabel("Approximatly how long will this job take, please just type in the total amount of hours?");
             jobDuration = new JTextField(50);
-            question4 = new JLabel("If needed what is this job's deadline, please type in this formate month:day:year");
+            question4 = new JLabel("If needed what is this job's deadline, please type in this formate month-day-year");
             jobDeadline = new JTextField(50);
             submitJob = new JButton("Submit");
             goBack = new JButton("Return to previous page");
@@ -259,9 +268,6 @@ public class StartPage extends JFrame{
                 printJob.print(" : ");
                 writerJob.write(jobDeadline.getText());
                 printJob.println();
-
-                writerJob.close();
-                printJob.close();
             }
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
@@ -340,9 +346,6 @@ public class StartPage extends JFrame{
                 printVehicle.print(" : ");
                 writerVehicle.write(vehicleYear.getText());
                 printVehicle.println();
-
-                writerVehicle.close();
-                printVehicle.close();
             }
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
