@@ -8,23 +8,16 @@ public class UserList {
     }
 
     public void add(JobOwner jobOwner) {
-        if (!isUserExist(jobOwner.getUsername())) {
             userList.add(jobOwner);
-        } else {
-            System.out.println("User with username " + jobOwner.getUsername() + " already exists!");
-        }
     }
     
     public void add(VehicleOwner vehicleOwner) {
-        if (!isUserExist(vehicleOwner.getUsername())) {
             userList.add(vehicleOwner);
-        } else {
-            System.out.println("User with username " + vehicleOwner.getUsername() + " already exists!");
-        }
     }
 
+    /*
     public User findUserByUsername(String username) {
-        for (User user : userList) {
+             for (User user : userList) {
             if (user.getUsername().equals(username)) {
                 return user;
             }
@@ -50,4 +43,6 @@ public class UserList {
     private boolean isUserExist(String username) {
         return findUserByUsername(username) != null;
     }
+
+     */
 }
