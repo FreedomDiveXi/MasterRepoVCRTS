@@ -25,6 +25,9 @@ public class JobOwner extends User {
             System.out.println(job.getJobID() + ": " + job.getJobOwnerName());
         }
     }
+       public List<Job> getOwnedJobs() {
+        return new ArrayList<>(ownedJobs);
+    }
 
     public String getCompanyName() {
         return companyName;
