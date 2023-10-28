@@ -5,11 +5,9 @@ public class JobOwner extends User {
     private String companyName;
     private String contactNumber;
 
-    public JobOwner(String username, String password, String companyName, String contactNumber) {
+    public JobOwner(String username, String password) {
         super(username, password);
         this.ownedJobs = new ArrayList<>();
-        this.companyName = companyName;
-        this.contactNumber = contactNumber;
     }
 
     public void addJob(Job job) {
@@ -28,21 +26,5 @@ public class JobOwner extends User {
        public List<Job> getOwnedJobs() {
         return new ArrayList<>(ownedJobs);
     }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getContactNumber() {
-        return contactNumber;
-    }
-
-
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
-    }
+    
 }
