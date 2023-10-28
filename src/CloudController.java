@@ -140,7 +140,7 @@ public class CloudController {
     public void assignJobToVehicle(Job job) {
         int numVehicles = generateRedundancy();
 
-        while(numVehicles > 0 ){
+        while(getAvailableVehicles().size()>0){
             int lastElement = availableVehicles.size()-1;
             Vehicle assignedVehicle = availableVehicles.remove(lastElement); // aux vehicle
 
@@ -166,6 +166,7 @@ public class CloudController {
     public  ArrayList<String> startProcessing() {
         // first migrate the available vehicles to the active job list
         startJobMigration();
+        System.out.println(getActiveJobs());
         // once everything is on the list and updated we process
         ArrayList <String> jobProcessData = new ArrayList<>();
         while(!getActiveJobs().isEmpty()){
@@ -176,7 +177,7 @@ public class CloudController {
             addJobToList(getCompletedJobs(),currentJob);
             releaseVehicles(currentJob);
         }
-        jobProcessData.add("--------\nTotal time to execute all jobs: " + totalCompletionTime + " hours");
+        jobProcessData.add("\n--------\nTotal time to execute all jobs: " + totalCompletionTime + " hours");
         setTotalCompletionTime(COMPLETION_TIME_DEFAULT_VALUE);
 
         return jobProcessData;
@@ -373,4 +374,18 @@ public class CloudController {
     public boolean isJobsPresent(){
         return !getAvailableJobs().isEmpty();
     }
+    /**
+     *
+     VehicleOwner sampleVehicleOwner = run.createVehicleOwner("mark", "asdfjk1kjhsdf12323");
+     JobOwner sampleJobOwner = run.createJobOwner("daniel", "asdfasdlfkj23e1234");
+     Vehicle sampleVehicle = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
+     Vehicle sampleVehicle2 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
+     Vehicle sampleVehicle3 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
+     Vehicle sampleVehicle4 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
+     Vehicle sampleVehicle5 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
+     Vehicle sampleVehicle6 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
+     Job sampleJob = run.createJob("1234", "123", "34", "10-28-2023");
+     Job sampleJob2 = run.createJob("1234", "123", "34", "10-28-2023");
+     Job sampleJob3 = run.createJob("1234", "123", "34", "10-28-2023");
+     */
 }
