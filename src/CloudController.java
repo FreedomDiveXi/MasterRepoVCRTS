@@ -304,7 +304,7 @@ public class CloudController {
      * a cool idea would that based on the jobOwners total owned jobs, we can have something that says.
      * "50% of your owned jobs have been completed!"
      * and then when all the jobs in their list are done we can show a string that says.
-     * "Hooray all your jobs are completed! 🥳🥳🥳".
+     * "Hooray all your jobs are completed! ".
      */
     public void seeProgressOfJobs() {
     }
