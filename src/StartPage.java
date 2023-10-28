@@ -53,25 +53,42 @@ public class StartPage extends JFrame{
     	
     	introduction = new JLabel("This application allows users to complete certain tasks that requires an immense amount of power that you simply don't have " +
     								"or input your ownn unoccupied car, so we can utilize the computational power that a car has.");
-        question1 = new JLabel("Are you a new user?");
-        buttonYes = new JButton("Yes");
-        buttonNo = new JButton("No");
-        question2 = new JLabel("Are you the admin/VC Controller?");
-        buttonController = new JButton("Controller");
+        buttonController = new JButton("Continue");
         
         panel = new JPanel();
         panel.add(introduction);
-        panel.add(question1);
-        panel.add(buttonYes);
-        panel.add(buttonNo);
-        panel.add(question2);
         panel.add(buttonController);
         add(panel);
-
-        ActionListener yesListener = new AddNewUserListener();
-        buttonYes.addActionListener(yesListener);
-        ActionListener controllerListener = new ControllerListener();
-        buttonController.addActionListener(controllerListener);
+        
+        ActionListener homePage = new homePageListener();
+        buttonController.addActionListener(homePage);
+    }
+    
+    //This is the home page listener
+    class homePageListener implements ActionListener {
+    	@Override
+    	public void actionPerformed(ActionEvent event) {
+    		panel.removeAll();
+    		panel.revalidate();
+    		panel.repaint();
+    		
+    		question1 = new JLabel("Are you a new user?");
+            buttonYes = new JButton("Yes");
+            buttonNo = new JButton("No");
+            question2 = new JLabel("Are you the admin/VC Controller?");
+            buttonController = new JButton("Controller");
+            
+            panel.add(question1);
+            panel.add(buttonYes);
+            panel.add(buttonNo);
+            panel.add(question2);
+            panel.add(buttonController);
+            
+            ActionListener yesListener = new AddNewUserListener();
+            buttonYes.addActionListener(yesListener);
+            ActionListener controllerListener = new ControllerListener();
+            buttonController.addActionListener(controllerListener);
+    	}
     }
 
     //This is the action caller for new users to register
@@ -107,7 +124,7 @@ public class StartPage extends JFrame{
         }
     }
     
-    //This is the chekcbox listener to differentiate the job owner and vehicle owner with no error
+    //This is the checkbox listener to differentiate the job owner and vehicle owner with no error
     class checkBoxListener implements ActionListener {
     	@Override
     	public void actionPerformed(ActionEvent event) {
@@ -129,11 +146,15 @@ public class StartPage extends JFrame{
     		panel.repaint();
     		
     		buttonData = new JButton("Calculate completion time");
+            goBack = new JButton("Return to previous page");
     		
     		panel.add(buttonData);
+            panel.add(goBack);
     		
     		ActionListener calculate = new calculateTimeListener();
     		buttonData.addActionListener(calculate);
+            ActionListener previousPage = new homePageListener();
+            goBack.addActionListener(previousPage);
     	}
     }
     
@@ -179,7 +200,7 @@ public class StartPage extends JFrame{
 
             ActionListener newData = new newDataListener();
             buttonNewData.addActionListener(newData);
-            ActionListener previousPage = new AddNewUserListener();
+            ActionListener previousPage = new homePageListener();
             goBack.addActionListener(previousPage);
         }
     }
