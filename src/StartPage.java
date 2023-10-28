@@ -40,12 +40,6 @@ public class StartPage extends JFrame{
     private JTextField vehicleMake;
     private JTextField vehicleYear;
     private JPasswordField password;
-    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
-    PrintWriter printUser = new PrintWriter(writerUser);
-    FileWriter writerVehicle = new FileWriter("VehicleDataBase.txt", true);
-    PrintWriter printVehicle = new PrintWriter(writerVehicle);
-    FileWriter writerJob = new FileWriter("JobDataBase.txt", true);
-    PrintWriter printJob = new PrintWriter(writerJob);
     private static final int INITIAL_COMPLETE_TIME = 0;
     private int completeTime;
     CloudController run = new CloudController();
@@ -113,7 +107,7 @@ public class StartPage extends JFrame{
         }
     }
     
-    //This is the chekcbox listener to differentiate the job owner and vehicle owner with no errors
+    //This is the chekcbox listener to differentiate the job owner and vehicle owner with no error
     class checkBoxListener implements ActionListener {
     	@Override
     	public void actionPerformed(ActionEvent event) {
@@ -148,6 +142,8 @@ public class StartPage extends JFrame{
         @Override
         public void actionPerformed(ActionEvent event) {
         	try {
+        	    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
+        	    PrintWriter printUser = new PrintWriter(writerUser);
                 writerUser.write(username.getText());
                 printUser.print(" : ");
                 writerUser.write(password.getText());
@@ -258,6 +254,8 @@ public class StartPage extends JFrame{
     	public void actionPerformed(ActionEvent event){
     		dateTimeNow = LocalDateTime.now();
     		try {
+    		    FileWriter writerJob = new FileWriter("JobDataBase.txt", true);
+    		    PrintWriter printJob = new PrintWriter(writerJob);
     			writerJob.write(dateTimeNow.toString());
     			printJob.print(" : ");
                 writerJob.write(clientID.getText());
@@ -268,6 +266,9 @@ public class StartPage extends JFrame{
                 printJob.print(" : ");
                 writerJob.write(jobDeadline.getText());
                 printJob.println();
+                
+                writerJob.close();
+                printJob.close();
             }
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
@@ -334,6 +335,8 @@ public class StartPage extends JFrame{
     	public void actionPerformed(ActionEvent event){
     		dateTimeNow = LocalDateTime.now();
     		try {
+    			FileWriter writerVehicle = new FileWriter("VehicleDataBase.txt", true);
+    		    PrintWriter printVehicle = new PrintWriter(writerVehicle);
     			writerVehicle.write(dateTimeNow.toString());
     			printVehicle.print(" : ");
                 writerVehicle.write(ownerID.getText());
@@ -346,6 +349,9 @@ public class StartPage extends JFrame{
                 printVehicle.print(" : ");
                 writerVehicle.write(vehicleYear.getText());
                 printVehicle.println();
+                
+                writerVehicle.close();
+                printVehicle.close();
             }
             catch(Exception e){
                 JOptionPane.showMessageDialog(null, e+"");
