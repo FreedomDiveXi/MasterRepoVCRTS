@@ -173,10 +173,12 @@ public class StartPage extends JFrame{
                 JOptionPane.showMessageDialog(null, e+"");
             }
         	
-        	if (jobCheck = true) {
-        		run.createJobOwner(username.getText(), password.getText());
-        	}else if (vehicleCheck = true) {
-        		run.createVehicleOwner(username.getText(), password.getText());
+        	if (jobOwnerBox.isSelected()) {
+        		JobOwner temp = run.createJobOwner(username.getText(), password.getText());
+                System.out.println(temp.getUsername() + " (coming from job person)");
+        	}else if (vehicleOwnerBox.isSelected()) {
+        		VehicleOwner temp = run.createVehicleOwner(username.getText(), password.getText());
+                System.out.println(temp.getUsername() + "(coming from vehicle person)");
         	}
         	
         	panel.removeAll();
