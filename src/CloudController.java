@@ -11,9 +11,7 @@ public class CloudController {
      */
 
     // todo ** testing
-    // todo * verification for job, vehicle, users for their ids
 
-    private final int COMPLETION_TIME_DEFAULT_VALUE = 0;
     private ArrayList<Vehicle> availableVehicles;
     private ArrayList<Vehicle> inUseVehicles;
     private Queue<Job> availableJobs;
@@ -39,7 +37,18 @@ public class CloudController {
         currentVehicleOwner = null;
 
         // used to store the total time it took to process jobs
-        totalCompletionTime = COMPLETION_TIME_DEFAULT_VALUE;
+        totalCompletionTime = 0;
+
+        VehicleOwner sampleVehicleOwner = createVehicleOwner("mark", "asdfjk1kjhsdf12323");
+        createVehicle("asdoc", "1", "civic", "honda", "2023");
+        createVehicle("asdoc", "2", "civic", "honda", "2023");
+        createVehicle("asdoc", "3", "civic", "honda", "2023");
+        createVehicle("asdoc", "4", "civic", "honda", "2023");
+        createVehicle("asdoc", "5", "civic", "honda", "2023");
+        createVehicle("asdoc", "6", "civic", "honda", "2023");
+        createVehicle("asdoc", "7", "civic", "honda", "2023");
+        createVehicle("asdoc", "8", "civic", "honda", "2023");
+        createVehicle("asdoc", "9", "civic", "honda", "2023");
     }
 
     /**
@@ -140,7 +149,9 @@ public class CloudController {
     public void assignJobToVehicle(Job job) {
         int numVehicles = generateRedundancy();
 
-        while(getAvailableVehicles().size()>0){
+        while(numVehicles > 0){
+            if(getAvailableVehicles().isEmpty())
+                break;
             int lastElement = availableVehicles.size()-1;
             Vehicle assignedVehicle = availableVehicles.remove(lastElement); // aux vehicle
 
@@ -163,24 +174,26 @@ public class CloudController {
      * @return returns a processed job string.
      */
 
-    public  ArrayList<String> startProcessing() {
+    public  String startProcessing() {
         // first migrate the available vehicles to the active job list
         startJobMigration();
-        System.out.println(getActiveJobs());
         // once everything is on the list and updated we process
-        ArrayList <String> jobProcessData = new ArrayList<>();
+        StringBuilder str = new StringBuilder();
         while(!getActiveJobs().isEmpty()){
             Job currentJob= getActiveJobs().remove();
-            String data = formatActiveJobData(currentJob);
-            jobProcessData.add(data);
+
+            str.append(formatActiveJobData(currentJob));
 
             addJobToList(getCompletedJobs(),currentJob);
             releaseVehicles(currentJob);
         }
-        jobProcessData.add("\n--------\nTotal time to execute all jobs: " + totalCompletionTime + " hours");
-        setTotalCompletionTime(COMPLETION_TIME_DEFAULT_VALUE);
+        if(getTotalCompletionTime() == 0){
+            str.append("---NO JOBS HAVE BEEN SUBMITTED---");
+        }else{
+            str.append("<br/>---Total Time Execution: ").append(getTotalCompletionTime()).append("---<br/>");
+        }
 
-        return jobProcessData;
+        return String.valueOf(str);
     }
 
     /**
@@ -204,8 +217,9 @@ public class CloudController {
                 break;
             }
 
-            totalCompletionTime += currentAvailableJob.getJobDurationTime();
-            currentAvailableJob.setExecutionTime(totalCompletionTime);
+            setTotalCompletionTime(currentAvailableJob.getJobDurationTime());
+
+            currentAvailableJob.setExecutionTime(getTotalCompletionTime());
             addJobToList(getActiveJobs(),currentAvailableJob);
         }
     }
@@ -216,20 +230,19 @@ public class CloudController {
      * @return  Returns the processed job data in a formatted String
      */
     private String formatActiveJobData(Job job){
-        String jobData = """
-            ==============
-            Job Owner Name: %s
-            Job ID: %s
-            Job Duration: %s hours
-        """.formatted(job.getJobOwnerName(), job.getJobID(), job.getJobDurationTime());
 
-        // will show a deadline if the job has one.
-        if (job.getJobDeadline() != null) {
-            jobData += "\nJob Deadline: " + job.getJobDeadline();
-        }
+        String str = "";
+        str += "=========" + "<br/>";
+        str += "Job Owner Name : " + job.getJobOwnerName() + "<br/>";
+        str += "Job Id: " + job.getJobID() + "<br/>";
+        str += "Job Duration: " + job.getJobDurationTime() + "<br/>";
 
-        jobData += "\nTime executed: " + job.getJobExecutionTime() + " hours";
-        return jobData;
+        if(job.getJobDeadline() != null)
+            str += "Job Deadline: " + job.getJobDeadline() + "<br/>";
+
+        str += "Time Executed: " + job.getJobExecutionTime() + "<br/>";
+
+        return str;
     }
 
     /**
@@ -251,15 +264,15 @@ public class CloudController {
 
     /**
      * generates the redundancy of the job. Used to know how many vehicles go to a job. Generating a value from
-     * 0-3 based on the total amount of vehicles available.
-     * @return returns a value 0-3
+     * 0-2 based on the total amount of vehicles available.
+     * @return returns a value 0-2
      */
     public int generateRedundancy() {
         if(availableVehicles.isEmpty())
             return 0;
-        if(availableVehicles.size() < 3)
+        if(availableVehicles.size() < 2)
             return 1;
-        return (int)Math.floor(Math.random() * (3-1 + 1 ) + 1);
+        return (int)Math.floor(Math.random() * (2-1 + 1 ) + 1);
     }
 
     /**
@@ -368,24 +381,10 @@ public class CloudController {
     }
 
     public void setTotalCompletionTime(int totalCompletionTime) {
-        this.totalCompletionTime = totalCompletionTime;
+        this.totalCompletionTime = totalCompletionTime + this.totalCompletionTime;
     }
 
     public boolean isJobsPresent(){
         return !getAvailableJobs().isEmpty();
     }
-    /**
-     *
-     VehicleOwner sampleVehicleOwner = run.createVehicleOwner("mark", "asdfjk1kjhsdf12323");
-     JobOwner sampleJobOwner = run.createJobOwner("daniel", "asdfasdlfkj23e1234");
-     Vehicle sampleVehicle = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
-     Vehicle sampleVehicle2 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
-     Vehicle sampleVehicle3 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
-     Vehicle sampleVehicle4 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
-     Vehicle sampleVehicle5 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
-     Vehicle sampleVehicle6 = run.createVehicle("asdoc", "123", "civic", "honda", "2023");
-     Job sampleJob = run.createJob("1234", "123", "34", "10-28-2023");
-     Job sampleJob2 = run.createJob("1234", "123", "34", "10-28-2023");
-     Job sampleJob3 = run.createJob("1234", "123", "34", "10-28-2023");
-     */
 }

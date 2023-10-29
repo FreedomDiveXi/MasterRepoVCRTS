@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.io.*;
 import java.time.*;
@@ -377,16 +378,14 @@ public class StartPage extends JFrame{
     	@Override
     	public void actionPerformed(ActionEvent event) {
     		JFrame jobCompletionController = new JFrame();
+
     		JPanel panel2 = new JPanel();
-    		
-    		String output = "";
-    		ArrayList<String> tempList = run.startProcessing();
-    		for (String current:tempList) {
-    			output += current;
-    		}
-    		question1 = new JLabel(output);
-    		
-    		panel2.add(question1);
+
+            String str = "<html>";
+            str += run.startProcessing();
+            str += "</html>";
+
+            panel2.add(new JLabel(str));
     		jobCompletionController.add(panel2);
     		
     		jobCompletionController.setSize(FRAME_WIDTH, FRAME_HEIGHT);

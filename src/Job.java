@@ -73,7 +73,7 @@ public int getJobExecutionTime(){
 }
 
 public void setExecutionTime(int executeTime){
-    this.executionTime += executeTime;
+    this.executionTime = executeTime;
 }
 
 public void addAssignedVehicle(Vehicle vehicle){
