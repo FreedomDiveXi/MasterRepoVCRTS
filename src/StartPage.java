@@ -115,7 +115,6 @@ public class StartPage extends JFrame{
             panel.add(goNext);
             add(panel);
             
-            
             ActionListener checkBoxListener = new nextPageListener();
             goNext.addActionListener(checkBoxListener);
         }
@@ -176,8 +175,7 @@ public class StartPage extends JFrame{
         	
         	if (jobCheck = true) {
         		run.createJobOwner(username.getText(), password.getText());
-        	}
-        	if (vehicleCheck = true) {
+        	}else if (vehicleCheck = true) {
         		run.createVehicleOwner(username.getText(), password.getText());
         	}
         	
@@ -185,7 +183,7 @@ public class StartPage extends JFrame{
             panel.revalidate();
             panel.repaint();
             
-            if (jobCheck = true) {
+            if (jobOwnerBox.isSelected()) {
             	question1 = new JLabel("Do you want to submit a job or see your previous information");
             	buttonData = new JButton("See your previous information");
             	buttonJob = new JButton("Submit a job");
@@ -195,8 +193,9 @@ public class StartPage extends JFrame{
                 panel.add(buttonData);
                 panel.add(buttonJob);
                 panel.add(goBack);
-            }
-            if (vehicleCheck = true) {
+                ActionListener newJob = new newJobListener();
+                buttonJob.addActionListener(newJob);
+            }else {
             	question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
             	buttonData = new JButton("See your previous information");
             	buttonVehicle = new JButton("Submit a vehicle");
@@ -206,12 +205,10 @@ public class StartPage extends JFrame{
                 panel.add(buttonData);
                 panel.add(buttonVehicle);
                 panel.add(goBack);
+                ActionListener newVehicle = new newVehicleListener();
+                buttonVehicle.addActionListener(newVehicle);
             }
 
-            ActionListener newJob = new newJobListener();
-            buttonJob.addActionListener(newJob);
-            ActionListener newVehicle = new newVehicleListener();
-            buttonVehicle.addActionListener(newVehicle);
             ActionListener previousPage = new homePageListener();
             goBack.addActionListener(previousPage);
         }
