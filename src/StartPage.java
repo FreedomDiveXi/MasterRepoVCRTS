@@ -16,8 +16,8 @@ public class StartPage extends JFrame{
     private JLabel question3;
     private JLabel question4;
     private JLabel question5;
-    private JCheckBox jobOwnerBox;
-    private JCheckBox vehicleOwnerBox;
+    private JButton jobOwnerButton;
+    private JButton vehicleOwnerButton;
     private JButton buttonYes;
     private JButton buttonNo;
     private JButton buttonData;
@@ -41,8 +41,7 @@ public class StartPage extends JFrame{
     private JTextField vehicleYear;
     private JPasswordField password;
     CloudController run = new CloudController();
-    boolean jobCheck = false;
-    boolean vehicleCheck = false;
+    private ButtonGroup group;
 
     //This is the constructor as well as the starting point to the objects inside the main JFrame
     public StartPage() throws IOException {
@@ -101,36 +100,26 @@ public class StartPage extends JFrame{
             question2 = new JLabel("Create a new password: ");
             password = new JPasswordField(50);
             question3 = new JLabel("Are you a job owner or vehicle owner? Choose only one.");
-            jobOwnerBox = new JCheckBox("Job Owner", false);
-            vehicleOwnerBox = new JCheckBox("Vehicle Owner", false);
-            goNext = new JButton("Continue");
+            jobOwnerButton = new JButton("Job Owner");
+            vehicleOwnerButton = new JButton("Vehicle Owner");
+            question4 = new JLabel("You have not selected Job or Vehicle Owner yet.");
+        	goNext = new JButton("Continue");
 
             panel.add(question1);
             panel.add(username);
             panel.add(question2);
             panel.add(password);
             panel.add(question3);
-            panel.add(jobOwnerBox);
-            panel.add(vehicleOwnerBox);
+            panel.add(jobOwnerButton);
+            panel.add(vehicleOwnerButton);
+            panel.add(question4);
             panel.add(goNext);
-            add(panel);
             
-            ActionListener checkBoxListener = new nextPageListener();
-            goNext.addActionListener(checkBoxListener);
+            ActionListener userJob = new userIsJobOwnerListener();
+            jobOwnerButton.addActionListener(userJob);
+            ActionListener userVehicle = new userIsVehicleOwnerListener();
+            vehicleOwnerButton.addActionListener(userVehicle);
         }
-    }
-    
-    //This is the checkbox listener to differentiate the job owner and vehicle owner with no error
-    class checkBoxListener implements ActionListener {
-    	@Override
-    	public void actionPerformed(ActionEvent event) {
-    		jobCheck = jobOwnerBox.isSelected();
-    		vehicleCheck = vehicleOwnerBox.isSelected();
-    		if (jobCheck!=vehicleCheck) {
-    			ActionListener nextPageListener = new nextPageListener();
-                goNext.addActionListener(nextPageListener);
-    		}
-    	}
     }
     
     //The controller action caller 
@@ -154,10 +143,52 @@ public class StartPage extends JFrame{
     	}
     }
     
-    //Continue button which add the user log in and asks if they want to see existing info or add new info 
-    class nextPageListener implements ActionListener {
+    //This is the button to make the user a job owner
+    class userIsJobOwnerListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
+        	panel.remove(question4);
+        	panel.remove(goNext);
+        	panel.revalidate();
+    		panel.repaint();
+    		
+        	question4 = new JLabel("You have selected job owner.");
+        	goNext = new JButton("Continue");
+        	
+        	panel.add(question4);
+            panel.add(goNext);
+        	
+            ActionListener nextPageListener = new nextPageListenerJob();
+            goNext.addActionListener(nextPageListener);
+        }
+    }
+    
+    //This is the button to make the user a vehicle owner
+    class userIsVehicleOwnerListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+        	panel.remove(question4);
+        	panel.remove(goNext);
+        	panel.revalidate();
+    		panel.repaint();
+    		
+        	question4 = new JLabel("You have selected vehicle owner.");
+        	goNext = new JButton("Continue");
+        	
+        	panel.add(question4);
+        	panel.add(goNext);
+        	
+        	ActionListener nextPageListener = new nextPageListenerVehicle();
+            goNext.addActionListener(nextPageListener);
+        }
+    }
+    
+    //Continue button which add the user log in and asks if they want to see existing info or add new info 
+    class nextPageListenerJob implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+        	run.createJobOwner(username.getText(), password.getText());
+        	
         	try {
         	    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
         	    PrintWriter printUser = new PrintWriter(writerUser);
@@ -173,46 +204,65 @@ public class StartPage extends JFrame{
                 JOptionPane.showMessageDialog(null, e+"");
             }
         	
-        	if (jobOwnerBox.isSelected()) {
-        		JobOwner temp = run.createJobOwner(username.getText(), password.getText());
-                System.out.println(temp.getUsername() + " (coming from job person)");
-        	}else if (vehicleOwnerBox.isSelected()) {
-        		VehicleOwner temp = run.createVehicleOwner(username.getText(), password.getText());
-                System.out.println(temp.getUsername() + "(coming from vehicle person)");
-        	}
-        	
         	panel.removeAll();
             panel.revalidate();
             panel.repaint();
             
-            if (jobOwnerBox.isSelected()) {
-            	question1 = new JLabel("Do you want to submit a job or see your previous information");
-            	buttonData = new JButton("See your previous information");
-            	buttonJob = new JButton("Submit a job");
-            	goBack = new JButton("Return to previous page");
+            question1 = new JLabel("Do you want to submit a job or see your previous information");
+            buttonData = new JButton("See your previous information");
+            buttonJob = new JButton("Submit a job");
+            goBack = new JButton("Return to home page");
             	
-                panel.add(question1);
-                panel.add(buttonData);
-                panel.add(buttonJob);
-                panel.add(goBack);
-                ActionListener newJob = new newJobListener();
-                buttonJob.addActionListener(newJob);
-            }else {
-            	question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
-            	buttonData = new JButton("See your previous information");
-            	buttonVehicle = new JButton("Submit a vehicle");
-            	goBack = new JButton("Return to previous page");
-            	
-                panel.add(question1);
-                panel.add(buttonData);
-                panel.add(buttonVehicle);
-                panel.add(goBack);
-                ActionListener newVehicle = new newVehicleListener();
-                buttonVehicle.addActionListener(newVehicle);
-            }
+            panel.add(question1);
+            panel.add(buttonData);
+            panel.add(buttonJob);
+            panel.add(goBack);
 
-            ActionListener previousPage = new homePageListener();
-            goBack.addActionListener(previousPage);
+            ActionListener newJob = new newJobListener();
+            buttonJob.addActionListener(newJob);
+            ActionListener homePage = new homePageListener();
+            goBack.addActionListener(homePage);
+        }
+    }
+    
+    class nextPageListenerVehicle implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+        	run.createJobOwner(username.getText(), password.getText());
+        	
+        	try {
+        	    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
+        	    PrintWriter printUser = new PrintWriter(writerUser);
+                writerUser.write(username.getText());
+                printUser.print(" : ");
+                writerUser.write(password.getText());
+                printUser.println();   
+
+                writerUser.close();
+                printUser.close();
+            }
+            catch(Exception e){
+                JOptionPane.showMessageDialog(null, e+"");
+            }
+        	
+        	panel.removeAll();
+            panel.revalidate();
+            panel.repaint();
+
+            question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
+            buttonData = new JButton("See your previous information");
+            buttonVehicle = new JButton("Submit a vehicle");
+            goBack = new JButton("Return to home page");
+            	
+            panel.add(question1);
+            panel.add(buttonData);
+            panel.add(buttonVehicle);
+            panel.add(goBack);
+            
+            ActionListener newVehicle = new newVehicleListener();
+            buttonVehicle.addActionListener(newVehicle);
+            ActionListener homePage = new homePageListener();
+            goBack.addActionListener(homePage);
         }
     }
 
@@ -233,7 +283,7 @@ public class StartPage extends JFrame{
             question4 = new JLabel("If needed what is this job's deadline, please type in this formate month-day-year");
             jobDeadline = new JTextField(50);
             submitJob = new JButton("Submit");
-            goBack = new JButton("Return to previous page");
+            goBack = new JButton("Return to home page");
             
             panel.add(question1);
             panel.add(clientID);
@@ -248,8 +298,8 @@ public class StartPage extends JFrame{
             
             ActionListener submit = new submitJobListener();
             submitJob.addActionListener(submit);
-            ActionListener previousPage = new nextPageListener();
-            goBack.addActionListener(previousPage);
+            ActionListener homePage = new homePageListener();
+            goBack.addActionListener(homePage);
         }
     }
     
@@ -312,7 +362,7 @@ public class StartPage extends JFrame{
             question5 = new JLabel("What is the vehicle's year");
             vehicleYear = new JTextField(50);
             submitVehicle = new JButton("Submit");
-            goBack = new JButton("Return to previous page");
+            goBack = new JButton("Return to home page");
             
             panel.add(question1);
             panel.add(ownerID);
@@ -329,8 +379,8 @@ public class StartPage extends JFrame{
             
             ActionListener submit = new submitVehicleListener();
             submitVehicle.addActionListener(submit);
-            ActionListener previousPage = new nextPageListener();
-            goBack.addActionListener(previousPage);
+            ActionListener homePage = new homePageListener();
+            goBack.addActionListener(homePage);
         }
     }
     
