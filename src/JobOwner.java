@@ -16,13 +16,33 @@ public class JobOwner extends User {
         return ownedJobs.remove(job);
     }
 
-    public void listAllJobs() {
-        for (Job job : ownedJobs) {
-            System.out.println(job.getJobID() + ": " + job.getJobOwnerName());
-        }
-    }
-       public ArrayList<Job> getOwnedJobs() {
+    public ArrayList<Job> getOwnedJobs() {
         return ownedJobs;
     }
-    
+    public String getJobOwnerDetails(){
+
+        StringBuilder str = new StringBuilder();
+        str.append("Job Owner Username:"+getUsername() +"\n");
+        if(getOwnedJobs().isEmpty()){
+            str.append("---USER HAS NO JOBS---\n")
+                    .append(listOwnedJobs()).append("======\n");
+        }else{
+            str.append("---Owned Jobs---\n")
+                    .append(listOwnedJobs()).append("======\n");
+        }
+
+        return String.valueOf(str);
+    }
+    private String listOwnedJobs() {
+        StringBuilder str = new StringBuilder();
+
+        for (Job job : ownedJobs) {
+            str.append("Job Id: ").append(job.getJobID())
+                    .append("\n")
+                    .append("Job Duration: ").append(job.getJobDurationTime())
+                    .append("\n");
+        }
+        return String.valueOf(str);
+    }
+
 }
