@@ -14,6 +14,9 @@ public class UserList {
     public void add(VehicleOwner vehicleOwner) {
             userList.add(vehicleOwner);
     }
+    public ArrayList<User> getUsers() {
+        return userList;
+    }
 
     /*
     public User findUserByUsername(String username) {

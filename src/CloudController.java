@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
 public class CloudController {
@@ -38,17 +39,24 @@ public class CloudController {
 
         // used to store the total time it took to process jobs
         totalCompletionTime = 0;
+        init();
+    }
 
+    /**
+     * Initializes controller with registered data on startup
+     * todo instead of manually creating vehicles/jobs/owners have it so it reads the file and creates them accordingly
+     */
+    private void init(){
         VehicleOwner sampleVehicleOwner = createVehicleOwner("mark", "asdfjk1kjhsdf12323");
         createVehicle("asdoc", "1", "civic", "honda", "2023");
-        createVehicle("asdoc", "2", "civic", "honda", "2023");
-        createVehicle("asdoc", "3", "civic", "honda", "2023");
-        createVehicle("asdoc", "4", "civic", "honda", "2023");
-        createVehicle("asdoc", "5", "civic", "honda", "2023");
-        createVehicle("asdoc", "6", "civic", "honda", "2023");
-        createVehicle("asdoc", "7", "civic", "honda", "2023");
-        createVehicle("asdoc", "8", "civic", "honda", "2023");
-        createVehicle("asdoc", "9", "civic", "honda", "2023");
+        createVehicle("asdoc", "2", "pilot", "honda", "2023");
+        createVehicle("asdoc", "3", "cr-v", "honda", "2023");
+        createVehicle("asdoc", "4", "accord", "honda", "2023");
+        createVehicle("asdoc", "5", "hr-v", "honda", "2023");
+        createVehicle("asdoc", "6", "civic type-r", "honda", "2023");
+        createVehicle("asdoc", "7", "model Y", "tesla", "2023");
+        createVehicle("asdoc", "8", "model S", "tesla", "2023");
+        createVehicle("asdoc", "9", "cybertruck", "tesla", "2023");
     }
 
     /**
@@ -61,7 +69,7 @@ public class CloudController {
     public JobOwner createJobOwner(String username, String password){
         JobOwner temp = new JobOwner(username,password);
         setCurrentJobOwner(temp);
-        getUsers().add(temp); // adds user's to the user list
+        allUsers.getUsers().add(temp); // adds user's to the user list
         return temp;
     }
 
@@ -75,7 +83,7 @@ public class CloudController {
     public VehicleOwner createVehicleOwner(String username, String password){
         VehicleOwner temp = new VehicleOwner(username,password);
         setCurrentVehicleOwner(temp);
-        getUsers().add(temp); // adds user's to the user list
+        allUsers.getUsers().add(temp); // adds user's to the user list
         return temp;
     }
 
@@ -146,7 +154,7 @@ public class CloudController {
      * assigned vehicle
      * @param job Job object provided by method calling
      */
-    public void assignJobToVehicle(Job job) {
+    private void assignJobToVehicle(Job job) {
         int numVehicles = generateRedundancy();
 
         while(numVehicles > 0){
@@ -174,7 +182,7 @@ public class CloudController {
      * @return returns a processed job string.
      */
 
-    public  String startProcessing() {
+    public String startProcessing() {
         // first migrate the available vehicles to the active job list
         startJobMigration();
         // once everything is on the list and updated we process
@@ -190,7 +198,9 @@ public class CloudController {
         if(getTotalCompletionTime() == 0){
             str.append("---NO JOBS HAVE BEEN SUBMITTED---");
         }else{
-            str.append("<br/>---Total Time Execution: ").append(getTotalCompletionTime()).append("---<br/>");
+            str.append("<br/>---Total Time Execution: ")
+                    .append(getTotalCompletionTime())
+                    .append("---<br/>");
         }
 
         return String.valueOf(str);
@@ -225,27 +235,6 @@ public class CloudController {
     }
 
     /**
-     * Returns a formatted processed job data. Method is exclusive to the job processing algorithmn.
-     * @param job Job object passed by method calling.
-     * @return  Returns the processed job data in a formatted String
-     */
-    private String formatActiveJobData(Job job){
-
-        String str = "";
-        str += "=========" + "<br/>";
-        str += "Job Owner Name : " + job.getJobOwnerName() + "<br/>";
-        str += "Job Id: " + job.getJobID() + "<br/>";
-        str += "Job Duration: " + job.getJobDurationTime() + "<br/>";
-
-        if(job.getJobDeadline() != null)
-            str += "Job Deadline: " + job.getJobDeadline() + "<br/>";
-
-        str += "Time Executed: " + job.getJobExecutionTime() + "<br/>";
-
-        return str;
-    }
-
-    /**
      * Release/removes the vehicles associated to a job. On removal, will remove the vehicle from the in use vehicle
      * list, removes the assigned job from the vehicle, then moves the vehicle back onto the available vehicle
      * list
@@ -263,11 +252,85 @@ public class CloudController {
     }
 
     /**
+     * Returns a formatted processed job data. Method is exclusive to the job processing algorithm.
+     * @param job Job object passed by method calling.
+     * @return  Returns the processed job data in a formatted String
+     */
+    private String formatActiveJobData(Job job){
+        String str = "";
+        str += "=========" + "<br/>";
+        str += "Job Owner Name : " + job.getJobOwnerName() + "<br/>";
+        str += "Job Id: " + job.getJobID() + "<br/>";
+        str += "Job Duration: " + job.getJobDurationTime() + "<br/>";
+
+        if(job.getJobDeadline() != null)
+            str += "Job Deadline: " + job.getJobDeadline() + "<br/>";
+
+        str += "Time Executed: " + job.getJobExecutionTime() + "<br/>";
+
+        return str;
+    }
+
+    /**
+     * Prints all the completed jobs.
+     * @return A formatted string of the jobs completed
+     */
+    public String printCompletedJobs(){
+        StringBuilder str = new StringBuilder();
+        for(Job currentJob: getCompletedJobs()){
+
+            str.append("Job Owner Name: ").append(currentJob.getJobOwnerName()).append("\n");
+            str.append("Job Id: ").append(currentJob.getJobID()).append("\n");
+            str.append("Job Duration: ")
+                    .append(currentJob.getJobDurationTime())
+                    .append(" hours").append("\n");
+
+            if(currentJob.getJobDeadline() != null)
+                str.append("Job Deadline: ").append(currentJob.getJobDeadline()).append("\n");
+
+            str.append("Time job was completed: ")
+                    .append(currentJob.getJobExecutionTime())
+                    .append(" hours").append("\n\n");
+        }
+        return String.valueOf(str);
+    }
+
+    /**
+     * Prints all the vehicles currently registered
+     * @return A formatted string of all the vehicles registered
+     */
+    public String printAllVehicles(){
+        StringBuilder str = new StringBuilder();
+        for(Vehicle currentVehicle: getAllVehicles()){
+
+            str.append("Vehicle Owner Name: ").append(currentVehicle.getVehicleOwner()).append("\n");
+            str.append("Vehicle Id: ").append(currentVehicle.getVehicleId()).append("\n");
+            str.append("Vehicle make: ").append(currentVehicle.getMake()).append("\n");
+            str.append("Vehicle model: ").append(currentVehicle.getModel()).append("\n");
+            str.append("Vehicle year: ").append(currentVehicle.getYear()).append("\n\n");
+        }
+        return String.valueOf(str);
+    }
+
+    public String printAllUsers(){
+        StringBuilder str = new StringBuilder();
+
+        for(User users: allUsers.getUsers()){
+            if(users instanceof JobOwner)
+                str.append(((JobOwner) users).getJobOwnerDetails());
+            if(users instanceof VehicleOwner)
+                str.append(((VehicleOwner) users).getVehicleOwnerDetails());
+        }
+
+        return String.valueOf(str);
+    }
+
+    /**
      * generates the redundancy of the job. Used to know how many vehicles go to a job. Generating a value from
      * 0-2 based on the total amount of vehicles available.
      * @return returns a value 0-2
      */
-    public int generateRedundancy() {
+    private int generateRedundancy() {
         if(availableVehicles.isEmpty())
             return 0;
         if(availableVehicles.size() < 2)
@@ -280,7 +343,7 @@ public class CloudController {
      * @param jobQueue Job queue list
      * @param job Job object.
      */
-    public void addJobToList(Queue<Job> jobQueue, Job job){
+    private void addJobToList(Queue<Job> jobQueue, Job job){
         jobQueue.add(job);
     }
 
@@ -289,7 +352,7 @@ public class CloudController {
      * @param jobList Job array list
      * @param job Job object.
      */
-    public void addJobToList(ArrayList<Job> jobList, Job job){
+    private void addJobToList(ArrayList<Job> jobList, Job job){
         jobList.add(job);
     }
 
@@ -298,56 +361,54 @@ public class CloudController {
      * @param vehicleList vehicle array list
      * @param vehicle vehicle object
      */
-    public void addVehicleToList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
+    private void addVehicleToList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
         vehicleList.add(vehicle);
     }
 
     /**
      * removes a vehicle from a list. It will remove a vehicle based on the vehicles ID.
+     * If multiple vehicles have the same ID it will remove them.
      * @param vehicleList passed in vehicle list
      * @param vehicle passed in vehicle object
      */
-    public void removeVehicleFromList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
+    private void removeVehicleFromList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
         vehicleList.removeIf(n-> n.getVehicleId() == vehicle.getVehicleId());
     }
 
-    //todo
     /**
+     * todo leave till further notice
      * a cool idea would that based on the jobOwners total owned jobs, we can have something that says.
      * "50% of your owned jobs have been completed!"
      * and then when all the jobs in their list are done we can show a string that says.
      * "Hooray all your jobs are completed! ".
      */
-    public void seeProgressOfJobs() {
+    private void seeProgressOfJobs() {
     }
 
     //todo leave till further notice
-    public void seeAllDataBases() {
+    private void seeAllDataBases() {
     }
 
     //todo leave till further notice
-    public void updateDatabaseToServer() {
+    private void updateDatabaseToServer() {
     }
 
     // todo leave till further notice
-    public void updateCheckpoint() {
+    private void updateCheckpoint() {
     }
 
     // Getters /setters
-    public Queue<Job> getAvailableJobs() {
-        return availableJobs;
-    }
-
     public ArrayList<Vehicle> getAvailableVehicles(){
         return availableVehicles;
     }
-
-    public Queue<Job> getActiveJobs() {
-        return activeJobs;
+    public Queue<Job> getAvailableJobs() {
+        return availableJobs;
     }
-
     public ArrayList<Vehicle> getInUseVehicles(){
         return inUseVehicles;
+    }
+    public Queue<Job> getActiveJobs() {
+        return activeJobs;
     }
 
     public ArrayList<Job> getCompletedJobs() {
@@ -360,8 +421,7 @@ public class CloudController {
     public JobOwner getCurrentJobOwner() {
         return currentJobOwner;
     }
-
-    public void setCurrentJobOwner(JobOwner currentJobOwner) {
+    private void setCurrentJobOwner(JobOwner currentJobOwner) {
         this.currentJobOwner = currentJobOwner;
     }
 
@@ -369,13 +429,10 @@ public class CloudController {
         return currentVehicleOwner;
     }
 
-    public void setCurrentVehicleOwner(VehicleOwner currentVehicleOwner) {
+    private void setCurrentVehicleOwner(VehicleOwner currentVehicleOwner) {
         this.currentVehicleOwner = currentVehicleOwner;
     }
 
-    public UserList getUsers() {
-        return allUsers;
-    }
     public int getTotalCompletionTime() {
         return totalCompletionTime;
     }
