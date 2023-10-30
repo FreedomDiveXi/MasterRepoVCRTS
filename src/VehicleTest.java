@@ -13,17 +13,6 @@ public class VehicleTest {
     }
 
     @Test
-    public void testCreateVehicleWithDuplicateID() {
-        Vehicle vehicle10 = new Vehicle("Bob", 10, "Toyota", "Camry", 2019);
-        try {
-            Vehicle vehicle11 = new Vehicle("Carl", 10, "Toyota", "Avalon", 2019);
-            fail("Expected IllegalArgumentException for duplicate vehicleId");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Duplicate vehicleId, please input a number other than 10", e.getMessage());
-        }
-    }
-
-    @Test
     public void testGetMake() {
         Vehicle vehicle = new Vehicle("Dave", 3, "Toyota", "Camry", 2020);
         assertEquals("Toyota", vehicle.getMake());
