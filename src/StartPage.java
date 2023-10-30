@@ -46,9 +46,7 @@ public class StartPage extends JFrame{
     //This is the constructor as well as the starting point to the objects inside the main JFrame
     public StartPage() throws IOException {
     	setSize(FRAME_WIDTH, FRAME_HEIGHT);
-    	
-    	introduction = new JLabel("This application allows users to complete certain tasks that would require an immense amount of power that you simply do not have or input your ownn unoccupied car, so we can utilize the computational power that a car has.");
-    	introduction.setBounds(50, 50, 100, 30);
+    	introduction = new JLabel("<html>" + "This application allows users to complete certain tasks that would require " + "<br/>" + "an immense amount of power that you simply do not have or input your own " + "<br/>" + "unoccupied car, so we can utilize the computational power that a car has." + "</html>");
         buttonController = new JButton("Continue");
         
         panel = new JPanel();
@@ -131,15 +129,15 @@ public class StartPage extends JFrame{
     		panel.repaint();
     		
     		buttonData = new JButton("Calculate completion time");
-            goBack = new JButton("Return to previous page");
+            goBack = new JButton("Return to home page");
     		
     		panel.add(buttonData);
             panel.add(goBack);
     		
     		ActionListener calculate = new calculateTimeListener();
     		buttonData.addActionListener(calculate);
-            ActionListener previousPage = new homePageListener();
-            goBack.addActionListener(previousPage);
+            ActionListener homePage = new homePageListener();
+            goBack.addActionListener(homePage);
     	}
     }
     
@@ -183,7 +181,7 @@ public class StartPage extends JFrame{
         }
     }
     
-    //Continue button which add the user log in and asks if they want to see existing info or add new info 
+    //This is the next page listener for job
     class nextPageListenerJob implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
@@ -225,6 +223,7 @@ public class StartPage extends JFrame{
         }
     }
     
+    //This is the next page listener for vehicle
     class nextPageListenerVehicle implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
