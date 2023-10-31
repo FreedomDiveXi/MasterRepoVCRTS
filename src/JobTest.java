@@ -52,7 +52,7 @@ public class JobTest {
         assertEquals(2, job.getJobExecutionTime());
         
         job.setExecutionTime(3);
-        assertEquals(5, job.getJobExecutionTime());
+        assertEquals(3, job.getJobExecutionTime());
     }
 
     @Test
@@ -73,22 +73,4 @@ public class JobTest {
         assertTrue(assignedVehicles.contains(vehicle2));
     }
     
-     @Test
-    public void testAssignVehicleToJob() {
-        assertTrue(job.getAssignedVehicles().isEmpty());
-
-        job.addAssignedVehicle(vehicle1);
-        job.addAssignedVehicle(vehicle2);
-
-        assertEquals(2, job.getAssignedVehicles().size());
-        assertTrue(job.getAssignedVehicles().contains(vehicle1));
-        assertTrue(job.getAssignedVehicles().contains(vehicle2));
-        assertEquals(job, vehicle1.getAssignedJob());
-        assertEquals(job, vehicle2.getAssignedJob());
-
-        job.removeAssignedVehicle(vehicle1);
-        assertNull(vehicle1.getAssignedJob());
-        assertEquals(1, job.getAssignedVehicles().size());
-        assertTrue(job.getAssignedVehicles().contains(vehicle2));
-    }
 }

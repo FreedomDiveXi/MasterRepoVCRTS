@@ -2,18 +2,20 @@ import java.util.ArrayList;
 
 public class VehicleOwner extends User{
 
-	ArrayList <Vehicle> userVehicleList;
+	ArrayList <Vehicle> vehicleList;
 	public VehicleOwner(String username, String password) {
 		super(username, password);
-		userVehicleList = new ArrayList<>();
+		vehicleList = new ArrayList<>();
 	}
 
-	public ArrayList<Vehicle> getUserVehicleList(){
-		return userVehicleList;
+	// generic getter
+	public ArrayList<Vehicle> getVehicleList(){
+		return vehicleList;
 	}
 
+	// controller uses this
 	public void addVehicleToVehicleUserList(Vehicle vehicle){
-		userVehicleList.add(vehicle);
+		vehicleList.add(vehicle);
 	}
 
 	public String getVehicleOwnerDetails(){
@@ -30,7 +32,7 @@ public class VehicleOwner extends User{
 	private String listOwnedVehicles(){
 		StringBuilder str = new StringBuilder();
 
-		for (Vehicle currentVehilce: getUserVehicleList()){
+		for (Vehicle currentVehilce: getVehicleList()){
 			str.append("Vehicle Id: "+currentVehilce.getVehicleId() +'\n')
 					.append("Vehicle Model: "+currentVehilce.getModel() +"\n");
 		}
