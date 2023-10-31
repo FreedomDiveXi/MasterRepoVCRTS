@@ -330,7 +330,7 @@ public class CloudController {
      * 0-2 based on the total amount of vehicles available.
      * @return returns a value 0-2
      */
-    private int generateRedundancy() {
+    public int generateRedundancy() {
         if(availableVehicles.isEmpty())
             return 0;
         if(availableVehicles.size() < 2)

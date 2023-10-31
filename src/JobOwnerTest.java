@@ -11,7 +11,7 @@ public class JobOwnerTest {
 
     @BeforeEach
     public void setup() {
-        jobOwner = new JobOwner("JohnDoe", "password123", "DoeCo", "555-555-5555");
+        jobOwner = new JobOwner("JohnDoe", "password123");
         job1 = new Job("JohnDoe", 101, 5);
         job2 = new Job("JohnDoe", 102, 8, "2023-12-31");
     }
@@ -19,8 +19,6 @@ public class JobOwnerTest {
     @Test
     public void testJobOwnerConstructor() {
         assertEquals("JohnDoe", jobOwner.getUsername()); // Assuming there's a getUsername method in User class
-        assertEquals("DoeCo", jobOwner.getCompanyName());
-        assertEquals("555-555-5555", jobOwner.getContactNumber());
     }
 
     @Test
@@ -42,7 +40,8 @@ public class JobOwnerTest {
         assertEquals(1, jobOwner.getOwnedJobs().size());
         assertFalse(jobOwner.getOwnedJobs().contains(job1));
         assertTrue(jobOwner.getOwnedJobs().contains(job2));
-   
+
+    }
 
     // Add more tests as required.
 }
