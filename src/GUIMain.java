@@ -8,7 +8,7 @@ public class GUIMain {
 		 startPage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 startPage.setVisible(true);
 		 
-		 JFrame controllerPage = new StartPage();
+		 JFrame controllerPage = new ControllerPage();
 		 controllerPage.setTitle("Welcome to the Controller view");
 		 controllerPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		 controllerPage.setVisible(true);
