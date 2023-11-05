@@ -186,6 +186,8 @@ public class StartPage extends JFrame{
 
             ActionListener newJob = new newJobListener();
             buttonJob.addActionListener(newJob);
+            ActionListener seeInformation = new seeJobInformationListener();
+            buttonData.addActionListener(seeInformation);
             ActionListener homePage = new homePageListener();
             goBack.addActionListener(homePage);
         }
@@ -228,6 +230,8 @@ public class StartPage extends JFrame{
             
             ActionListener newVehicle = new newVehicleListener();
             buttonVehicle.addActionListener(newVehicle);
+            ActionListener seeInformation = new seeVehicleInformationListener();
+            buttonData.addActionListener(seeInformation);
             ActionListener homePage = new homePageListener();
             goBack.addActionListener(homePage);
         }
@@ -345,6 +349,30 @@ public class StartPage extends JFrame{
     		vehicleMake.setText("");
     		vehicleYear.setText("");
     	}
+    }
+    
+    //This is the button listener for the user to see their job information and status
+    class seeJobInformationListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+        	panel.removeAll();
+            panel.revalidate();
+            panel.repaint();
+            
+            
+        }
+    }
+    
+  //This is the button listener for the user to see their vehicle information and status
+    class seeVehicleInformationListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+        	panel.removeAll();
+            panel.revalidate();
+            panel.repaint();
+            
+            
+        }
     }
     
 }
