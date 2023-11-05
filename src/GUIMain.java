@@ -7,5 +7,10 @@ public class GUIMain {
 		 startPage.setTitle("Welcome to the Vehicular Cloud");
 		 startPage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 startPage.setVisible(true);
+		 
+		 JFrame controllerPage = new StartPage();
+		 controllerPage.setTitle("Welcome to the Controller view");
+		 controllerPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		 controllerPage.setVisible(true);
 	}
 }
