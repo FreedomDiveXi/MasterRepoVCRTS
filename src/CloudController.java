@@ -11,8 +11,6 @@ public class CloudController {
      * milestones.
      */
 
-    // todo ** testing
-
     private ArrayList<Vehicle> availableVehicles;
     private ArrayList<Vehicle> inUseVehicles;
     private Queue<Job> availableJobs;
@@ -23,6 +21,9 @@ public class CloudController {
     private int totalCompletionTime;
     private JobOwner currentJobOwner;
     private VehicleOwner currentVehicleOwner;
+    private Job pendingJob;
+    private Vehicle pendingVehicle;
+
 
     public CloudController(){
         availableVehicles = new ArrayList<Vehicle>();
@@ -36,32 +37,15 @@ public class CloudController {
 
         currentJobOwner = null;
         currentVehicleOwner = null;
+        pendingJob= null;
+        pendingVehicle= null;
 
         // used to store the total time it took to process jobs
         totalCompletionTime = 0;
-        init();
     }
 
     /**
-     * Initializes controller with registered data on startup
-     * todo instead of manually creating vehicles/jobs/owners have it so it reads the file and creates them accordingly
-     */
-    private void init(){
-        VehicleOwner sampleVehicleOwner = createVehicleOwner("mark", "asdfjk1kjhsdf12323");
-        createVehicle("asdoc", "1", "civic", "honda", "2023");
-        createVehicle("asdoc", "2", "pilot", "honda", "2023");
-        createVehicle("asdoc", "3", "cr-v", "honda", "2023");
-        createVehicle("asdoc", "4", "accord", "honda", "2023");
-        createVehicle("asdoc", "5", "hr-v", "honda", "2023");
-        createVehicle("asdoc", "6", "civic type-r", "honda", "2023");
-        createVehicle("asdoc", "7", "model Y", "tesla", "2023");
-        createVehicle("asdoc", "8", "model S", "tesla", "2023");
-        createVehicle("asdoc", "9", "cybertruck", "tesla", "2023");
-    }
-
-    /**
-     * this constructor will create a job owner. Each time we create a job owner we store a reference of the job owner
-     * and append the owner to the user list
+     * Creates and returns a new job owner.
      * @param username String value provided by gui
      * @param password String value provided by gui
      * @return returns the created job owner
@@ -69,13 +53,13 @@ public class CloudController {
     public JobOwner createJobOwner(String username, String password){
         JobOwner temp = new JobOwner(username,password);
         setCurrentJobOwner(temp);
+        // method that writes bro to file.
         allUsers.getUsers().add(temp); // adds user's to the user list
         return temp;
     }
 
     /**
-     * this constructor will create a vehicle owner. Each time we create a vehicle owner
-     * we store a reference of the vehicle owner and append the owner to the user list
+     * Creates and returns a new vehicle owner.
      * @param username String value provided by gui
      * @param password String value provided by gui
      * @return returns the created vehicle owner
@@ -83,50 +67,43 @@ public class CloudController {
     public VehicleOwner createVehicleOwner(String username, String password){
         VehicleOwner temp = new VehicleOwner(username,password);
         setCurrentVehicleOwner(temp);
+        // method that writes bro to file.
         allUsers.getUsers().add(temp); // adds user's to the user list
         return temp;
     }
 
     /**
      * Creates and returns the newly created job without a deadline.
-     * On creation, we append job to available job list, assign vehicles to job and append the job to the current
-     * job owner
+     * Does not accept the job into the system automatically, simply creates it.
+     * Can only create one new Job at a time.
      * @param clientId String value provided by gui
      * @param jobId String value provided by gui
      * @param jobDurationTime String value provided by gui
      * @return returns the created job without a deadline.
      */
     public Job createJob(String clientId, String jobId, String jobDurationTime){
-        Job newJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime));
-        addJobToList(getAvailableJobs(), newJob);
-        assignJobToVehicle(newJob);
-
-        getCurrentJobOwner().addJob(newJob); // add the job to the job user
-        return newJob;
+        pendingJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime));
+        return pendingJob;
     }
 
     /**
      * Creates and returns the newly created job with a deadline.
-     * On creation, we append job to available job list, assign vehicles to job and append the job to the current
-     * job owner
+     * Does not accept the job into the system automatically, simply creates it.
+     * Can only create one new job at a time.
      * @param clientId String value provided by gui
      * @param jobId String value provided by gui
      * @param jobDurationTime String value provided by gui
      * @return returns the created job with a deadline.
      */
     public Job createJob(String clientId, String jobId, String jobDurationTime, String jobDeadline){
-        Job newJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime), jobDeadline);
-        addJobToList(getAvailableJobs(), newJob);
-        assignJobToVehicle(newJob);
-
-        getCurrentJobOwner().addJob(newJob); // add the job to the job user
-        return newJob;
+        pendingJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime), jobDeadline);
+        return pendingJob;
     }
 
     /**
      * Creates and returns the newly created vehicle.
-     * On creation, appends created vehicle to the all vehicle list, appends the vehicle to the available vehicle list.
-     * It appends the new vehicle onto the vehicle owners vehicle list.
+     * Does not accept the vehicle into the system automatically, simply creates it.
+     * Can only create one new vehicle at a time.
      * @param ownerId String provided by gui
      * @param vehicleId String provided by gui MUST BE A NUMBER
      * @param model String provided by gui
@@ -135,22 +112,78 @@ public class CloudController {
      * @return returns the newly created vehicle MUST BE A NUMBER
      */
     public Vehicle createVehicle(String ownerId, String vehicleId,String model, String make, String year){
-        // similar to the
-        Vehicle newVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year));
-
-        addVehicleToList(getAllVehicles(), newVehicle);
-        addVehicleToList(getAvailableVehicles(), newVehicle);
-
-        getCurrentVehicleOwner().addVehicleToVehicleUserList(newVehicle); // appends the vehicle to the current user
-        return newVehicle;
+        pendingVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year));
+        return pendingVehicle;
     }
+
+    /**
+     * Accepts the job that was created by the system. Appends job to the appropriate lists and assigns a vehicle to the
+     * job.
+     * Can only accept one job at a time.
+     * @return a string acceptance message
+     */
+    public String acceptJob(){
+        String temp = "Your job ID: " + pendingJob.getJobID() +" has been accepted.";
+
+        addJobToList(getAvailableJobs(), pendingJob);
+        assignJobToVehicle(pendingJob);
+        getCurrentJobOwner().addJob(pendingJob); // add the job to the current job user
+        // method that writes job to file
+        pendingJob = null;
+        return temp;
+    }
+
+    /**
+     * Accepts the vehicle that was created by the system. Appends vehicle to the appropriate lists.
+     * Can only accept one vehicle at a time.
+     * @return a string acceptance message
+     */
+    public String acceptVehicle(){
+        String temp = "Your vehicle ID: " + pendingVehicle.getVehicleId() +" has been accepted.";
+
+        addVehicleToList(getAllVehicles(), pendingVehicle);
+        addVehicleToList(getAvailableVehicles(), pendingVehicle);
+        getCurrentVehicleOwner().addVehicleToVehicleUserList(pendingVehicle); // adds the vehicle to the current vehicle user
+        // method that writes vehicle to file.
+        pendingVehicle = null;
+        return temp;
+    }
+
+    /**
+     * Rejects a created job. If a job is rejected it's not registered to the system
+     * Can only reject one job at a time.
+     * @return a string rejection message
+     */
+    public String rejectJob(){
+        String temp = pendingJob.getJobOwnerName()+ ", your job ID: " + pendingJob.getJobID() + " has been rejected. Please try again";
+        pendingJob = null;
+        return temp;
+    }
+
+    /**
+     * Rejects a created vehicle. If a vehicle is rejected it's not registered to the system
+     * Can only reject one vehicle at a time.
+     * @return a string rejection message
+     */
+    public String rejectVehicle(){
+        String temp = pendingVehicle.getVehicleOwner() + ", your vehicle ID: "+ pendingVehicle.getVehicleId() + " has been rejected. Please try again";
+        pendingVehicle = null;
+        return temp;
+    }
+
+    //todo
+    public void writeUser(VehicleOwner vehicleOwner){}
+    public void writeUser(JobOwner jobOwner){}
+    public void writeJob(Job job){}
+    public void writeVehicle(Vehicle vehicle){}
+
 
     /**
      * Assigns a job to vehicle(s). The number of vehicles that go to a job will be determined by a redundancy that the
      * system creates. This method is run on job creation automatically.
      * If there are no available vehicles it does not assign a vehicle to the job.
      * Every time we assign a job to vehicle, we remove that vehicle from the available vehicle list and onto the in
-     * use vehicle list. It also copies a image of the job onto the vehicle itself. The job also stores an image of the
+     * use vehicle list. It also copies an image of the job onto the vehicle itself. The job also stores an image of the
      * assigned vehicle
      * @param job Job object provided by method calling
      */
@@ -373,28 +406,6 @@ public class CloudController {
      */
     private void removeVehicleFromList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
         vehicleList.removeIf(n-> n.getVehicleId() == vehicle.getVehicleId());
-    }
-
-    /**
-     * todo leave till further notice
-     * a cool idea would that based on the jobOwners total owned jobs, we can have something that says.
-     * "50% of your owned jobs have been completed!"
-     * and then when all the jobs in their list are done we can show a string that says.
-     * "Hooray all your jobs are completed! ".
-     */
-    private void seeProgressOfJobs() {
-    }
-
-    //todo leave till further notice
-    private void seeAllDataBases() {
-    }
-
-    //todo leave till further notice
-    private void updateDatabaseToServer() {
-    }
-
-    // todo leave till further notice
-    private void updateCheckpoint() {
     }
 
     // Getters /setters
