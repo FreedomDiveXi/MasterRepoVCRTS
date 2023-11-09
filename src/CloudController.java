@@ -179,7 +179,10 @@ public class CloudController {
         return temp;
     }
 
-    //todo
+    /**
+     * Method will write to user database.
+     * @param vehicleOwner is the current vehicle owner.
+     */
     private void writeUser(VehicleOwner vehicleOwner){
         try{
             BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt", true));
@@ -195,6 +198,10 @@ public class CloudController {
         }
     }
 
+    /**
+     * Method will write to user database.
+     * @param jobOwner is the current job owner.
+     */
     private void writeUser(JobOwner jobOwner){
 
         try{
@@ -211,11 +218,13 @@ public class CloudController {
         }
     }
 
-
-
-    public void writeJob(Job job){
+    /**
+     * Method will write job to job database.
+     * @param job is the current job.
+     */
+    private void writeJob(Job job){
         try{
-            BufferedWriter writer = new BufferedWriter(new FileWriter("JobDataBase.txt",true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("JobDatabase.txt",true));
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
 
@@ -234,9 +243,14 @@ public class CloudController {
         }
 
     }
-    public void writeVehicle(Vehicle vehicle){
+
+    /**
+     * Method will write to vehicle to vehicle database.
+     * @param vehicle is the current vehicle.
+     */
+    private void writeVehicle(Vehicle vehicle){
         try{
-            BufferedWriter writer = new BufferedWriter(new FileWriter("VehicleDataBase.txt",true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("VehicleDatabase.txt",true));
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
 
