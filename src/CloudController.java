@@ -1,3 +1,10 @@
+import javax.imageio.IIOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -53,7 +60,7 @@ public class CloudController {
     public JobOwner createJobOwner(String username, String password){
         JobOwner temp = new JobOwner(username,password);
         setCurrentJobOwner(temp);
-        // method that writes bro to file.
+        writeUser(temp);
         allUsers.getUsers().add(temp); // adds user's to the user list
         return temp;
     }
@@ -67,7 +74,7 @@ public class CloudController {
     public VehicleOwner createVehicleOwner(String username, String password){
         VehicleOwner temp = new VehicleOwner(username,password);
         setCurrentVehicleOwner(temp);
-        // method that writes bro to file.
+        writeUser(temp);
         allUsers.getUsers().add(temp); // adds user's to the user list
         return temp;
     }
@@ -128,7 +135,7 @@ public class CloudController {
         addJobToList(getAvailableJobs(), pendingJob);
         assignJobToVehicle(pendingJob);
         getCurrentJobOwner().addJob(pendingJob); // add the job to the current job user
-        // method that writes job to file
+        writeJob(pendingJob);
         pendingJob = null;
         return temp;
     }
@@ -145,6 +152,7 @@ public class CloudController {
         addVehicleToList(getAvailableVehicles(), pendingVehicle);
         getCurrentVehicleOwner().addVehicleToVehicleUserList(pendingVehicle); // adds the vehicle to the current vehicle user
         // method that writes vehicle to file.
+        writeVehicle(pendingVehicle);
         pendingVehicle = null;
         return temp;
     }
@@ -172,10 +180,77 @@ public class CloudController {
     }
 
     //todo
-    public void writeUser(VehicleOwner vehicleOwner){}
-    public void writeUser(JobOwner jobOwner){}
-    public void writeJob(Job job){}
-    public void writeVehicle(Vehicle vehicle){}
+    private void writeUser(VehicleOwner vehicleOwner){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt", true));
+
+            String temp = vehicleOwner.getUsername() +":" + vehicleOwner.getHashedPassword();
+            writer.write(temp);
+            writer.newLine();
+            writer.close();
+
+            System.out.println("User: " + vehicleOwner.getUsername() + " has been registered.");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void writeUser(JobOwner jobOwner){
+
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt",true));
+
+            String temp = jobOwner.getUsername() +":" + jobOwner.getHashedPassword();
+            writer.write(temp);
+            writer.newLine();
+            writer.close();
+
+            System.out.println("User: " + jobOwner.getUsername() + " has been registered.");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public void writeJob(Job job){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("JobDataBase.txt",true));
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+
+            String temp = dtf.format(now) + " : "+job.getJobOwnerName() +" : " + job.getJobID() + " : " + job.getJobDurationTime();
+
+            if(job.getJobDeadline() != null)
+                temp += " : " + job.getJobDeadline();
+
+            writer.write(temp);
+            writer.newLine();
+            writer.close();
+
+            System.out.println("Job: " + job.getJobID() + " has been accepted");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+    public void writeVehicle(Vehicle vehicle){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("VehicleDataBase.txt",true));
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+
+            String temp = dtf.format(now) + " : " + vehicle.getVehicleOwner() + " : " + vehicle.getVehicleId() + " : " + vehicle.getModel() + " : " + vehicle.getMake() + " : " +vehicle.getYear();
+
+            writer.write(temp);
+            writer.newLine();
+            writer.close();
+
+            System.out.println("Vehicle: " + vehicle.getVehicleId() + " has been accepted");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
 
     /**

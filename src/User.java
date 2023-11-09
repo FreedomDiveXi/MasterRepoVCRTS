@@ -35,6 +35,8 @@ public class User {
         return username;
     }
 
+    public String getHashedPassword(){ return hashedPassword;}
+
     // Note: We don't provide a method to get hashedPassword for security reasons
 
     public void changePassword(String newPassword) {
