@@ -289,7 +289,7 @@ public class StartPage extends JFrame{
     	    		accepted.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	    		accepted.setVisible(true);
     			}
-    			else {
+    			else if (messageIn.equals("Reject")){
     				JFrame rejected = new JFrame();
     				panel2 = new JPanel();
     				introduction = new JLabel("Your job has been rejected");
@@ -382,7 +382,7 @@ public class StartPage extends JFrame{
     	    		accepted.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	    		accepted.setVisible(true);
     			}
-    			else {
+    			else if (messageIn.equals("Reject")) {
     				JFrame rejected = new JFrame();
     				panel2 = new JPanel();
     				introduction = new JLabel("Your vehicle has been rejected");
