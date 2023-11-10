@@ -1,10 +1,10 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.Array;
-import java.util.*;
 import java.io.*;
 import java.time.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.*;
 
 public class StartPage extends JFrame{
     private static final int FRAME_WIDTH = 600;
@@ -27,8 +27,8 @@ public class StartPage extends JFrame{
     private JButton submitVehicle;
     private JButton goNext;
     private JButton goBack;
-    private JButton buttonController;
     private JPanel panel;
+    private JPanel panel2;
     private JTextField username;
     private JTextField clientID;
     private JTextField jobID;
@@ -41,21 +41,25 @@ public class StartPage extends JFrame{
     private JTextField vehicleYear;
     private JPasswordField password;
     CloudController run = new CloudController();
-    private ButtonGroup group;
+    private Boolean newUser;
+    static ServerSocket serverSocket;
+	static Socket socket;
+	static DataInputStream inputStream;
+	static DataOutputStream outputStream;
 
     //This is the constructor as well as the starting point to the objects inside the main JFrame
     public StartPage() throws IOException {
     	setSize(FRAME_WIDTH, FRAME_HEIGHT);
     	introduction = new JLabel("<html>" + "This application allows users to complete certain tasks that would require " + "<br/>" + "an immense amount of power that you simply do not have or input your own " + "<br/>" + "unoccupied car, so we can utilize the computational power that a car has." + "</html>");
-        buttonController = new JButton("Continue");
+        goNext = new JButton("Continue");
         
         panel = new JPanel();
         panel.add(introduction);
-        panel.add(buttonController);
+        panel.add(goNext);
         add(panel);
         
         ActionListener homePage = new homePageListener();
-        buttonController.addActionListener(homePage);
+        goNext.addActionListener(homePage);
     }
     
     //This is the home page listener
@@ -69,19 +73,13 @@ public class StartPage extends JFrame{
     		question1 = new JLabel("Are you a new user?");
             buttonYes = new JButton("Yes");
             buttonNo = new JButton("No");
-            question2 = new JLabel("Are you the admin/VC Controller?");
-            buttonController = new JButton("Controller");
             
             panel.add(question1);
             panel.add(buttonYes);
             panel.add(buttonNo);
-            panel.add(question2);
-            panel.add(buttonController);
             
             ActionListener yesListener = new AddNewUserListener();
             buttonYes.addActionListener(yesListener);
-            ActionListener controllerListener = new ControllerListener();
-            buttonController.addActionListener(controllerListener);
     	}
     }
 
@@ -89,10 +87,10 @@ public class StartPage extends JFrame{
     class AddNewUserListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event){
-            panel.removeAll();
-            panel.revalidate();
-            panel.repaint();
-
+            JFrame UserLogin = new JFrame();
+            panel = new JPanel();
+            newUser = true;
+            
             question1 = new JLabel("Create a new username (':' is not allowed): ");
             username = new JTextField(50);
             question2 = new JLabel("Create a new password: ");
@@ -112,33 +110,17 @@ public class StartPage extends JFrame{
             panel.add(vehicleOwnerButton);
             panel.add(question4);
             panel.add(goNext);
+            UserLogin.add(panel);
+            UserLogin.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+            UserLogin.setTitle("New User");
+            UserLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            UserLogin.setVisible(true);
             
             ActionListener userJob = new userIsJobOwnerListener();
             jobOwnerButton.addActionListener(userJob);
             ActionListener userVehicle = new userIsVehicleOwnerListener();
             vehicleOwnerButton.addActionListener(userVehicle);
         }
-    }
-    
-    //The controller action caller 
-    class ControllerListener implements ActionListener {
-    	@Override
-    	public void actionPerformed(ActionEvent event) {
-    		panel.removeAll();
-    		panel.revalidate();
-    		panel.repaint();
-    		
-    		buttonData = new JButton("Calculate completion time");
-            goBack = new JButton("Return to home page");
-    		
-    		panel.add(buttonData);
-            panel.add(goBack);
-    		
-    		ActionListener calculate = new calculateTimeListener();
-    		buttonData.addActionListener(calculate);
-            ActionListener homePage = new homePageListener();
-            goBack.addActionListener(homePage);
-    	}
     }
     
     //This is the button to make the user a job owner
@@ -185,22 +167,11 @@ public class StartPage extends JFrame{
     class nextPageListenerJob implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-        	run.createJobOwner(username.getText(), password.getText());
-        	
-        	try {
-        	    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
-        	    PrintWriter printUser = new PrintWriter(writerUser);
-                writerUser.write(username.getText());
-                printUser.print(" : ");
-                writerUser.write(password.getText());
-                printUser.println();   
-
-                writerUser.close();
-                printUser.close();
-            }
-            catch(Exception e){
-                JOptionPane.showMessageDialog(null, e+"");
-            }
+        	if (newUser) {
+        		run.createJobOwner(username.getText(), password.getText());
+        		//run.write into file method 
+        		newUser = false;
+        	} 
         	
         	panel.removeAll();
             panel.revalidate();
@@ -209,17 +180,13 @@ public class StartPage extends JFrame{
             question1 = new JLabel("Do you want to submit a job or see your previous information");
             buttonData = new JButton("See your previous information");
             buttonJob = new JButton("Submit a job");
-            goBack = new JButton("Return to home page");
             	
             panel.add(question1);
             panel.add(buttonData);
             panel.add(buttonJob);
-            panel.add(goBack);
 
             ActionListener newJob = new newJobListener();
             buttonJob.addActionListener(newJob);
-            ActionListener homePage = new homePageListener();
-            goBack.addActionListener(homePage);
         }
     }
     
@@ -227,22 +194,11 @@ public class StartPage extends JFrame{
     class nextPageListenerVehicle implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-        	run.createJobOwner(username.getText(), password.getText());
-        	
-        	try {
-        	    FileWriter writerUser = new FileWriter("UserDataBase.txt", true);
-        	    PrintWriter printUser = new PrintWriter(writerUser);
-                writerUser.write(username.getText());
-                printUser.print(" : ");
-                writerUser.write(password.getText());
-                printUser.println();   
-
-                writerUser.close();
-                printUser.close();
-            }
-            catch(Exception e){
-                JOptionPane.showMessageDialog(null, e+"");
-            }
+        	if (newUser) {
+        		run.createVehicleOwner(username.getText(), password.getText());
+        		//run.write into file method 
+        		newUser = false;
+        	} 
         	
         	panel.removeAll();
             panel.revalidate();
@@ -251,7 +207,6 @@ public class StartPage extends JFrame{
             question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
             buttonData = new JButton("See your previous information");
             buttonVehicle = new JButton("Submit a vehicle");
-            goBack = new JButton("Return to home page");
             	
             panel.add(question1);
             panel.add(buttonData);
@@ -260,8 +215,6 @@ public class StartPage extends JFrame{
             
             ActionListener newVehicle = new newVehicleListener();
             buttonVehicle.addActionListener(newVehicle);
-            ActionListener homePage = new homePageListener();
-            goBack.addActionListener(homePage);
         }
     }
 
@@ -297,42 +250,59 @@ public class StartPage extends JFrame{
             
             ActionListener submit = new submitJobListener();
             submitJob.addActionListener(submit);
-            ActionListener homePage = new homePageListener();
-            goBack.addActionListener(homePage);
+            ActionListener nextPageJob = new nextPageListenerJob();
+            goBack.addActionListener(nextPageJob);
         }
     }
     
-    //This submit the job into the txt file
+    //This creates a job
     class submitJobListener implements ActionListener {
     	@Override
     	public void actionPerformed(ActionEvent event){
-    		dateTimeNow = LocalDateTime.now();
-    		try {
-    		    FileWriter writerJob = new FileWriter("JobDataBase.txt", true);
-    		    PrintWriter printJob = new PrintWriter(writerJob);
-    			writerJob.write(dateTimeNow.toString());
-    			printJob.print(" : ");
-                writerJob.write(clientID.getText());
-                printJob.print(" : ");
-                writerJob.write(jobID.getText());
-                printJob.print(" : ");
-                writerJob.write(jobDuration.getText());
-                printJob.print(" : ");
-                writerJob.write(jobDeadline.getText());
-                printJob.println();
-                
-                writerJob.close();
-                printJob.close();
-            }
-            catch(Exception e){
-                JOptionPane.showMessageDialog(null, e+"");
-            }
     		
-    		if (jobDeadline.getText().equals("")) {
-    			run.createJob(clientID.getText(), jobID.getText(), jobDuration.getText());
-    		}
-    		else {
-    			run.createJob(clientID.getText(), jobID.getText(), jobDuration.getText(), jobDeadline.getText());
+    		String messageIn = "";
+    		String messageOut = "";
+    		
+    		try {
+    			Socket socket = new Socket("localhost", 9806);
+    			inputStream = new DataInputStream(socket.getInputStream());
+    			outputStream = new DataOutputStream(socket.getOutputStream());
+    			
+    			messageOut = "Client ID: " + clientID.getText() + "\nJob ID: " + jobID.getText() + "\nJob Duration: " + jobDuration.getText() + "\nJob Deadline: " + jobDeadline.getText();
+    			outputStream.writeUTF(messageOut);
+    			
+    			if (messageIn.equals("Accept")) {
+    				if (jobDeadline.getText().equals("")) {
+    	    			run.createJob(clientID.getText(), jobID.getText(), jobDuration.getText());
+    	    		}
+    	    		else {
+    	    			run.createJob(clientID.getText(), jobID.getText(), jobDuration.getText(), jobDeadline.getText());
+    	    		}
+    				
+    				JFrame accepted = new JFrame();
+    				panel2 = new JPanel();
+    				introduction = new JLabel("Your job has been accepted");
+    				panel2.add(introduction);
+    				accepted.add(panel2);
+    				accepted.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+    	    		accepted.setTitle("Acception or Rejection");
+    	    		accepted.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	    		accepted.setVisible(true);
+    			}
+    			else if (messageIn.equals("Reject")){
+    				JFrame rejected = new JFrame();
+    				panel2 = new JPanel();
+    				introduction = new JLabel("Your job has been rejected");
+    				panel2.add(introduction);
+    				rejected.add(panel2);
+    				rejected.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+    	    		rejected.setTitle("Acception or Rejection");
+    	    		rejected.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	    		rejected.setVisible(true);
+    			}
+    		} 
+    		catch (Exception e) {
+    			e.printStackTrace();
     		}
     		
     		clientID.setText("");
@@ -378,40 +348,55 @@ public class StartPage extends JFrame{
             
             ActionListener submit = new submitVehicleListener();
             submitVehicle.addActionListener(submit);
-            ActionListener homePage = new homePageListener();
-            goBack.addActionListener(homePage);
+            ActionListener nextPageVehicle = new nextPageListenerVehicle();
+            goBack.addActionListener(nextPageVehicle);
         }
     }
     
-    //This submits the vehicle into the txt file
+    //This creates a vehicle
     class submitVehicleListener implements ActionListener {
     	@Override
     	public void actionPerformed(ActionEvent event){
-    		dateTimeNow = LocalDateTime.now();
-    		try {
-    			FileWriter writerVehicle = new FileWriter("VehicleDataBase.txt", true);
-    		    PrintWriter printVehicle = new PrintWriter(writerVehicle);
-    			writerVehicle.write(dateTimeNow.toString());
-    			printVehicle.print(" : ");
-                writerVehicle.write(ownerID.getText());
-                printVehicle.print(" : ");
-                writerVehicle.write(vehicleID.getText());
-                printVehicle.print(" : ");
-                writerVehicle.write(vehicleModel.getText());
-                printVehicle.print(" : ");
-                writerVehicle.write(vehicleMake.getText());
-                printVehicle.print(" : ");
-                writerVehicle.write(vehicleYear.getText());
-                printVehicle.println();
-                
-                writerVehicle.close();
-                printVehicle.close();
-            }
-            catch(Exception e){
-                JOptionPane.showMessageDialog(null, e+"");
-            }
+
+    		String messageIn = "";
+    		String messageOut = "";
     		
-    		run.createVehicle(ownerID.getText(), vehicleID.getText(), vehicleModel.getText(), vehicleMake.getText(), vehicleYear.getText());
+    		try {
+    			Socket socket = new Socket("localhost", 9806);
+    			inputStream = new DataInputStream(socket.getInputStream());
+    			outputStream = new DataOutputStream(socket.getOutputStream());
+    			
+    			messageOut = "Owner ID: " + ownerID.getText() + "\nVehicle ID: " + vehicleID.getText() + "\nVehicle Model: " + vehicleModel.getText() + "\nVehicle Make: " + vehicleMake.getText() + "\nVehicle Year: " + vehicleYear.getText();
+    			outputStream.writeUTF(messageOut);
+    			
+    			if (messageIn.equals("Accept")) {
+    				run.createVehicle(ownerID.getText(), vehicleID.getText(), vehicleModel.getText(), vehicleMake.getText(), vehicleYear.getText());
+    				
+    				JFrame accepted = new JFrame();
+    				panel2 = new JPanel();
+    				introduction = new JLabel("Your vehicle has been accepted");
+    				panel2.add(introduction);
+    				accepted.add(panel2);
+    				accepted.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+    	    		accepted.setTitle("Acception or Rejection");
+    	    		accepted.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	    		accepted.setVisible(true);
+    			}
+    			else if (messageIn.equals("Reject")) {
+    				JFrame rejected = new JFrame();
+    				panel2 = new JPanel();
+    				introduction = new JLabel("Your vehicle has been rejected");
+    				panel2.add(introduction);
+    				rejected.add(panel2);
+    				rejected.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+    	    		rejected.setTitle("Acception or Rejection");
+    	    		rejected.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	    		rejected.setVisible(true);
+    			}
+    		} 
+    		catch (Exception e) {
+    			e.printStackTrace();
+    		}
     		
     		ownerID.setText("");
     		vehicleID.setText("");
@@ -421,26 +406,4 @@ public class StartPage extends JFrame{
     	}
     }
     
-    //This is the action  listener for calculation complete time within controller
-    class calculateTimeListener implements ActionListener {
-    	@Override
-    	public void actionPerformed(ActionEvent event) {
-    		JFrame jobCompletionController = new JFrame();
-
-    		JPanel panel2 = new JPanel();
-
-            String str = "<html>";
-            str += run.startProcessing();
-            str += "</html>";
-
-            panel2.add(new JLabel(str));
-    		jobCompletionController.add(panel2);
-    		
-    		jobCompletionController.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-    		jobCompletionController.setTitle("Controller list of current completed jobs' ID and completion time");
-    		jobCompletionController.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    		jobCompletionController.setVisible(true);
-    		
-    	}
-    }
 }
