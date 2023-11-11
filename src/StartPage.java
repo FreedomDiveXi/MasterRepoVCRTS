@@ -9,6 +9,7 @@ import java.util.*;
 public class StartPage extends JFrame {
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 500;
+    JFrame start;
     private LocalDateTime dateTimeNow;
     private JLabel introduction;
     private JLabel question1;
@@ -41,35 +42,44 @@ public class StartPage extends JFrame {
     private JTextField vehicleYear;
     private JPasswordField password;
     private Boolean newUser;
-    static ServerSocket serverSocket;
-    static Socket socket;
-    static DataInputStream inputStream;
-    static DataOutputStream outputStream;
+
+    private ClientConnection clientConnection;
+
+    public StartPage() throws IOException{
+        initGui();
+        setupClient();
+    }
 
     //This is the constructor as well as the starting point to the objects inside the main JFrame
-    public StartPage() throws IOException {
-        setSize(FRAME_WIDTH, FRAME_HEIGHT);
+    public void initGui() throws IOException {
+        start = new JFrame();
+        start.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        start.setTitle("Welcome to the Controller");
+        start.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        start.setVisible(true);
+
         introduction = new JLabel("<html>" + "This application allows users to complete certain tasks that would require " + "<br/>" + "an immense amount of power that you simply do not have or input your own " + "<br/>" + "unoccupied car, so we can utilize the computational power that a car has." + "</html>");
         goNext = new JButton("Continue");
 
         panel = new JPanel();
         panel.add(introduction);
         panel.add(goNext);
-        add(panel);
+        start.add(panel);
 
-        // server initialization
-        System.out.println("client is running");
-        try {
-            Socket socket = new Socket("localhost", 9806);
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         ActionListener homePage = new homePageListener();
         goNext.addActionListener(homePage);
+    }
 
+    public void setupClient(){
+        clientConnection = new ClientConnection("localhost",9806);
+        try{
+            clientConnection.connectToServer();
+            System.out.println("able to connect to server! coming from actual client");
+        }catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Unable to connect to the server.",
+                    "Connection Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     //This is the home page listener
@@ -185,32 +195,32 @@ public class StartPage extends JFrame {
                 if (newUser) {
                     System.out.println("User Request");
                     messageOut = "user-request-ju" + "::" + username.getText() + "::" + password.getText();
-                    outputStream.writeUTF(messageOut);
+//                    outputStream.writeUTF(messageOut);
                 }
                 newUser = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            try {
-                if(inputStream.readUTF().equals("user-accept")){
-                    System.out.println("user has been accepted");
-                    panel.removeAll();
-                    panel.revalidate();
-                    panel.repaint();
-
-                    question1 = new JLabel("Do you want to submit a job or see your previous information");
-                    buttonData = new JButton("See your previous information");
-                    buttonJob = new JButton("Submit a job");
-
-                    panel.add(question1);
-                    panel.add(buttonData);
-                    panel.add(buttonJob);
-
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                if(inputStream.readUTF().equals("user-accept")){
+//                    System.out.println("user has been accepted");
+//                    panel.removeAll();
+//                    panel.revalidate();
+//                    panel.repaint();
+//
+//                    question1 = new JLabel("Do you want to submit a job or see your previous information");
+//                    buttonData = new JButton("See your previous information");
+//                    buttonJob = new JButton("Submit a job");
+//
+//                    panel.add(question1);
+//                    panel.add(buttonData);
+//                    panel.add(buttonJob);
+//
+//                }
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
             ActionListener newJob = new newJobListener();
             buttonJob.addActionListener(newJob);
         }
@@ -226,31 +236,31 @@ public class StartPage extends JFrame {
                 if (newUser) {
                     System.out.println("User Request");
                     messageOut = "user-request-vu" + "::" + username.getText() + "::" + password.getText();
-                    outputStream.writeUTF(messageOut);
+//                    outputStream.writeUTF(messageOut);
                 }
                 newUser = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            try{
-                if(inputStream.readUTF().equals("user-accept")){
-                    panel.removeAll();
-                    panel.revalidate();
-                    panel.repaint();
-
-                    question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
-                    buttonData = new JButton("See your previous information");
-                    buttonVehicle = new JButton("Submit a vehicle");
-
-                    panel.add(question1);
-                    panel.add(buttonData);
-                    panel.add(buttonVehicle);
-//                    panel.add(goBack);
-                }
-            }catch(IOException e){
-                e.printStackTrace();
-            }
+//            try{
+//                if(inputStream.readUTF().equals("user-accept")){
+//                    panel.removeAll();
+//                    panel.revalidate();
+//                    panel.repaint();
+//
+//                    question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
+//                    buttonData = new JButton("See your previous information");
+//                    buttonVehicle = new JButton("Submit a vehicle");
+//
+//                    panel.add(question1);
+//                    panel.add(buttonData);
+//                    panel.add(buttonVehicle);
+////                    panel.add(goBack);
+//                }
+//            }catch(IOException e){
+//                e.printStackTrace();
+//            }
             ActionListener newVehicle = new newVehicleListener();
             buttonVehicle.addActionListener(newVehicle);
         }
@@ -307,21 +317,21 @@ public class StartPage extends JFrame {
                 if(!jobDeadline.getText().isEmpty())
                     messageOut += "::" + jobDeadline.getText();
 
-                outputStream.writeUTF(messageOut);
+//                outputStream.writeUTF(messageOut);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            try {
-                if(inputStream.readUTF().equals("job-accept")){
-                    clientID.setText("");
-                    jobID.setText("");
-                    jobDuration.setText("");
-                    jobDeadline.setText("");
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                if(inputStream.readUTF().equals("job-accept")){
+//                    clientID.setText("");
+//                    jobID.setText("");
+//                    jobDuration.setText("");
+//                    jobDeadline.setText("");
+//                }
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
         }
     }
 
@@ -376,25 +386,25 @@ public class StartPage extends JFrame {
                 try {
                     messageOut = "user-request-vehicle:: " + ownerID.getText() + "::" + vehicleID.getText() + "::" + vehicleModel.getText() + "::" + vehicleMake.getText() + "::" + vehicleYear.getText();
                     System.out.println("Vehicle request.");
-                    outputStream.writeUTF(messageOut);
+//                    outputStream.writeUTF(messageOut);
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                try{
-                    if(inputStream.readUTF().equals("vehicle-accept")){
-                        ownerID.setText("");
-                        vehicleID.setText("");
-                        vehicleModel.setText("");
-                        vehicleMake.setText("");
-                        vehicleYear.setText("");
-                    }else{
-                        System.out.println("Vehicle has been rejected please try again");
-                    }
-                }catch (IOException e){
-                    throw new RuntimeException(e);
-                }
+//                try{
+//                    if(inputStream.readUTF().equals("vehicle-accept")){
+//                        ownerID.setText("");
+//                        vehicleID.setText("");
+//                        vehicleModel.setText("");
+//                        vehicleMake.setText("");
+//                        vehicleYear.setText("");
+//                    }else{
+//                        System.out.println("Vehicle has been rejected please try again");
+//                    }
+//                }catch (IOException e){
+//                    throw new RuntimeException(e);
+//                }
             }
         }
 }

@@ -4,11 +4,31 @@ import java.io.*;
 public class GUIMain {
 	public static void main (String [] args) throws IOException {
 
-		server server = new server();
-		server.start();
+		new Thread(()->{
+			new ServerConnection().start();
+		}).start();
 
-		client something = new client();
-		something.start();
+		new Thread(()->{
+			SwingUtilities.invokeLater(()->{
+				try {
+					new ControllerPage();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+
+			});
+		}).start();
+
+		new Thread(()->{
+			SwingUtilities.invokeLater(()->{
+				try {
+					new StartPage();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+
+			});
+		}).start();
 
 	}
 }
