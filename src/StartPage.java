@@ -1,16 +1,11 @@
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
-import java.time.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.*;
 
 public class StartPage extends JFrame {
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 500;
     JFrame start;
-    private LocalDateTime dateTimeNow;
     private JLabel introduction;
     private JLabel question1;
     private JLabel question2;
@@ -74,12 +69,27 @@ public class StartPage extends JFrame {
         clientConnection = new ClientConnection("localhost",9806);
         try{
             clientConnection.connectToServer();
-            System.out.println("able to connect to server! coming from actual client");
+            clientConnection.sendMessage("client");
         }catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Unable to connect to the server.",
                     "Connection Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    private void clearVehicleFields() {
+        // Clear the vehicle-related text fields.
+        ownerID.setText("");
+        vehicleID.setText("");
+        vehicleModel.setText("");
+        vehicleMake.setText("");
+        vehicleYear.setText("");
+        // Add any additional clearing if needed
+    }
+    private void clearJobFields(){
+        clientID.setText("");
+        jobID.setText("");
+        jobDuration.setText("");
+        jobDeadline.setText("");
     }
 
     //This is the home page listener
@@ -189,40 +199,35 @@ public class StartPage extends JFrame {
         public void actionPerformed(ActionEvent event) {
             // instead of creating the object here, we funnel the response to the server so that
             // the server can create it.
-            String messageOut = "";
-
+            String messageOut = "user-request-ju" + "::" + username.getText() + "::" + password.getText();
             try {
                 if (newUser) {
-                    System.out.println("User Request");
-                    messageOut = "user-request-ju" + "::" + username.getText() + "::" + password.getText();
-//                    outputStream.writeUTF(messageOut);
+                    System.out.println("new job user request");
+                    clientConnection.sendMessage(messageOut);
+                    newUser = false;
                 }
-                newUser = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-//            try {
-//                if(inputStream.readUTF().equals("user-accept")){
-//                    System.out.println("user has been accepted");
-//                    panel.removeAll();
-//                    panel.revalidate();
-//                    panel.repaint();
-//
-//                    question1 = new JLabel("Do you want to submit a job or see your previous information");
-//                    buttonData = new JButton("See your previous information");
-//                    buttonJob = new JButton("Submit a job");
-//
-//                    panel.add(question1);
-//                    panel.add(buttonData);
-//                    panel.add(buttonJob);
-//
-//                }
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-            ActionListener newJob = new newJobListener();
-            buttonJob.addActionListener(newJob);
+            try {
+                if(clientConnection.receiveMessage().equals("user-accept")){
+                    panel.removeAll();
+                    panel.revalidate();
+                    panel.repaint();
+
+                    question1 = new JLabel("Do you want to submit a job or see your previous information");
+                    buttonData = new JButton("See your previous information");
+                    buttonJob = new JButton("Submit a job");
+
+                    buttonJob.addActionListener(new newJobListener());
+                    panel.add(question1);
+                    panel.add(buttonData);
+                    panel.add(buttonJob);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -230,39 +235,39 @@ public class StartPage extends JFrame {
     class nextPageListenerVehicle implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            String messageOut = "";
+            String messageOut = "user-request-vu" + "::" + username.getText() + "::" + password.getText();
 
-            try {
-                if (newUser) {
-                    System.out.println("User Request");
-                    messageOut = "user-request-vu" + "::" + username.getText() + "::" + password.getText();
-//                    outputStream.writeUTF(messageOut);
+                try {
+                    if (newUser) {
+                        clientConnection.sendMessage(messageOut);
+                        newUser = false;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                newUser = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            try {
+                while(true){
+                    if (clientConnection.receiveMessage().equals("user-accept")) {
 
-//            try{
-//                if(inputStream.readUTF().equals("user-accept")){
-//                    panel.removeAll();
-//                    panel.revalidate();
-//                    panel.repaint();
-//
-//                    question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
-//                    buttonData = new JButton("See your previous information");
-//                    buttonVehicle = new JButton("Submit a vehicle");
-//
-//                    panel.add(question1);
-//                    panel.add(buttonData);
-//                    panel.add(buttonVehicle);
-////                    panel.add(goBack);
-//                }
-//            }catch(IOException e){
-//                e.printStackTrace();
-//            }
-            ActionListener newVehicle = new newVehicleListener();
-            buttonVehicle.addActionListener(newVehicle);
+                        panel.removeAll();
+                        question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
+                        buttonData = new JButton("See your previous information");
+                        buttonVehicle = new JButton("Submit a vehicle");
+
+                        buttonVehicle.addActionListener(new newVehicleListener());
+                        panel.add(question1);
+                        panel.add(buttonData);
+                        panel.add(buttonVehicle);
+//                        panel.add(goBack);
+                        panel.revalidate();
+                        panel.repaint();
+                        break;
+                    }
+
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -308,30 +313,25 @@ public class StartPage extends JFrame {
         @Override
         public void actionPerformed(ActionEvent event) {
 
-            String messageOut = "";
-
+            String messageOut = "user-request-job::" + clientID.getText() + "::" + jobID.getText() + "::" + jobDuration.getText();
             try {
-                System.out.println("sending a request job request");
-                messageOut = "user-request-job::" + clientID.getText() + "::" + jobID.getText() + "::" + jobDuration.getText();
-
                 if(!jobDeadline.getText().isEmpty())
                     messageOut += "::" + jobDeadline.getText();
-
-//                outputStream.writeUTF(messageOut);
+                clientConnection.sendMessage(messageOut);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-//            try {
-//                if(inputStream.readUTF().equals("job-accept")){
-//                    clientID.setText("");
-//                    jobID.setText("");
-//                    jobDuration.setText("");
-//                    jobDeadline.setText("");
-//                }
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
+            new Thread(()->{
+                try {
+                    if(clientConnection.receiveMessage().equals("accepted-job"))
+                        clearJobFields();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }).start();
+
         }
     }
 
@@ -380,31 +380,22 @@ public class StartPage extends JFrame {
         class submitVehicleListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent event) {
-
-                String messageOut = "";
-
                 try {
-                    messageOut = "user-request-vehicle:: " + ownerID.getText() + "::" + vehicleID.getText() + "::" + vehicleModel.getText() + "::" + vehicleMake.getText() + "::" + vehicleYear.getText();
-                    System.out.println("Vehicle request.");
-//                    outputStream.writeUTF(messageOut);
+                    String messageOut = "user-request-vehicle:: " + ownerID.getText() + "::" + vehicleID.getText() + "::" + vehicleModel.getText() + "::" + vehicleMake.getText() + "::" + vehicleYear.getText();
+                    clientConnection.sendMessage(messageOut);
 
+                    new Thread(()->{
+                        try {
+                            if(clientConnection.receiveMessage().equals("accepted-vehicle"))
+                                clearVehicleFields();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-//                try{
-//                    if(inputStream.readUTF().equals("vehicle-accept")){
-//                        ownerID.setText("");
-//                        vehicleID.setText("");
-//                        vehicleModel.setText("");
-//                        vehicleMake.setText("");
-//                        vehicleYear.setText("");
-//                    }else{
-//                        System.out.println("Vehicle has been rejected please try again");
-//                    }
-//                }catch (IOException e){
-//                    throw new RuntimeException(e);
-//                }
             }
         }
 }
