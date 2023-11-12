@@ -202,7 +202,6 @@ public class StartPage extends JFrame {
             String messageOut = "user-request-ju" + "::" + username.getText() + "::" + password.getText();
             try {
                 if (newUser) {
-                    System.out.println("new job user request");
                     clientConnection.sendMessage(messageOut);
                     newUser = false;
                 }

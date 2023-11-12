@@ -160,7 +160,7 @@ public class CloudController {
      * @return a string rejection message
      */
     public String rejectJob(){
-        String temp = pendingJob.getJobOwnerName()+ ", your job ID: " + pendingJob.getJobID() + " has been rejected. Please try again";
+        String temp = pendingJob.getJobOwnerName() + " your job has been cancelled please try again";
         pendingJob = null;
         return temp;
     }
@@ -171,7 +171,7 @@ public class CloudController {
      * @return a string rejection message
      */
     public String rejectVehicle(){
-        String temp = pendingVehicle.getVehicleOwner() + ", your vehicle ID: "+ pendingVehicle.getVehicleId() + " has been rejected. Please try again";
+        String temp = pendingVehicle.getVehicleOwner() + ", your vehicle has been rejected. Please try again";
         pendingVehicle = null;
         return temp;
     }

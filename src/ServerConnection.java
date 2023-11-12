@@ -63,14 +63,13 @@ public class ServerConnection {
                 if(access.equals("controller")){
                     clientOutputStreams.put(access,outputStream);
                     clientInputStreams.put(access,inputStream);
-                    System.out.println(outputStream);
                 }
 
                 String previousRequest = "";
                 while(true){
                     String inputLine = inputStream.readUTF();
 
-                    System.out.println("current input " + inputLine);
+                    System.out.println("Retrieved Information: " + inputLine);
                     if(inputLine.contains("::")){
                         objectData= inputLine.split("::");
                         inputLine = objectData[0];
@@ -124,7 +123,12 @@ public class ServerConnection {
                 }
             }
             if(request.equals("reject")){
-                System.out.println("thing has been denied");
+                System.out.println("Object creation has been denied.");
+                //todo getting a weird error actually calling methods though the print statement works the same. no objects are created/registered
+//                if(objectData[0].equals("user-request-job"))
+//                    controller.rejectJob();
+//                if(objectData[0].equals("user-request-vehicle"))
+//                    controller.rejectVehicle();
             }
 
             if(request.equals("process-jobs")){
