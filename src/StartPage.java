@@ -1,43 +1,18 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
 public class StartPage extends JFrame {
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 500;
-    JFrame start;
-    private JLabel introduction;
-    private JLabel question1;
-    private JLabel question2;
-    private JLabel question3;
-    private JLabel question4;
-    private JLabel question5;
-    private JButton jobOwnerButton;
-    private JButton vehicleOwnerButton;
-    private JButton buttonYes;
-    private JButton buttonNo;
-    private JButton buttonData;
-    private JButton buttonJob;
-    private JButton buttonVehicle;
-    private JButton submitJob;
-    private JButton submitVehicle;
-    private JButton goNext;
-    private JButton goBack;
-    private JPanel panel;
-    private JPanel panel2;
-    private JTextField username;
-    private JTextField clientID;
-    private JTextField jobID;
-    private JTextField jobDuration;
-    private JTextField jobDeadline;
-    private JTextField ownerID;
-    private JTextField vehicleID;
-    private JTextField vehicleModel;
-    private JTextField vehicleMake;
-    private JTextField vehicleYear;
+    private JLabel introduction, question1, question2, question3, question4, question5;
+    private JButton jobOwnerButton, vehicleOwnerButton, buttonYes, buttonNo, buttonData, buttonJob, buttonVehicle, submitJob, submitVehicle, goNext;
+    private JPanel panel, panel2;
+    private JTextField username, clientID, jobID, jobDuration, jobDeadline, ownerID, vehicleID, vehicleModel, vehicleMake, vehicleYear;
     private JPasswordField password;
     private Boolean newUser;
-
     private ClientConnection clientConnection;
 
     public StartPage() throws IOException{
@@ -46,23 +21,38 @@ public class StartPage extends JFrame {
     }
 
     //This is the constructor as well as the starting point to the objects inside the main JFrame
-    public void initGui() throws IOException {
-        start = new JFrame();
-        start.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-        start.setTitle("Welcome, Client");
-        start.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        start.setVisible(true);
+    public void initGui() {
+        this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        this.setTitle("Welcome to the Controller");
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        introduction = new JLabel("<html>" + "This application allows users to complete certain tasks that would require " + "<br/>" + "an immense amount of power that you simply do not have or input your own " + "<br/>" + "unoccupied car, so we can utilize the computational power that a car has." + "</html>");
+        introduction = new JLabel("<html><body>" +
+                                  "This application allows users to complete certain tasks that would require " +
+                                  "an immense amount of power that you simply do not have, or input your own " +
+                                  "unoccupied car, so we can utilize the computational power that a car has." +
+                                  "</body></html>");
+        introduction.setHorizontalAlignment(JLabel.CENTER);
+
+        introduction.setMaximumSize(new Dimension(FRAME_WIDTH - 50, Integer.MAX_VALUE));
+        introduction.setPreferredSize(new Dimension(FRAME_WIDTH - 50, 100));
+
         goNext = new JButton("Continue");
 
         panel = new JPanel();
-        panel.add(introduction);
-        panel.add(goNext);
-        start.add(panel);
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        ActionListener homePage = new homePageListener();
-        goNext.addActionListener(homePage);
+        panel.add(introduction, gbc);
+        panel.add(goNext);
+
+        this.add(panel);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+        
+        goNext.addActionListener(new HomePageListener());
     }
 
     public void setupClient(){
@@ -93,14 +83,14 @@ public class StartPage extends JFrame {
     }
 
     //This is the home page listener
-    class homePageListener implements ActionListener {
-    	@Override
-    	public void actionPerformed(ActionEvent event) {
-    		panel.removeAll();
-    		panel.revalidate();
-    		panel.repaint();
+    class HomePageListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            panel.removeAll();
+            panel.setLayout(new GridLayout(0, 1));
+            panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-    		question1 = new JLabel("Are you a new user?");
+            question1 = new JLabel("Are you a new user?");
             buttonYes = new JButton("Yes");
             buttonNo = new JButton("No");
 
@@ -108,8 +98,10 @@ public class StartPage extends JFrame {
             panel.add(buttonYes);
             panel.add(buttonNo);
 
-            ActionListener yesListener = new AddNewUserListener();
-            buttonYes.addActionListener(yesListener);
+            buttonYes.addActionListener(new AddNewUserListener());
+
+            panel.revalidate();
+            panel.repaint();
         }
     }
 
