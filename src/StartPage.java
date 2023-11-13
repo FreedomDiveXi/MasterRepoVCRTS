@@ -1,201 +1,150 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.time.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.*;
 
 public class StartPage extends JFrame {
-    private static final int FRAME_WIDTH = 800;
-    private static final int FRAME_HEIGHT = 600;
-    private LocalDateTime dateTimeNow;
-    private JLabel introduction;
-    private JLabel question1;
-    private JLabel question2;
-    private JLabel question3;
-    private JLabel question4;
-    private JLabel question5;
-    private JButton jobOwnerButton;
-    private JButton vehicleOwnerButton;
-    private JButton buttonYes;
-    private JButton buttonNo;
-    private JButton buttonData;
-    private JButton buttonJob;
-    private JButton buttonVehicle;
-    private JButton submitJob;
-    private JButton submitVehicle;
-    private JButton goNext;
-    private JButton goBack;
-    private JPanel panel;
-    private JPanel panel2;
-    private JPanel panel3;
-    private JTextField username;
-    private JTextField clientID;
-    private JTextField jobID;
-    private JTextField jobDuration;
-    private JTextField jobDeadline;
-    private JTextField ownerID;
-    private JTextField vehicleID;
-    private JTextField vehicleModel;
-    private JTextField vehicleMake;
-    private JTextField vehicleYear;
+    private static final int FRAME_WIDTH = 600;
+    private static final int FRAME_HEIGHT = 500;
+    private JLabel introduction, question1, question2, question3, question4, question5;
+    private JButton jobOwnerButton, vehicleOwnerButton, buttonYes, buttonNo, buttonData, buttonJob, buttonVehicle, submitJob, submitVehicle, goNext, goBack;
+    private JPanel panel, panel2;
+    private JTextField username, clientID, jobID, jobDuration, jobDeadline, ownerID, vehicleID, vehicleModel, vehicleMake, vehicleYear;
     private JPasswordField password;
     private Boolean newUser;
-    static ServerSocket serverSocket;
-    static Socket socket;
-    static DataInputStream inputStream;
-    static DataOutputStream outputStream;
 
-    //This is the constructor as well as the starting point to the objects inside the main JFrame
+    private ClientConnection clientConnection; 
+
     public StartPage() throws IOException {
-        setSize(FRAME_WIDTH, FRAME_HEIGHT);
-        setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
-        
-        panel = new JPanel();
-        panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        
-        introduction = new JLabel("<html>" + "This application allows users to complete certain tasks that would require " + "<br/>" + "an immense amount of power that you simply do not have or input your own " + "<br/>" + "unoccupied car, so we can utilize the computational power that a car has." + "</html>");
-        introduction.setFont(new Font("Arial", Font.BOLD, 14));
-        introduction.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        panel2 = new JPanel();
-        panel2.setBorder(new EmptyBorder(50, 0, 0, 0));
-        
-        goNext = new JButton("Continue");
-        goNext.setPreferredSize(new Dimension(100, 40));
-        goNext.setFont(new Font("Arial", Font.BOLD, 12));
-
-        panel.add(introduction);
-        panel2.add(goNext);
-        add(panel);
-        add(panel2);
-
-        // server initialization
-        System.out.println("client is running");
-        try {
-            Socket socket = new Socket("localhost", 9806);
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ActionListener homePage = new homePageListener();
-        goNext.addActionListener(homePage);
-
+        initGui();
+        setupClient();
     }
 
-    //This is the home page listener
-    class homePageListener implements ActionListener {
-    	@Override
-    	public void actionPerformed(ActionEvent event) {
-    		panel.removeAll();
-    		panel.revalidate();
-    		panel.repaint();
-    		panel2.removeAll();
-    		panel2.revalidate();
-    		panel2.repaint();
+    public void initGui() {
+        this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        this.setTitle("Welcome to the Controller");
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-    		question1 = new JLabel("Are you a new user?");
-    		question1.setFont(new Font("Arial", Font.BOLD, 14));
-    		question1.setBorder(new EmptyBorder(0, 0, 0, 0));
-    		question1.setAlignmentX(Component.CENTER_ALIGNMENT);
-    		
+        introduction = new JLabel("<html><body>" +
+                                  "This application allows users to complete certain tasks that would require " +
+                                  "an immense amount of power that you simply do not have, or input your own " +
+                                  "unoccupied car, so we can utilize the computational power that a car has." +
+                                  "</body></html>");
+        introduction.setHorizontalAlignment(JLabel.CENTER);
+
+        introduction.setMaximumSize(new Dimension(FRAME_WIDTH - 50, Integer.MAX_VALUE));
+        introduction.setPreferredSize(new Dimension(FRAME_WIDTH - 50, 100));
+
+        goNext = new JButton("Continue");
+
+        panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        panel.add(introduction, gbc);
+        panel.add(goNext, gbc);
+
+        this.add(panel);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+
+        goNext.addActionListener(new HomePageListener());
+    }
+
+
+
+
+    public void setupClient() {
+        clientConnection = new ClientConnection("localhost", 9806);
+        try {
+            clientConnection.connectToServer();
+            clientConnection.sendMessage("client");
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Unable to connect to the server.",
+                                          "Connection Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void clearVehicleFields() {
+        ownerID.setText("");
+        vehicleID.setText("");
+        vehicleModel.setText("");
+        vehicleMake.setText("");
+        vehicleYear.setText("");
+    }
+
+    private void clearJobFields() {
+        clientID.setText("");
+        jobID.setText("");
+        jobDuration.setText("");
+        jobDeadline.setText("");
+    }
+
+    class HomePageListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            panel.removeAll();
+            panel.setLayout(new GridLayout(0, 1));
+            panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+            question1 = new JLabel("Are you a new user?");
             buttonYes = new JButton("Yes");
-            buttonYes.setPreferredSize(new Dimension(100, 40));
-            buttonYes.setFont(new Font("Arial", Font.BOLD, 12));
-            
             buttonNo = new JButton("No");
-            buttonNo.setPreferredSize(new Dimension(100, 40));
-            buttonNo.setFont(new Font("Arial", Font.BOLD, 12));
 
             panel.add(question1);
-            panel2.add(buttonYes);
-            panel2.add(buttonNo);
+            panel.add(buttonYes);
+            panel.add(buttonNo);
 
-            ActionListener yesListener = new AddNewUserListener();
-            buttonYes.addActionListener(yesListener);
+            buttonYes.addActionListener(new AddNewUserListener());
+
+            panel.revalidate();
+            panel.repaint();
         }
     }
 
-    //This is the action caller for new users to register
     class AddNewUserListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            JFrame UserLogin = new JFrame();
-            UserLogin.setLayout(new BoxLayout(UserLogin.getContentPane(), BoxLayout.Y_AXIS));
+            JFrame userLogin = new JFrame();
+            JPanel panel = new JPanel();
             newUser = true;
-            
-            panel = new JPanel();
-            panel.setBorder(new EmptyBorder(20,0,10,0));
-            
+
             question1 = new JLabel("Create a new username (':' is not allowed): ");
-            question1.setFont(new Font("Arial", Font.BOLD, 14));
-    		question1.setAlignmentX(Component.LEFT_ALIGNMENT);
-            username = new JTextField(25);
-            
+            username = new JTextField(50);
             question2 = new JLabel("Create a new password: ");
-            question2.setFont(new Font("Arial", Font.BOLD, 14));
-            question2.setBorder(new EmptyBorder(50, 0, 0, 0));
-    		question2.setAlignmentX(Component.LEFT_ALIGNMENT);
-            password = new JPasswordField(25);
-            
+            password = new JPasswordField(50);
             question3 = new JLabel("Are you a job owner or vehicle owner? Choose only one.");
-            question3.setFont(new Font("Arial", Font.BOLD, 14));
-            question3.setBorder(new EmptyBorder(75, 0, 10, 0));
-    		question3.setAlignmentX(Component.LEFT_ALIGNMENT);
-    		
-    		panel2 = new JPanel();
-    		panel2.setBorder(new EmptyBorder(100,0,0,0));
-    		
             jobOwnerButton = new JButton("Job Owner");
-            jobOwnerButton.setPreferredSize(new Dimension(100, 40));
-            jobOwnerButton.setFont(new Font("Arial", Font.BOLD, 12));
-            
             vehicleOwnerButton = new JButton("Vehicle Owner");
-            vehicleOwnerButton.setPreferredSize(new Dimension(100, 40));
-            vehicleOwnerButton.setFont(new Font("Arial", Font.BOLD, 12));
-            
             question4 = new JLabel("You have not selected Job or Vehicle Owner yet.");
-            question4.setFont(new Font("Arial", Font.BOLD, 14));
-            question4.setBorder(new EmptyBorder(125, 0, 10, 0));
-    		question4.setAlignmentX(Component.LEFT_ALIGNMENT);
-    		
-    		panel3 = new JPanel();
-    		panel3.setBorder(new EmptyBorder(150, 0, 0, 0));
-    		
             goNext = new JButton("Continue");
-            goNext.setPreferredSize(new Dimension(100, 40));
-            goNext.setFont(new Font("Arial", Font.BOLD, 12));
 
             panel.add(question1);
             panel.add(username);
-            UserLogin.add(question2);
-            UserLogin.add(password);
-            UserLogin.add(question3);
-            panel2.add(jobOwnerButton);
-            panel2.add(vehicleOwnerButton);
-            panel2.add(question4);
-            panel3.add(goNext);
-            UserLogin.add(panel);
-            UserLogin.add(panel2);
-            UserLogin.add(panel3);
-            UserLogin.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-            UserLogin.setTitle("New User");
-            UserLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            UserLogin.setVisible(true);
+            panel.add(question2);
+            panel.add(password);
+            panel.add(question3);
+            panel.add(jobOwnerButton);
+            panel.add(vehicleOwnerButton);
+            panel.add(question4);
+            panel.add(goNext);
 
-            ActionListener userJob = new userIsJobOwnerListener();
-            jobOwnerButton.addActionListener(userJob);
-            ActionListener userVehicle = new userIsVehicleOwnerListener();
-            vehicleOwnerButton.addActionListener(userVehicle);
+            userLogin.add(panel);
+            userLogin.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+            userLogin.setTitle("New User");
+            userLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            userLogin.setVisible(true);
+
+            jobOwnerButton.addActionListener(new userIsJobOwnerListener());
+            vehicleOwnerButton.addActionListener(new userIsVehicleOwnerListener());
         }
     }
+
 
     //This is the button to make the user a job owner
     class userIsJobOwnerListener implements ActionListener {
@@ -243,22 +192,18 @@ public class StartPage extends JFrame {
         public void actionPerformed(ActionEvent event) {
             // instead of creating the object here, we funnel the response to the server so that
             // the server can create it.
-            String messageOut = "";
-
+            String messageOut = "user-request-ju" + "::" + username.getText() + "::" + password.getText();
             try {
                 if (newUser) {
-                    System.out.println("User Request");
-                    messageOut = "user-request-ju" + "::" + username.getText() + "::" + password.getText();
-                    outputStream.writeUTF(messageOut);
+                    clientConnection.sendMessage(messageOut);
+                    newUser = false;
                 }
-                newUser = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             try {
-                if(inputStream.readUTF().equals("user-accept")){
-                    System.out.println("user has been accepted");
+                if(clientConnection.receiveMessage().equals("user-accept")){
                     panel.removeAll();
                     panel.revalidate();
                     panel.repaint();
@@ -267,16 +212,14 @@ public class StartPage extends JFrame {
                     buttonData = new JButton("See your previous information");
                     buttonJob = new JButton("Submit a job");
 
+                    buttonJob.addActionListener(new newJobListener());
                     panel.add(question1);
                     panel.add(buttonData);
                     panel.add(buttonJob);
-
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            ActionListener newJob = new newJobListener();
-            buttonJob.addActionListener(newJob);
         }
     }
 
@@ -284,39 +227,39 @@ public class StartPage extends JFrame {
     class nextPageListenerVehicle implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            String messageOut = "";
+            String messageOut = "user-request-vu" + "::" + username.getText() + "::" + password.getText();
 
+                try {
+                    if (newUser) {
+                        clientConnection.sendMessage(messageOut);
+                        newUser = false;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             try {
-                if (newUser) {
-                    System.out.println("User Request");
-                    messageOut = "user-request-vu" + "::" + username.getText() + "::" + password.getText();
-                    outputStream.writeUTF(messageOut);
+                while(true){
+                    if (clientConnection.receiveMessage().equals("user-accept")) {
+
+                        panel.removeAll();
+                        question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
+                        buttonData = new JButton("See your previous information");
+                        buttonVehicle = new JButton("Submit a vehicle");
+
+                        buttonVehicle.addActionListener(new newVehicleListener());
+                        panel.add(question1);
+                        panel.add(buttonData);
+                        panel.add(buttonVehicle);
+//                        panel.add(goBack);
+                        panel.revalidate();
+                        panel.repaint();
+                        break;
+                    }
+
                 }
-                newUser = false;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-            try{
-                if(inputStream.readUTF().equals("user-accept")){
-                    panel.removeAll();
-                    panel.revalidate();
-                    panel.repaint();
-
-                    question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
-                    buttonData = new JButton("See your previous information");
-                    buttonVehicle = new JButton("Submit a vehicle");
-
-                    panel.add(question1);
-                    panel.add(buttonData);
-                    panel.add(buttonVehicle);
-//                    panel.add(goBack);
-                }
-            }catch(IOException e){
-                e.printStackTrace();
-            }
-            ActionListener newVehicle = new newVehicleListener();
-            buttonVehicle.addActionListener(newVehicle);
         }
     }
 
@@ -362,30 +305,25 @@ public class StartPage extends JFrame {
         @Override
         public void actionPerformed(ActionEvent event) {
 
-            String messageOut = "";
-
+            String messageOut = "user-request-job::" + clientID.getText() + "::" + jobID.getText() + "::" + jobDuration.getText();
             try {
-                System.out.println("sending a request job request");
-                messageOut = "user-request-job::" + clientID.getText() + "::" + jobID.getText() + "::" + jobDuration.getText();
-
                 if(!jobDeadline.getText().isEmpty())
                     messageOut += "::" + jobDeadline.getText();
-
-                outputStream.writeUTF(messageOut);
+                clientConnection.sendMessage(messageOut);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            try {
-                if(inputStream.readUTF().equals("job-accept")){
-                    clientID.setText("");
-                    jobID.setText("");
-                    jobDuration.setText("");
-                    jobDeadline.setText("");
+            new Thread(()->{
+                try {
+                    if(clientConnection.receiveMessage().equals("accepted-job"))
+                        clearJobFields();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+
+            }).start();
+
         }
     }
 
@@ -434,30 +372,21 @@ public class StartPage extends JFrame {
         class submitVehicleListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent event) {
-
-                String messageOut = "";
-
                 try {
-                    messageOut = "user-request-vehicle:: " + ownerID.getText() + "::" + vehicleID.getText() + "::" + vehicleModel.getText() + "::" + vehicleMake.getText() + "::" + vehicleYear.getText();
-                    System.out.println("Vehicle request.");
-                    outputStream.writeUTF(messageOut);
+                    String messageOut = "user-request-vehicle:: " + ownerID.getText() + "::" + vehicleID.getText() + "::" + vehicleModel.getText() + "::" + vehicleMake.getText() + "::" + vehicleYear.getText();
+                    clientConnection.sendMessage(messageOut);
 
+                    new Thread(()->{
+                        try {
+                            if(clientConnection.receiveMessage().equals("accepted-vehicle"))
+                                clearVehicleFields();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-
-                try{
-                    if(inputStream.readUTF().equals("vehicle-accept")){
-                        ownerID.setText("");
-                        vehicleID.setText("");
-                        vehicleModel.setText("");
-                        vehicleMake.setText("");
-                        vehicleYear.setText("");
-                    }else{
-                        System.out.println("Vehicle has been rejected please try again");
-                    }
-                }catch (IOException e){
-                    throw new RuntimeException(e);
                 }
             }
         }
