@@ -24,7 +24,7 @@ public class ControllerPage extends JFrame {
 
 		controllerPage = new JFrame();
 		controllerPage.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-		controllerPage.setTitle("Welcome to the Controller");
+		controllerPage.setTitle("Welcome, Controller");
 		controllerPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		controllerPage.setVisible(true);
 
