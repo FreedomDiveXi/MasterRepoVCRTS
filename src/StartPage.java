@@ -49,7 +49,7 @@ public class StartPage extends JFrame {
     public void initGui() throws IOException {
         start = new JFrame();
         start.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-        start.setTitle("Welcome to the Controller");
+        start.setTitle("Welcome, Client");
         start.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         start.setVisible(true);
 
@@ -249,6 +249,8 @@ public class StartPage extends JFrame {
                     if (clientConnection.receiveMessage().equals("user-accept")) {
 
                         panel.removeAll();
+                        panel.revalidate();
+                        panel.repaint();
                         question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
                         buttonData = new JButton("See your previous information");
                         buttonVehicle = new JButton("Submit a vehicle");
@@ -257,7 +259,6 @@ public class StartPage extends JFrame {
                         panel.add(question1);
                         panel.add(buttonData);
                         panel.add(buttonVehicle);
-//                        panel.add(goBack);
                         panel.revalidate();
                         panel.repaint();
                         break;
@@ -274,9 +275,8 @@ public class StartPage extends JFrame {
     class newJobListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            panel.removeAll();
-            panel.revalidate();
-            panel.repaint();
+            JFrame SubmitJob = new JFrame();
+            panel = new JPanel();
 
             question1 = new JLabel("Client ID");
             clientID = new JTextField(50);
@@ -287,7 +287,6 @@ public class StartPage extends JFrame {
             question4 = new JLabel("If needed what is this job's deadline, please type in this formate month-day-year");
             jobDeadline = new JTextField(50);
             submitJob = new JButton("Submit");
-            goBack = new JButton("Return to home page");
 
             panel.add(question1);
             panel.add(clientID);
@@ -298,12 +297,14 @@ public class StartPage extends JFrame {
             panel.add(question4);
             panel.add(jobDeadline);
             panel.add(submitJob);
-            panel.add(goBack);
+            SubmitJob.add(panel);
+            SubmitJob.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+            SubmitJob.setTitle("Enlisting Multiple Jobs");
+            SubmitJob.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            SubmitJob.setVisible(true);
 
             ActionListener submit = new submitJobListener();
             submitJob.addActionListener(submit);
-            ActionListener nextPageJob = new nextPageListenerJob();
-            goBack.addActionListener(nextPageJob);
         }
     }
 
@@ -338,9 +339,8 @@ public class StartPage extends JFrame {
         class newVehicleListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent event) {
-                panel.removeAll();
-                panel.revalidate();
-                panel.repaint();
+                JFrame SubmitVehicle = new JFrame();
+                panel = new JPanel();
 
                 question1 = new JLabel("Owner ID");
                 ownerID = new JTextField(50);
@@ -353,7 +353,6 @@ public class StartPage extends JFrame {
                 question5 = new JLabel("What is the vehicle's year");
                 vehicleYear = new JTextField(50);
                 submitVehicle = new JButton("Submit");
-                goBack = new JButton("Return to home page");
 
                 panel.add(question1);
                 panel.add(ownerID);
@@ -366,12 +365,14 @@ public class StartPage extends JFrame {
                 panel.add(question5);
                 panel.add(vehicleYear);
                 panel.add(submitVehicle);
-                panel.add(goBack);
+                SubmitVehicle.add(panel);
+                SubmitVehicle.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+                SubmitVehicle.setTitle("Enlisting Multiple Vehicles");
+                SubmitVehicle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                SubmitVehicle.setVisible(true);
 
                 ActionListener submit = new submitVehicleListener();
                 submitVehicle.addActionListener(submit);
-                ActionListener nextPageVehicle = new nextPageListenerVehicle();
-                goBack.addActionListener(nextPageVehicle);
             }
         }
 
