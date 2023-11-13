@@ -8,19 +8,19 @@ public class StartPage extends JFrame {
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 500;
     private JLabel introduction, question1, question2, question3, question4, question5;
-    private JButton jobOwnerButton, vehicleOwnerButton, buttonYes, buttonNo, buttonData, buttonJob, buttonVehicle, submitJob, submitVehicle, goNext, goBack;
+    private JButton jobOwnerButton, vehicleOwnerButton, buttonYes, buttonNo, buttonData, buttonJob, buttonVehicle, submitJob, submitVehicle, goNext;
     private JPanel panel, panel2;
     private JTextField username, clientID, jobID, jobDuration, jobDeadline, ownerID, vehicleID, vehicleModel, vehicleMake, vehicleYear;
     private JPasswordField password;
     private Boolean newUser;
+    private ClientConnection clientConnection;
 
-    private ClientConnection clientConnection; 
-
-    public StartPage() throws IOException {
+    public StartPage() throws IOException{
         initGui();
         setupClient();
     }
 
+    //This is the constructor as well as the starting point to the objects inside the main JFrame
     public void initGui() {
         this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         this.setTitle("Welcome to the Controller");
@@ -46,45 +46,43 @@ public class StartPage extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
 
         panel.add(introduction, gbc);
-        panel.add(goNext, gbc);
+        panel.add(goNext);
 
         this.add(panel);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-
+        
         goNext.addActionListener(new HomePageListener());
     }
 
-
-
-
-    public void setupClient() {
-        clientConnection = new ClientConnection("localhost", 9806);
-        try {
+    public void setupClient(){
+        clientConnection = new ClientConnection("localhost",9806);
+        try{
             clientConnection.connectToServer();
             clientConnection.sendMessage("client");
-        } catch (IOException e) {
+        }catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Unable to connect to the server.",
-                                          "Connection Error", JOptionPane.ERROR_MESSAGE);
+                    "Connection Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void clearVehicleFields() {
+        // Clear the vehicle-related text fields.
         ownerID.setText("");
         vehicleID.setText("");
         vehicleModel.setText("");
         vehicleMake.setText("");
         vehicleYear.setText("");
+        // Add any additional clearing if needed
     }
-
-    private void clearJobFields() {
+    private void clearJobFields(){
         clientID.setText("");
         jobID.setText("");
         jobDuration.setText("");
         jobDeadline.setText("");
     }
 
+    //This is the home page listener
     class HomePageListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
@@ -107,11 +105,12 @@ public class StartPage extends JFrame {
         }
     }
 
+    //This is the action caller for new users to register
     class AddNewUserListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            JFrame userLogin = new JFrame();
-            JPanel panel = new JPanel();
+            JFrame UserLogin = new JFrame();
+            panel = new JPanel();
             newUser = true;
 
             question1 = new JLabel("Create a new username (':' is not allowed): ");
@@ -133,18 +132,18 @@ public class StartPage extends JFrame {
             panel.add(vehicleOwnerButton);
             panel.add(question4);
             panel.add(goNext);
+            UserLogin.add(panel);
+            UserLogin.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+            UserLogin.setTitle("New User");
+            UserLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            UserLogin.setVisible(true);
 
-            userLogin.add(panel);
-            userLogin.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-            userLogin.setTitle("New User");
-            userLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            userLogin.setVisible(true);
-
-            jobOwnerButton.addActionListener(new userIsJobOwnerListener());
-            vehicleOwnerButton.addActionListener(new userIsVehicleOwnerListener());
+            ActionListener userJob = new userIsJobOwnerListener();
+            jobOwnerButton.addActionListener(userJob);
+            ActionListener userVehicle = new userIsVehicleOwnerListener();
+            vehicleOwnerButton.addActionListener(userVehicle);
         }
     }
-
 
     //This is the button to make the user a job owner
     class userIsJobOwnerListener implements ActionListener {
@@ -242,6 +241,8 @@ public class StartPage extends JFrame {
                     if (clientConnection.receiveMessage().equals("user-accept")) {
 
                         panel.removeAll();
+                        panel.revalidate();
+                        panel.repaint();
                         question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
                         buttonData = new JButton("See your previous information");
                         buttonVehicle = new JButton("Submit a vehicle");
@@ -250,7 +251,6 @@ public class StartPage extends JFrame {
                         panel.add(question1);
                         panel.add(buttonData);
                         panel.add(buttonVehicle);
-//                        panel.add(goBack);
                         panel.revalidate();
                         panel.repaint();
                         break;
@@ -267,9 +267,8 @@ public class StartPage extends JFrame {
     class newJobListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            panel.removeAll();
-            panel.revalidate();
-            panel.repaint();
+            JFrame SubmitJob = new JFrame();
+            panel = new JPanel();
 
             question1 = new JLabel("Client ID");
             clientID = new JTextField(50);
@@ -280,7 +279,6 @@ public class StartPage extends JFrame {
             question4 = new JLabel("If needed what is this job's deadline, please type in this formate month-day-year");
             jobDeadline = new JTextField(50);
             submitJob = new JButton("Submit");
-            goBack = new JButton("Return to home page");
 
             panel.add(question1);
             panel.add(clientID);
@@ -291,12 +289,14 @@ public class StartPage extends JFrame {
             panel.add(question4);
             panel.add(jobDeadline);
             panel.add(submitJob);
-            panel.add(goBack);
+            SubmitJob.add(panel);
+            SubmitJob.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+            SubmitJob.setTitle("Enlisting Multiple Jobs");
+            SubmitJob.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            SubmitJob.setVisible(true);
 
             ActionListener submit = new submitJobListener();
             submitJob.addActionListener(submit);
-            ActionListener nextPageJob = new nextPageListenerJob();
-            goBack.addActionListener(nextPageJob);
         }
     }
 
@@ -331,9 +331,8 @@ public class StartPage extends JFrame {
         class newVehicleListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent event) {
-                panel.removeAll();
-                panel.revalidate();
-                panel.repaint();
+                JFrame SubmitVehicle = new JFrame();
+                panel = new JPanel();
 
                 question1 = new JLabel("Owner ID");
                 ownerID = new JTextField(50);
@@ -346,7 +345,6 @@ public class StartPage extends JFrame {
                 question5 = new JLabel("What is the vehicle's year");
                 vehicleYear = new JTextField(50);
                 submitVehicle = new JButton("Submit");
-                goBack = new JButton("Return to home page");
 
                 panel.add(question1);
                 panel.add(ownerID);
@@ -359,12 +357,14 @@ public class StartPage extends JFrame {
                 panel.add(question5);
                 panel.add(vehicleYear);
                 panel.add(submitVehicle);
-                panel.add(goBack);
+                SubmitVehicle.add(panel);
+                SubmitVehicle.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+                SubmitVehicle.setTitle("Enlisting Multiple Vehicles");
+                SubmitVehicle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                SubmitVehicle.setVisible(true);
 
                 ActionListener submit = new submitVehicleListener();
                 submitVehicle.addActionListener(submit);
-                ActionListener nextPageVehicle = new nextPageListenerVehicle();
-                goBack.addActionListener(nextPageVehicle);
             }
         }
 
