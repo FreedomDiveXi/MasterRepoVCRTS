@@ -7,11 +7,8 @@ public class User {
     private String hashedPassword;
 
     public User(String username, String password) {
-        validateUsername(username);
-        validatePassword(password);
-        
         this.username = username;
-        this.hashedPassword = hashPassword(password);
+        this.hashedPassword = password;
     }
 
     // Hashes the password for storage using SHA-256

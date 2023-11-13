@@ -203,6 +203,7 @@ public class StartPage extends JFrame {
 
             try {
                 if(clientConnection.receiveMessage().equals("user-accept")){
+                    System.out.println("after");
                     panel.removeAll();
                     panel.revalidate();
                     panel.repaint();
@@ -237,25 +238,21 @@ public class StartPage extends JFrame {
                     throw new RuntimeException(e);
                 }
             try {
-                while(true){
-                    if (clientConnection.receiveMessage().equals("user-accept")) {
+                if (clientConnection.receiveMessage().equals("user-accept")) {
 
-                        panel.removeAll();
-                        panel.revalidate();
-                        panel.repaint();
-                        question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
-                        buttonData = new JButton("See your previous information");
-                        buttonVehicle = new JButton("Submit a vehicle");
+                    panel.removeAll();
+                    panel.revalidate();
+                    panel.repaint();
+                    question1 = new JLabel("Do you want to submit a vehicle or see your previous information");
+                    buttonData = new JButton("See your previous information");
+                    buttonVehicle = new JButton("Submit a vehicle");
 
-                        buttonVehicle.addActionListener(new newVehicleListener());
-                        panel.add(question1);
-                        panel.add(buttonData);
-                        panel.add(buttonVehicle);
-                        panel.revalidate();
-                        panel.repaint();
-                        break;
-                    }
-
+                    buttonVehicle.addActionListener(new newVehicleListener());
+                    panel.add(question1);
+                    panel.add(buttonData);
+                    panel.add(buttonVehicle);
+                    panel.revalidate();
+                    panel.repaint();
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

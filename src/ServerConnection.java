@@ -69,7 +69,7 @@ public class ServerConnection {
                 while(true){
                     String inputLine = inputStream.readUTF();
 
-                    System.out.println("Retrieved Information: " + inputLine);
+                    System.out.println("==== Server received following request ===\n" + inputLine);
                     if(inputLine.contains("::")){
                         objectData= inputLine.split("::");
                         inputLine = objectData[0];
@@ -98,42 +98,46 @@ public class ServerConnection {
         public void dispatcher(String request) throws IOException {
             if (request.equals("user-request-ju")) {
                 controller.createJobOwner(objectData[1], objectData[2]);
+                System.out.println("=== Server has accepted job user ===\n");
                 outputStream.writeUTF("user-accept");
             }
             // vehicle user
             if (request.equals("user-request-vu")) {
                 controller.createVehicleOwner(objectData[1], objectData[2]);
+                System.out.println("=== Server has accepted vehicle user ===\n");
                 outputStream.writeUTF("user-accept");
             }
 
             if (request.equals("user-request-job") || request.equals("user-request-vehicle")) {
+                if(request.equals("user-request-job"))
+                    System.out.println("=== Server has received vehicle. Waiting for approval... ===\n");
+                if(request.equals("user-request-vehicle"))
+                    System.out.println("=== Server has received vehicle. Waiting for approval... ===\n");
+
                 clientOutputStreams.get("controller").writeUTF("request-confirmation");
             }
 
             if(request.equals("accept")){
-                System.out.println("thing has been accepted");
                 if(objectData[0].equals("user-request-job")){
+                    System.out.println("=== Job has been approved. Creating job... ===");
                     acceptIncomingJob(objectData);
                     clientOutputStreams.get("client").writeUTF("accepted-job");
                 }
 
                 if(objectData[0].equals("user-request-vehicle")){
+                    System.out.println("=== Vehicle has been approved. Creating vehicle... ===");
                     acceptIncomingVehicle(objectData);
                     clientOutputStreams.get("client").writeUTF("accepted-vehicle");
                 }
             }
             if(request.equals("reject")){
-                System.out.println("Object creation has been denied.");
-                //todo getting a weird error actually calling methods though the print statement works the same. no objects are created/registered
-//                if(objectData[0].equals("user-request-job"))
-//                    controller.rejectJob();
-//                if(objectData[0].equals("user-request-vehicle"))
-//                    controller.rejectVehicle();
+                System.out.println("=== Controller has denied object creation. ===\n");
             }
 
             if(request.equals("process-jobs")){
                 String temp = controller.startProcessing();
                 DataOutputStream controllerOutput = clientOutputStreams.get("controller");
+                System.out.println("=====\nPROCESSING JOBS \n=====");
                 controllerOutput.writeUTF(temp);
             }
 
@@ -146,7 +150,6 @@ public class ServerConnection {
 				controller.createJob(request[1],request[2],request[3],request[4]);
 
 			System.out.println(controller.acceptJob());
-
         }
 
         public void acceptIncomingVehicle(String[] request) {

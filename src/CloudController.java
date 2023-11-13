@@ -46,6 +46,32 @@ public class CloudController {
 
         // used to store the total time it took to process jobs
         totalCompletionTime = 0;
+        init();
+    }
+
+    /**
+     * Initializes a set of vehicles to mimic data load in
+     */
+    public void init(){
+        createVehicleOwner("mark","StrongPassword1231");
+        createVehicle("mark", "1000", "civic", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "999", "pilot", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "998", "cr-v", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "997", "accord", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "996", "hr-v", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "995", "civic type-r", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "994", "model Y", "tesla", "2023");
+        acceptVehicle();
+        createVehicle("mark", "993", "model S", "tesla", "2023");
+        acceptVehicle();
+        createVehicle("mark", "992", "cybertruck", "tesla", "2023");
+        acceptVehicle();
     }
 
     /**
@@ -127,7 +153,7 @@ public class CloudController {
      * @return a string acceptance message
      */
     public String acceptJob(){
-        String temp = "Your job ID: " + pendingJob.getJobID() +" has been accepted.";
+        String temp = "Your job ID: " + pendingJob.getJobID() +" has been registered.\n";
 
         addJobToList(getAvailableJobs(), pendingJob);
         assignJobToVehicle(pendingJob);
@@ -143,7 +169,7 @@ public class CloudController {
      * @return a string acceptance message
      */
     public String acceptVehicle(){
-        String temp = "Your vehicle ID: " + pendingVehicle.getVehicleId() +" has been accepted.";
+        String temp = "Your vehicle ID: " + pendingVehicle.getVehicleId() +" has been registered.\n";
 
         addVehicleToList(getAllVehicles(), pendingVehicle);
         addVehicleToList(getAvailableVehicles(), pendingVehicle);
@@ -160,9 +186,7 @@ public class CloudController {
      * @return a string rejection message
      */
     public String rejectJob(){
-        String temp = pendingJob.getJobOwnerName() + " your job has been cancelled please try again";
-        pendingJob = null;
-        return temp;
+        return "Your job has been denied. Please try again.";
     }
 
     /**
@@ -171,9 +195,7 @@ public class CloudController {
      * @return a string rejection message
      */
     public String rejectVehicle(){
-        String temp = pendingVehicle.getVehicleOwner() + ", your vehicle has been rejected. Please try again";
-        pendingVehicle = null;
-        return temp;
+        return "Your vehicle has been denied. Please try again.";
     }
 
     /**
@@ -189,7 +211,6 @@ public class CloudController {
             writer.newLine();
             writer.close();
 
-            System.out.println("User: " + vehicleOwner.getUsername() + " has been registered.");
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -209,7 +230,6 @@ public class CloudController {
             writer.newLine();
             writer.close();
 
-            System.out.println("User: " + jobOwner.getUsername() + " has been registered.");
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -234,7 +254,6 @@ public class CloudController {
             writer.newLine();
             writer.close();
 
-            System.out.println("Job: " + job.getJobID() + " has been accepted");
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -257,7 +276,6 @@ public class CloudController {
             writer.newLine();
             writer.close();
 
-            System.out.println("Vehicle: " + vehicle.getVehicleId() + " has been accepted");
         }catch (IOException e){
             e.printStackTrace();
         }

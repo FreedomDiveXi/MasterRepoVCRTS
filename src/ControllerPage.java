@@ -8,10 +8,6 @@ public class ControllerPage extends JFrame {
 	private JFrame controllerPage;
 	private JButton completionTime;
 	private JPanel panel;
-	private String messageOut;
-	JPanel requestPanel;
-	JButton accept;
-	JButton reject;
 	ClientConnection clientConnection;
 
 
@@ -75,8 +71,6 @@ public class ControllerPage extends JFrame {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, "Lost connection to the server.",
-					"Connection Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
