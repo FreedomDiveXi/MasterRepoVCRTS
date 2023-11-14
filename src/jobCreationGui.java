@@ -57,6 +57,7 @@ public class jobCreationGui {
         jobID.setText("");
         jobDuration.setText("");
         jobDeadline.setText("");
+        System.gc();
     }
     class submitJobListener implements ActionListener{
         @Override

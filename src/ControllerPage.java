@@ -14,6 +14,7 @@ public class ControllerPage extends JFrame {
 	public ControllerPage() throws IOException {
 		initGui();
 		setupClient();
+		new Thread(this :: listenForRequests).start();
 	}
 
 	public void initGui() throws IOException {
@@ -41,9 +42,6 @@ public class ControllerPage extends JFrame {
 		try{
 			clientConnection.connectToServer();
 			clientConnection.sendMessage("controller");
-
-			new Thread(this :: listenForRequests).start();
-
 		}catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, "Unable to connect to the server.",

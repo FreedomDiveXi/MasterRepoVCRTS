@@ -86,7 +86,9 @@ public class StartPage extends JFrame {
     class AddNewUserListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            new userLoginGui(clientConnection);
+            new Thread(()->{
+                new userLoginGui(clientConnection);
+            }).start();
         }
     }
 }

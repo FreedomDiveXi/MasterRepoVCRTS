@@ -63,6 +63,7 @@ public class vehicleCreationGui {
         vehicleModel.setText("");
         vehicleMake.setText("");
         vehicleYear.setText("");
+        System.gc();
     }
     //This creates a vehicle
     class submitVehicleListener implements ActionListener {
