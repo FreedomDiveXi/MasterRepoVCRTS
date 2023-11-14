@@ -10,11 +10,9 @@ public class StartPage extends JFrame {
     private JLabel introduction, question1;
     private JButton buttonYes, buttonNo, goNext;
     private JPanel panel;
-    private ClientConnection clientConnection;
 
     public StartPage() throws IOException{
         initGui();
-        setupClient();
     }
 
     //This is the constructor as well as the starting point to the objects inside the main JFrame
@@ -52,15 +50,6 @@ public class StartPage extends JFrame {
         goNext.addActionListener(new HomePageListener());
     }
 
-    public void setupClient(){
-        clientConnection = new ClientConnection("localhost",9806);
-        try{
-            clientConnection.connectToServer();
-            clientConnection.sendMessage("client");
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     //This is the home page listener
     class HomePageListener implements ActionListener {
@@ -86,9 +75,7 @@ public class StartPage extends JFrame {
     class AddNewUserListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            new Thread(()->{
-                new userLoginGui(clientConnection);
-            }).start();
+            new Thread(userLoginGui::new).start();
         }
     }
 }

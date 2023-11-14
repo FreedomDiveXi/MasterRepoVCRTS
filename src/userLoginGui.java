@@ -20,8 +20,7 @@ public class userLoginGui {
     JButton isVehicleOwner= new JButton("Continue");
     ClientConnection clientConnection;
 
-    public userLoginGui(ClientConnection connection){
-        clientConnection = connection;
+    public userLoginGui(){
         panel.add(question1);
         panel.add(username);
         panel.add(question2);
@@ -40,6 +39,15 @@ public class userLoginGui {
         vehicleOwnerButton.addActionListener(new userIsVehicleOwnerListener());
         isJobOwner.addActionListener(new goToJobView());
         isVehicleOwner.addActionListener(new goToVehicleView());
+    }
+    public void setupClient(String id){
+        clientConnection = new ClientConnection("localhost",9806);
+        try{
+            clientConnection.connectToServer();
+            clientConnection.sendMessage(id);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     //This is the button to make the user a job owner
     class userIsJobOwnerListener implements ActionListener {
@@ -70,8 +78,8 @@ public class userLoginGui {
     class goToJobView implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent event) {
-            // instead of creating the object here, we funnel the response to the server so that
-            // the server can create it.
+            // da solution to our problems, JUST MAKE A SEPARATE CONNECTION IF YOU DONT WANT RACE CONDITIONS
+            setupClient("job-user");
             String messageOut = "user-request-ju" + "::" + username.getText() + "::" + password.getText();
             try {
                 clientConnection.sendMessage(messageOut);
@@ -90,6 +98,8 @@ public class userLoginGui {
     class goToVehicleView implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent event) {
+            // da solution to our problems, JUST MAKE A SEPARATE CONNECTION IF YOU DONT WANT RACE CONDITIONS
+            setupClient("vehicle-user");
             String messageOut = "user-request-vu" + "::" + username.getText() + "::" + password.getText();
 
             try {

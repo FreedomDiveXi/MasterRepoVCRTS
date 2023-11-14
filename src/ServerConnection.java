@@ -19,6 +19,13 @@ public class ServerConnection {
         controller = new CloudController();
     }
 
+    /**
+     * Since we're handling threads, this simply initializes a server
+     * and begins to listen for requests when we run the server thread.
+     * On initialization, it will it actively listens for a new connection
+     * and accepts the new connection onto a separate thread, and begins
+     * to listen to requests provided by the client handler.
+     */
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
 
@@ -37,6 +44,10 @@ public class ServerConnection {
         }
     }
 
+    /**
+     * when the server accepts a client handler will be created
+     * and will listen to requests provided by the respective client
+     */
     class ClientHandler implements Runnable {
         private Socket clientSocket;
         private DataInputStream inputStream;
@@ -55,15 +66,7 @@ public class ServerConnection {
                 outputStream = new DataOutputStream(clientSocket.getOutputStream());
 
                 String access = inputStream.readUTF();
-
-                if(access.equals("client")){
-                    clientOutputStreams.put(access, outputStream);
-                    clientInputStreams.put(access,inputStream);
-                }
-                if(access.equals("controller")){
-                    clientOutputStreams.put(access,outputStream);
-                    clientInputStreams.put(access,inputStream);
-                }
+                trackClient(access);
 
                 String previousRequest = "";
                 while(true){
@@ -95,18 +98,59 @@ public class ServerConnection {
             }
         }
 
+        /**
+         * Registers the proper client communication links so that we can send
+         * and receive the proper messages to and from the client
+         * @param access the id token the client sends when connected to the server
+         */
+        public void trackClient(String access){
+            if(access.equals("job-user")){
+                clientOutputStreams.put(access, outputStream);
+                clientInputStreams.put(access,inputStream);
+                System.out.println("connected job user");
+            }
+            if(access.equals("vehicle-user")){
+                clientOutputStreams.put(access, outputStream);
+                clientInputStreams.put(access,inputStream);
+                System.out.println("connected vehicle user");
+            }
+            if(access.equals("controller")){
+                clientOutputStreams.put(access,outputStream);
+                clientInputStreams.put(access,inputStream);
+            }
+
+        }
+
+        /**
+         * This is our server request handler. Based on the request iw will send the appropriate
+         * message back to the respective user
+         * @param request request received by the user
+         * @throws IOException
+         */
+
         public void dispatcher(String request) throws IOException {
             if(request.equals("accept")){
                 if(objectData[0].equals("user-request-job")){
-                    clientOutputStreams.get("client").writeUTF("accepted-job");
                     System.out.println("=== Job has been approved. Creating job... ===");
                     acceptIncomingJob(objectData);
+                    clientOutputStreams.get("job-user").writeUTF("accepted-job");
                 }
 
                 if(objectData[0].equals("user-request-vehicle")){
-                    clientOutputStreams.get("client").writeUTF("accepted-vehicle");
                     System.out.println("=== Vehicle has been approved. Creating vehicle... ===");
                     acceptIncomingVehicle(objectData);
+                    clientOutputStreams.get("vehicle-user").writeUTF("accepted-vehicle");
+                }
+            }
+            if(request.equals("reject")){
+                if(objectData[0].equals("user-request-job")){
+                    System.out.println("=== Controller has denied job creation. ===\n");
+                    clientOutputStreams.get("job-user").writeUTF("rejected-job");
+                }
+
+                if(objectData[0].equals("user-request-vehicle")){
+                    System.out.println("=== Controller has denied vehicle creation. ===\n");
+                    clientOutputStreams.get("vehicle-user").writeUTF("rejected-vehicle");
                 }
             }
 
@@ -129,10 +173,6 @@ public class ServerConnection {
                     System.out.println("=== Server has received vehicle. Waiting for approval... ===\n");
 
                 clientOutputStreams.get("controller").writeUTF("request-confirmation");
-            }
-
-            if(request.equals("reject")){
-                System.out.println("=== Controller has denied object creation. ===\n");
             }
 
             if(request.equals("process-jobs")){

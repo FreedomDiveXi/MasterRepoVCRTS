@@ -19,6 +19,7 @@ public class jobCreationGui {
     JButton submitJob = new JButton("Submit");
     ClientConnection clientConnection;
     public jobCreationGui(ClientConnection connection){
+        listenForRequests();
         clientConnection = connection;
         panel.add(question1);
         panel.add(clientID);
@@ -36,28 +37,34 @@ public class jobCreationGui {
         SubmitJob.setVisible(true);
 
        submitJob.addActionListener(new submitJobListener());
-       new Thread(this::listenForRequests).start();
     }
 
     public void listenForRequests(){
-        while(true){
-            try{
-                String request = clientConnection.receiveMessage();
-
-                if("accepted-job".equals(request))
-                    clearJobFields();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        new Thread(()->{
+            while(true){
+                try{
+                    String request = clientConnection.receiveMessage();
+                    processServerResponse(request);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
+        }).start();
     }
 
-    private void clearJobFields(){
-        clientID.setText("");
-        jobID.setText("");
-        jobDuration.setText("");
-        jobDeadline.setText("");
-        System.gc();
+    private void processServerResponse(String request){
+        SwingUtilities.invokeLater(()->{
+            if("accepted-job".contains(request)) {
+                clientID.setText("");
+                jobID.setText("");
+                jobDuration.setText("");
+                jobDeadline.setText("");
+            }else if ("rejected-job".contains(request)){
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(SubmitJob,"Job submission was rejected. Please try again.", "Rejection", JOptionPane.INFORMATION_MESSAGE);
+                });
+            }
+        });
     }
     class submitJobListener implements ActionListener{
         @Override

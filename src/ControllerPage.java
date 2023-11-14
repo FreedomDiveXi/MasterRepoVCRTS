@@ -75,7 +75,7 @@ public class ControllerPage extends JFrame {
 	private int showConfirmationDialog() {
 		// This will show a dialog with Yes and No options on the Event Dispatch Thread
 		return JOptionPane.showOptionDialog(
-				null,
+				controllerPage,
 				"Do you want to accept the request?",
 				"Request Confirmation",
 				JOptionPane.YES_NO_OPTION,

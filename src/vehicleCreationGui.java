@@ -22,6 +22,7 @@ public class vehicleCreationGui {
     ClientConnection clientConnection;
 
     public vehicleCreationGui(ClientConnection connection){
+        listenForRequests();
         clientConnection = connection;
         panel.add(question1);
         panel.add(ownerID);
@@ -41,29 +42,34 @@ public class vehicleCreationGui {
         SubmitVehicle.setVisible(true);
 
         submitVehicle.addActionListener(new submitVehicleListener());
-
-        new Thread(this::listenForRequests).start();
     }
 
     public void listenForRequests(){
-        while(true){
-            try{
-                String request = clientConnection.receiveMessage();
-                if("accepted-vehicle".equals(request))
-                    clearVehicleFields();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        new Thread(()->{
+            while(true){
+                try{
+                    String request = clientConnection.receiveMessage();
+                    processServerResponse(request);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
+        }).start();
     }
-    private void clearVehicleFields() {
-        // Clear the vehicle-related text fields.
-        ownerID.setText("");
-        vehicleID.setText("");
-        vehicleModel.setText("");
-        vehicleMake.setText("");
-        vehicleYear.setText("");
-        System.gc();
+    private void processServerResponse(String request) {
+        SwingUtilities.invokeLater(()->{
+            if("accepted-vehicle".contains(request)){
+                ownerID.setText("");
+                vehicleID.setText("");
+                vehicleModel.setText("");
+                vehicleMake.setText("");
+                vehicleYear.setText("");
+            }else if ("rejected-vehicle".contains(request)){
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(submitVehicle,"Vehicle submission was rejected. Please try again.", "Rejection", JOptionPane.INFORMATION_MESSAGE);
+                });
+            }
+        });
     }
     //This creates a vehicle
     class submitVehicleListener implements ActionListener {
