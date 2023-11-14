@@ -166,20 +166,24 @@ public class ServerConnection {
                 outputStream.writeUTF("user-accept");
             }
 
-            if (request.equals("user-request-job") || request.equals("user-request-vehicle")) {
-                if(request.equals("user-request-job"))
-                    System.out.println("=== Server has received vehicle. Waiting for approval... ===\n");
-                if(request.equals("user-request-vehicle"))
-                    System.out.println("=== Server has received vehicle. Waiting for approval... ===\n");
+            if (request.equals("user-request-job")){
+                System.out.println("=== Server has received vehicle. Waiting for approval... ===\n");
+                if(objectData.length == 4)
+                    clientOutputStreams.get("controller").writeUTF("request-confirmation::" + objectData[1] + "::" + objectData[2] + "::" + objectData[3]);
+                if(objectData.length == 5)
+                    clientOutputStreams.get("controller").writeUTF("request-confirmation::" + objectData[1] + "::" + objectData[2] + "::" + objectData[3] + "::" + objectData[4]);
+            }
+            if(request.equals("user-request-vehicle")){
+                System.out.println("=== Server has received vehicle. Waiting for approval... ===\n");
+                clientOutputStreams.get("controller").writeUTF("request-confirmation::" + objectData[1] +"::"+objectData[2] +"::"+objectData[3]+"::"+objectData[4] + "::" + objectData[5]);
 
-                clientOutputStreams.get("controller").writeUTF("request-confirmation");
             }
 
             if(request.equals("process-jobs")){
                 String temp = controller.startProcessing();
                 DataOutputStream controllerOutput = clientOutputStreams.get("controller");
                 System.out.println("=====\nPROCESSING JOBS \n=====");
-                controllerOutput.writeUTF(temp);
+                controllerOutput.writeUTF("html::"+temp);
             }
 
         }

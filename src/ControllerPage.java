@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Arrays;
 
 public class ControllerPage extends JFrame {
 	private static final int FRAME_WIDTH = 600;
@@ -52,8 +53,9 @@ public class ControllerPage extends JFrame {
 		try {
 			while (true) {
 				String request = clientConnection.receiveMessage();
-				if ("request-confirmation".equals(request)) {
-					int action = showConfirmationDialog();
+				String[] data = request.split("::");
+				if ("request-confirmation".equals(data[0])) {
+					int action = showConfirmationDialog(data);
 					if (action == 0 ) {
 						String accept = "accept";
 						clientConnection.sendMessage(accept);
@@ -63,8 +65,8 @@ public class ControllerPage extends JFrame {
 						clientConnection.sendMessage(reject);
 					}
 				}
-				if(request.contains("html")){
-					showProcessedData(request);
+				if("html".equals(data[0])){
+					showProcessedData(data[1]);
 				}
 			}
 		} catch (IOException e) {
@@ -72,11 +74,24 @@ public class ControllerPage extends JFrame {
 		}
 	}
 
-	private int showConfirmationDialog() {
+	private int showConfirmationDialog(String[] data) {
 		// This will show a dialog with Yes and No options on the Event Dispatch Thread
+
+		String message ="";
+		if (data.length == 4) {
+			message += "Client ID: " + data[1] + "<br>Job ID: " + data[2] + "<br>Job Duration:" + data[3];
+		}
+		if (data.length == 5) {
+			message += "Client ID: " + data[1] + "<br>Job ID: " + data[2] + "<br>Job Duration:" + data[3] +"<br>Job Deadline: " +data[4];
+		}
+		if (data.length == 6) {
+			message += "Owner ID: " + data[1] + "<br>Vehicle ID: " + data[2] + "<br>Vehicle Model: " + data[3] +"<br>Vehicle Make: " +data[4] + "<br>Vehicle Year: " + data[5];
+		}
+		JLabel temp = new JLabel("<html>Do you want to accept the following request:<br>"+message +"</html>");
+
 		return JOptionPane.showOptionDialog(
 				controllerPage,
-				"Do you want to accept the request?",
+				temp,
 				"Request Confirmation",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.INFORMATION_MESSAGE,
