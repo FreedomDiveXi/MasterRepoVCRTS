@@ -66,12 +66,6 @@ public class CloudController {
         acceptVehicle();
         createVehicle("mark", "995", "civic type-r", "honda", "2023");
         acceptVehicle();
-        createVehicle("mark", "994", "model Y", "tesla", "2023");
-        acceptVehicle();
-        createVehicle("mark", "993", "model S", "tesla", "2023");
-        acceptVehicle();
-        createVehicle("mark", "992", "cybertruck", "tesla", "2023");
-        acceptVehicle();
     }
 
     /**
@@ -261,7 +255,7 @@ public class CloudController {
     }
 
     /**
-     * Method will write to vehicle to vehicle database.
+     * Method will write to vehicle database.
      * @param vehicle is the current vehicle.
      */
     private void writeVehicle(Vehicle vehicle){
