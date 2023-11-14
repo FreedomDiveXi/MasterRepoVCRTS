@@ -18,7 +18,7 @@ public class StartPage extends JFrame {
     //This is the constructor as well as the starting point to the objects inside the main JFrame
     public void initGui() {
         this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-        this.setTitle("Welcome to the Controller");
+        this.setTitle("Welcome, Client");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         introduction = new JLabel("<html><body>" +
