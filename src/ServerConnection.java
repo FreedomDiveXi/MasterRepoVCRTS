@@ -96,6 +96,20 @@ public class ServerConnection {
         }
 
         public void dispatcher(String request) throws IOException {
+            if(request.equals("accept")){
+                if(objectData[0].equals("user-request-job")){
+                    clientOutputStreams.get("client").writeUTF("accepted-job");
+                    System.out.println("=== Job has been approved. Creating job... ===");
+                    acceptIncomingJob(objectData);
+                }
+
+                if(objectData[0].equals("user-request-vehicle")){
+                    clientOutputStreams.get("client").writeUTF("accepted-vehicle");
+                    System.out.println("=== Vehicle has been approved. Creating vehicle... ===");
+                    acceptIncomingVehicle(objectData);
+                }
+            }
+
             if (request.equals("user-request-ju")) {
                 controller.createJobOwner(objectData[1], objectData[2]);
                 System.out.println("=== Server has accepted job user ===\n");
@@ -117,19 +131,6 @@ public class ServerConnection {
                 clientOutputStreams.get("controller").writeUTF("request-confirmation");
             }
 
-            if(request.equals("accept")){
-                if(objectData[0].equals("user-request-job")){
-                    System.out.println("=== Job has been approved. Creating job... ===");
-                    acceptIncomingJob(objectData);
-                    clientOutputStreams.get("client").writeUTF("accepted-job");
-                }
-
-                if(objectData[0].equals("user-request-vehicle")){
-                    System.out.println("=== Vehicle has been approved. Creating vehicle... ===");
-                    acceptIncomingVehicle(objectData);
-                    clientOutputStreams.get("client").writeUTF("accepted-vehicle");
-                }
-            }
             if(request.equals("reject")){
                 System.out.println("=== Controller has denied object creation. ===\n");
             }
