@@ -59,6 +59,9 @@ public class jobCreationGui {
                 jobID.setText("");
                 jobDuration.setText("");
                 jobDeadline.setText("");
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(SubmitJob,"Job submission has been accepted.", "Accepted", JOptionPane.INFORMATION_MESSAGE);
+                });
             }else if ("rejected-job".contains(request)){
                 SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(SubmitJob,"Job submission was rejected. Please try again.", "Rejection", JOptionPane.INFORMATION_MESSAGE);

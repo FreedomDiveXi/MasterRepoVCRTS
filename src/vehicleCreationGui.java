@@ -64,6 +64,9 @@ public class vehicleCreationGui {
                 vehicleModel.setText("");
                 vehicleMake.setText("");
                 vehicleYear.setText("");
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(submitVehicle,"Vehicle submission has been accepted.", "Accepted", JOptionPane.INFORMATION_MESSAGE);
+                });
             }else if ("rejected-vehicle".contains(request)){
                 SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(submitVehicle,"Vehicle submission was rejected. Please try again.", "Rejection", JOptionPane.INFORMATION_MESSAGE);
