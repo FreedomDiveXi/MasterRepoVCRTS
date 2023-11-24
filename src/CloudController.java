@@ -1,6 +1,10 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,6 +31,16 @@ public class CloudController {
     private VehicleOwner currentVehicleOwner;
     private Job pendingJob;
     private Vehicle pendingVehicle;
+    static Connection connection = null;
+
+    // replace "vcs" with the name of personal database.
+    static String url = "jdbc:mysql://localhost:3306/vcs";
+
+    //default username, replace if needed
+    static String username = "root";
+
+    // replace with sql password
+    static String password = "";
 
 
     public CloudController(){
@@ -46,7 +60,6 @@ public class CloudController {
 
         // used to store the total time it took to process jobs
         totalCompletionTime = 0;
-        init();
     }
 
     /**
@@ -146,13 +159,14 @@ public class CloudController {
      * Can only accept one job at a time.
      * @return a string acceptance message
      */
-    public String acceptJob(){
+    public String acceptJob() throws SQLException {
         String temp = "Your job ID: " + pendingJob.getJobID() +" has been registered.\n";
 
         addJobToList(getAvailableJobs(), pendingJob);
         assignJobToVehicle(pendingJob);
         getCurrentJobOwner().addJob(pendingJob); // add the job to the current job user
         writeJob(pendingJob);
+        updateDatabase(pendingJob);
         pendingJob = null;
         return temp;
     }
@@ -191,6 +205,22 @@ public class CloudController {
     public String rejectVehicle(){
         return "Your vehicle has been denied. Please try again.";
     }
+    public void updateDatabase(Job job) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+        String data = "'"+ job.getJobOwnerName()+"'," + job.getJobID() +"," +job.getJobDurationTime();
+        if(job.getJobDeadline() != null){
+            data += "," + job.getJobDeadline();
+        }else{
+            data += ",NULL";
+        }
+
+
+        String sql = "INSERT INTO job_table (clientID, jobID, jobDuration, jobDeadline)" +"values("+data+")";
+
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        connection.close();
+    }
 
     /**
      * Method will write to user database.
@@ -199,8 +229,11 @@ public class CloudController {
     private void writeUser(VehicleOwner vehicleOwner){
         try{
             BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt", true));
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            String time = now.format(dtf);
 
-            String temp = vehicleOwner.getUsername() +":" + vehicleOwner.getHashedPassword();
+            String temp = time +":"+vehicleOwner.getUsername() +":" + vehicleOwner.getHashedPassword();
             writer.write(temp);
             writer.newLine();
             writer.close();
@@ -218,8 +251,11 @@ public class CloudController {
 
         try{
             BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt",true));
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            String time = now.format(dtf);
 
-            String temp = jobOwner.getUsername() +":" + jobOwner.getHashedPassword();
+            String temp = time + ":" + jobOwner.getUsername() +":" + jobOwner.getHashedPassword();
             writer.write(temp);
             writer.newLine();
             writer.close();
