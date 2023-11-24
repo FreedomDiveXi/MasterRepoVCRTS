@@ -187,24 +187,6 @@ public class CloudController {
         pendingVehicle = null;
         return temp;
     }
-
-    /**
-     * Rejects a created job. If a job is rejected it's not registered to the system
-     * Can only reject one job at a time.
-     * @return a string rejection message
-     */
-    public String rejectJob(){
-        return "Your job has been denied. Please try again.";
-    }
-
-    /**
-     * Rejects a created vehicle. If a vehicle is rejected it's not registered to the system
-     * Can only reject one vehicle at a time.
-     * @return a string rejection message
-     */
-    public String rejectVehicle(){
-        return "Your vehicle has been denied. Please try again.";
-    }
     public void updateDatabase(Job job) throws SQLException {
         connection = DriverManager.getConnection(url,username,password);
         String data = "'"+ job.getJobOwnerName()+"'," + job.getJobID() +"," +job.getJobDurationTime();
@@ -217,6 +199,15 @@ public class CloudController {
 
         String sql = "INSERT INTO job_table (clientID, jobID, jobDuration, jobDeadline)" +"values("+data+")";
 
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        connection.close();
+    }
+    public void updateDatabase(Vehicle vehicle) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+        String data = "'" + vehicle.getVehicleOwner() + "'," + vehicle.getVehicleId() +"," + "'" + vehicle.getModel()+ "'," + "'"+ vehicle.getMake()+ "'," + vehicle.getYear();
+
+        String sql = "INSERT INTO vehicle_table (ownerID, vehicleID, model, make, year)" +"values("+data+")";
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         connection.close();
