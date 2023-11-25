@@ -66,12 +66,13 @@ public class CloudController {
      * @param password String value provided by gui
      * @return returns the created job owner
      */
-    public JobOwner createJobOwner(String username, String password){
+    public JobOwner createJobOwner(String username, String password) throws SQLException {
         String time = getTime();
         JobOwner temp = new JobOwner(username,password, time);
         setCurrentJobOwner(temp);
         writeUser(temp);
         allUsers.getUsers().add(temp); // adds user's to the user list
+        uploadToDatabase(getCurrentJobOwner());
         return temp;
     }
 
@@ -81,12 +82,13 @@ public class CloudController {
      * @param password String value provided by gui
      * @return returns the created vehicle owner
      */
-    public VehicleOwner createVehicleOwner(String username, String password){
+    public VehicleOwner createVehicleOwner(String username, String password) throws SQLException {
         String time = getTime();
         VehicleOwner temp = new VehicleOwner(username,password, time);
         setCurrentVehicleOwner(temp);
         writeUser(temp);
         allUsers.getUsers().add(temp); // adds user's to the user list
+        uploadToDatabase(getCurrentVehicleOwner());
         return temp;
     }
 
@@ -173,6 +175,26 @@ public class CloudController {
         return temp;
     }
 
+    public void uploadToDatabase(JobOwner jobOwner) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+        String data ="'" + jobOwner.getTimeCreated() + "','" + jobOwner.getUsername() + "','" + jobOwner.getHashedPassword() + "','job-owner'";
+
+        String sql = "INSERT INTO user_table (timeCreated, userName, password, type)" +"values("+data+")";
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        connection.close();
+    }
+
+    public void uploadToDatabase(VehicleOwner vehicleOwner) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+        String data ="'" + vehicleOwner.getTimeCreated() + "','" + vehicleOwner.getUsername() + "','" + vehicleOwner.getHashedPassword() + "','vehicle-owner'";
+
+        String sql = "INSERT INTO user_table (timeCreated, userName, password, type)" +"values("+data+")";
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        connection.close();
+    }
+
     public void uploadToDatabase(Job job) throws SQLException {
         connection = DriverManager.getConnection(url,username,password);
         String data = "'" + job.getTimeCreated() + "','"+ job.getClientID()+"'," + job.getJobID() +"," +job.getJobDurationTime();
@@ -188,6 +210,7 @@ public class CloudController {
         statement.executeUpdate(sql);
         connection.close();
     }
+
     public void uploadToDatabase(Vehicle vehicle) throws SQLException {
         connection = DriverManager.getConnection(url,username,password);
         String data ="'" + vehicle.getTimeCreated() + "','" + vehicle.getOwnerID() + "'," + vehicle.getVehicleID() +"," + "'" + vehicle.getModel()+ "'," + "'"+ vehicle.getMake()+ "'," + vehicle.getYear();
@@ -196,6 +219,209 @@ public class CloudController {
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         connection.close();
+    }
+
+    /**
+     * updates a job entry on database
+     * @param currentJob that wants to update value in database
+     */
+    private void updateDatabase(Job currentJob) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+
+        //todo temp solution. but a nice way to target the processing job without much effort
+        String sql = "UPDATE job_table SET isCompleted = 'true'," + "executionTime=" + currentJob.getJobExecutionTime()+ " WHERE timeCreated = '" + currentJob.getTimeCreated() +"'";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.executeUpdate(sql);
+        connection.close();
+    }
+
+    /**
+     * This will begin processing all the jobs within the available job list, and returns a list of strings containing
+     * each jobs execution information. It first starts the job migration, which moves the available jobs onto the active
+     * job list. Then the active job list will begin processing removing each job from the list at a time. Each time we
+     * remove a job, we move the job into the completed job list, and we release/remove the vehicle(s) associated with
+     * the job. Resets total completion time when done processing jobs in active job list.
+     * @return returns a processed job string.
+     */
+
+    public String startProcessing() throws SQLException {
+        // first migrate the available vehicles to the active job list
+        startJobMigration();
+        // once everything is on the list and updated we process
+        StringBuilder str = new StringBuilder();
+        str.append("<html>");
+        while(!getActiveJobs().isEmpty()){
+            Job currentJob= getActiveJobs().remove();
+
+            str.append(formatActiveJobData(currentJob));
+
+            addJobToList(getCompletedJobs(),currentJob);
+            releaseVehicles(currentJob);
+            currentJob.setJobCompletion("true");
+            updateDatabase(currentJob);
+        }
+        if(getTotalCompletionTime() == 0){
+            str.append("---NO JOBS HAVE BEEN SUBMITTED---");
+        }else{
+            str.append("<br/>---Total Time Execution: ")
+                    .append(getTotalCompletionTime())
+                    .append("---<br/>");
+        }
+        str.append("</html>");
+
+        return String.valueOf(str);
+    }
+
+    /**
+     * Migrates the jobs from available job list to the active job list so that it can be processed.
+     * System updates the total execution time in the system and stores the time the job was processed on the job itself.
+     * Only jobs associated with a vehicle will be migrated onto the active job list.
+     * If the current job happens to have no vehicles associated to it, we try and add a vehicle. If no vehicles are
+     * available we return the job back onto the available job list
+     */
+    private void startJobMigration(){
+        while(isJobsPresent()){
+            Job currentAvailableJob = getAvailableJobs().remove();
+
+            // if there are any vehicles adds any if possible
+            if(currentAvailableJob.getAssignedVehicles().isEmpty()){
+                assignJobToVehicle(currentAvailableJob);
+            }
+
+            // if it couldn't add a vehicle it goes back onto the available job list
+            if(currentAvailableJob.getAssignedVehicles().isEmpty()){
+                addJobToList(getAvailableJobs(), currentAvailableJob);
+                break;
+            }
+
+            setTotalCompletionTime(currentAvailableJob.getJobDurationTime());
+            currentAvailableJob.setExecutionTime(getTotalCompletionTime());
+            addJobToList(getActiveJobs(),currentAvailableJob);
+        }
+    }
+
+    /**
+     * Assigns a job to vehicle(s). The number of vehicles that go to a job will be determined by a redundancy that the
+     * system creates. This method is run on job creation automatically.
+     * If there are no available vehicles it does not assign a vehicle to the job.
+     * Every time we assign a job to vehicle, we remove that vehicle from the available vehicle list and onto the in
+     * use vehicle list. It also copies an image of the job onto the vehicle itself. The job also stores an image of the
+     * assigned vehicle
+     * @param job Job object provided by method calling
+     */
+    private void assignJobToVehicle(Job job) {
+        int numVehicles = generateRedundancy();
+
+        while(numVehicles > 0){
+            if(getAvailableVehicles().isEmpty())
+                break;
+            int lastElement = availableVehicles.size()-1;
+            Vehicle assignedVehicle = availableVehicles.remove(lastElement); // aux vehicle
+
+            assignedVehicle.setAssignedJob(job);
+            job.addAssignedVehicle(assignedVehicle);
+
+            removeVehicleFromList(getAvailableVehicles(), assignedVehicle); // when vehicle assigned removed from available list
+            addVehicleToList(getInUseVehicles(), assignedVehicle);
+            numVehicles--;
+        }
+    }
+
+    /**
+     * Release/removes the vehicles associated to a job. On removal, will remove the vehicle from the in use vehicle
+     * list, removes the assigned job from the vehicle, then moves the vehicle back onto the available vehicle
+     * list
+     * @param job job object
+     */
+    private void releaseVehicles(Job job){
+        while(!job.getAssignedVehicles().isEmpty()){
+            int lastElement = job.getAssignedVehicles().size()-1;
+            Vehicle assignedVehicle = job.getAssignedVehicles().remove(lastElement);
+
+            removeVehicleFromList(getInUseVehicles(), assignedVehicle);
+            assignedVehicle.removeAssignedJob();
+            addVehicleToList(getAvailableVehicles(), assignedVehicle);
+        }
+    }
+
+    /**
+     * generates the redundancy of the job. Used to know how many vehicles go to a job. Generating a value from
+     * 0-2 based on the total amount of vehicles available.
+     * @return returns a value 0-2
+     */
+    public int generateRedundancy() {
+        if(availableVehicles.isEmpty())
+            return 0;
+        if(availableVehicles.size() < 2)
+            return 1;
+        return (int)Math.floor(Math.random() * (2-1 + 1 ) + 1);
+    }
+
+    // testing methods
+
+    /**
+     * Initializes a set of vehicles to mimic data load in
+     */
+    public void init() throws SQLException {
+        createVehicleOwner("mark","StrongPassword1231");
+        createVehicle("mark", "1000", "civic", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "999", "pilot", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "998", "cr-v", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "997", "accord", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "996", "hr-v", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "995", "civic type-r", "honda", "2023");
+        acceptVehicle();
+    }
+
+    /**
+     * Prints all the completed jobs.
+     * @return A formatted string of the jobs completed
+     */
+    private String printCompletedJobs(){
+        StringBuilder str = new StringBuilder();
+        for(Job currentJob: getCompletedJobs()){
+
+            str.append("Job Owner Name: ").append(currentJob.getClientID()).append("\n");
+            str.append("Job Id: ").append(currentJob.getJobID()).append("\n");
+            str.append("Job Duration: ")
+                    .append(currentJob.getJobDurationTime())
+                    .append(" hours").append("\n");
+
+            if(currentJob.getJobDeadline() != null)
+                str.append("Job Deadline: ").append(currentJob.getJobDeadline()).append("\n");
+
+            str.append("Time job was completed: ")
+                    .append(currentJob.getJobExecutionTime())
+                    .append(" hours").append("\n\n");
+        }
+        return String.valueOf(str);
+    }
+
+    // helper methods
+
+    /**
+     * Returns a formatted processed job data. Method is exclusive to the job processing algorithm.
+     * @param job Job object passed by method calling.
+     * @return  Returns the processed job data in a formatted String
+     */
+    private String formatActiveJobData(Job job){
+        String str = "";
+        str += "=========" + "<br/>";
+        str += "Job Owner Name : " + job.getClientID() + "<br/>";
+        str += "Job Id: " + job.getJobID() + "<br/>";
+        str += "Job Duration: " + job.getJobDurationTime() + "<br/>";
+
+        if(job.getJobDeadline() != null)
+            str += "Job Deadline: " + job.getJobDeadline() + "<br/>";
+
+        str += "Time Executed: " + job.getJobExecutionTime() + "<br/>";
+
+        return str;
     }
 
     /**
@@ -273,209 +499,6 @@ public class CloudController {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Assigns a job to vehicle(s). The number of vehicles that go to a job will be determined by a redundancy that the
-     * system creates. This method is run on job creation automatically.
-     * If there are no available vehicles it does not assign a vehicle to the job.
-     * Every time we assign a job to vehicle, we remove that vehicle from the available vehicle list and onto the in
-     * use vehicle list. It also copies an image of the job onto the vehicle itself. The job also stores an image of the
-     * assigned vehicle
-     * @param job Job object provided by method calling
-     */
-    private void assignJobToVehicle(Job job) {
-        int numVehicles = generateRedundancy();
-
-        while(numVehicles > 0){
-            if(getAvailableVehicles().isEmpty())
-                break;
-            int lastElement = availableVehicles.size()-1;
-            Vehicle assignedVehicle = availableVehicles.remove(lastElement); // aux vehicle
-
-            assignedVehicle.setAssignedJob(job);
-            job.addAssignedVehicle(assignedVehicle);
-
-            removeVehicleFromList(getAvailableVehicles(), assignedVehicle); // when vehicle assigned removed from available list
-            addVehicleToList(getInUseVehicles(), assignedVehicle);
-            numVehicles--;
-        }
-    }
-
-    /**
-     * This will begin processing all the jobs within the available job list, and returns a list of strings containing
-     * each jobs execution information.
-     * It first starts the job migration, which moves the available jobs onto the active job list. Then the active job
-     * list will begin processing removing each job from the list at a time. Each time we remove a job, we move the job
-     * into the completed job list, and we release/remove the vehicle(s) associated with the job. Resets total completion
-     * time when done processing jobs in active job list.
-     * @return returns a processed job string.
-     */
-
-    public String startProcessing() throws SQLException {
-        // first migrate the available vehicles to the active job list
-        startJobMigration();
-        // once everything is on the list and updated we process
-        StringBuilder str = new StringBuilder();
-        str.append("<html>");
-        while(!getActiveJobs().isEmpty()){
-            Job currentJob= getActiveJobs().remove();
-
-            str.append(formatActiveJobData(currentJob));
-
-            addJobToList(getCompletedJobs(),currentJob);
-            releaseVehicles(currentJob);
-            currentJob.setJobCompletion("true");
-            updateDatabase(currentJob);
-        }
-        if(getTotalCompletionTime() == 0){
-            str.append("---NO JOBS HAVE BEEN SUBMITTED---");
-        }else{
-            str.append("<br/>---Total Time Execution: ")
-                    .append(getTotalCompletionTime())
-                    .append("---<br/>");
-        }
-        str.append("</html>");
-
-        return String.valueOf(str);
-    }
-
-    /**
-     * Migrates the jobs from available job list to the active job list so that it can be processed.
-     * Only jobs associated with a vehicle will be migrated onto the active job list.
-     * If the current job happens to have no vehicles associated to it, we try and add a vehicle. If it still doesn't
-     * have a vehicle we return the job back onto the available job list
-     */
-    private void startJobMigration(){
-        while(isJobsPresent()){
-            Job currentAvailableJob = getAvailableJobs().remove();
-
-            // if there are any vehicles adds any if possible
-            if(currentAvailableJob.getAssignedVehicles().isEmpty()){
-                assignJobToVehicle(currentAvailableJob);
-            }
-
-            // if it couldn't add a vehicle it goes back onto the available job list
-            if(currentAvailableJob.getAssignedVehicles().isEmpty()){
-                addJobToList(getAvailableJobs(), currentAvailableJob);
-                break;
-            }
-
-            setTotalCompletionTime(currentAvailableJob.getJobDurationTime());
-
-            currentAvailableJob.setExecutionTime(getTotalCompletionTime());
-            addJobToList(getActiveJobs(),currentAvailableJob);
-        }
-    }
-
-    /**
-     * Release/removes the vehicles associated to a job. On removal, will remove the vehicle from the in use vehicle
-     * list, removes the assigned job from the vehicle, then moves the vehicle back onto the available vehicle
-     * list
-     * @param job job object
-     */
-    private void releaseVehicles(Job job){
-        while(!job.getAssignedVehicles().isEmpty()){
-            int lastElement = job.getAssignedVehicles().size()-1;
-            Vehicle assignedVehicle = job.getAssignedVehicles().remove(lastElement);
-
-            removeVehicleFromList(getInUseVehicles(), assignedVehicle);
-            assignedVehicle.removeAssignedJob();
-            addVehicleToList(getAvailableVehicles(), assignedVehicle);
-        }
-    }
-
-    /**
-     * Returns a formatted processed job data. Method is exclusive to the job processing algorithm.
-     * @param job Job object passed by method calling.
-     * @return  Returns the processed job data in a formatted String
-     */
-    private String formatActiveJobData(Job job){
-        String str = "";
-        str += "=========" + "<br/>";
-        str += "Job Owner Name : " + job.getClientID() + "<br/>";
-        str += "Job Id: " + job.getJobID() + "<br/>";
-        str += "Job Duration: " + job.getJobDurationTime() + "<br/>";
-
-        if(job.getJobDeadline() != null)
-            str += "Job Deadline: " + job.getJobDeadline() + "<br/>";
-
-        str += "Time Executed: " + job.getJobExecutionTime() + "<br/>";
-
-        return str;
-    }
-
-    /**
-     * updates job completion status
-     * @param currentJob job that's currently processing
-     */
-    private void updateDatabase(Job currentJob) throws SQLException {
-        connection = DriverManager.getConnection(url,username,password);
-
-        //todo temp solution. but a nice way to target the processing job without much effort
-        String sql = "UPDATE job_table SET isCompleted = 'true' WHERE timeCreated = '" + currentJob.getTimeCreated() +"'";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.executeUpdate(sql);
-        connection.close();
-    }
-
-    /**
-     * generates the redundancy of the job. Used to know how many vehicles go to a job. Generating a value from
-     * 0-2 based on the total amount of vehicles available.
-     * @return returns a value 0-2
-     */
-    public int generateRedundancy() {
-        if(availableVehicles.isEmpty())
-            return 0;
-        if(availableVehicles.size() < 2)
-            return 1;
-        return (int)Math.floor(Math.random() * (2-1 + 1 ) + 1);
-    }
-
-    // testing methods
-    /**
-     * Initializes a set of vehicles to mimic data load in
-     */
-    public void init() throws SQLException {
-        createVehicleOwner("mark","StrongPassword1231");
-        createVehicle("mark", "1000", "civic", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "999", "pilot", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "998", "cr-v", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "997", "accord", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "996", "hr-v", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "995", "civic type-r", "honda", "2023");
-        acceptVehicle();
-    }
-
-    /**
-     * Prints all the completed jobs.
-     * @return A formatted string of the jobs completed
-     */
-    private String printCompletedJobs(){
-        StringBuilder str = new StringBuilder();
-        for(Job currentJob: getCompletedJobs()){
-
-            str.append("Job Owner Name: ").append(currentJob.getClientID()).append("\n");
-            str.append("Job Id: ").append(currentJob.getJobID()).append("\n");
-            str.append("Job Duration: ")
-                    .append(currentJob.getJobDurationTime())
-                    .append(" hours").append("\n");
-
-            if(currentJob.getJobDeadline() != null)
-                str.append("Job Deadline: ").append(currentJob.getJobDeadline()).append("\n");
-
-            str.append("Time job was completed: ")
-                    .append(currentJob.getJobExecutionTime())
-                    .append(" hours").append("\n\n");
-        }
-        return String.valueOf(str);
-    }
-
-    // helper methods
 
     /**
      * Adds a job to a job queue.
