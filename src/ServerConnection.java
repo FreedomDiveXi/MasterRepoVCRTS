@@ -198,7 +198,7 @@ public class ServerConnection {
 			System.out.println(controller.acceptJob());
         }
 
-        public void acceptIncomingVehicle(String[] request) {
+        public void acceptIncomingVehicle(String[] request) throws SQLException {
 			controller.createVehicle(request[1],request[2],request[3],request[4],request[5]);
 			System.out.println(controller.acceptVehicle());
         }

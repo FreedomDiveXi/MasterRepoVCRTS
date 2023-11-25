@@ -3,8 +3,8 @@ import java.util.ArrayList;
 public class JobOwner extends User {
     private ArrayList<Job> ownedJobs;
 
-    public JobOwner(String username, String password) {
-        super(username, password);
+    public JobOwner(String username, String password, String creationTime) {
+        super(username, password, creationTime);
         this.ownedJobs = new ArrayList<>();
     }
 
