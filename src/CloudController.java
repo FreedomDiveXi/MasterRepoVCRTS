@@ -232,7 +232,7 @@ public class CloudController {
         connection = DriverManager.getConnection(url,username,password);
 
         //todo temp solution. but a nice way to target the processing job without much effort
-        String sql = "UPDATE job_table SET isCompleted = 'true'," + "executionTime=" + currentJob.getJobExecutionTime()+ " WHERE timeCreated = '" + currentJob.getTimeCreated() +"'";
+        String sql = "UPDATE job_table SET isCompleted = 'true'," + "executionTime=" + currentJob.getJobExecutionTime()+ ", redundancy = " + currentJob.getRedundancy() + " WHERE timeCreated = '" + currentJob.getTimeCreated() +"'";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.executeUpdate(sql);
         connection.close();
