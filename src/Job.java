@@ -6,6 +6,7 @@ public class Job {
     private int jobDurationTime;
     private String jobDeadline; // date
     private int executionTime;
+    private int redundancy;
     private String timeCreated;
     private String jobCompletion;
 
@@ -26,6 +27,7 @@ public class Job {
         timeCreated = creationTime;
         jobCompletion = "false";
         assignedVehicles = new ArrayList<>();
+        redundancy = 0;
     }
 
     /**
@@ -44,53 +46,58 @@ public class Job {
         timeCreated = creationTime;
         jobCompletion = "false";
         assignedVehicles = new ArrayList<>();
+        redundancy = 0;
     }
 
     // Getter and Setter methods
-public String getClientID() {
-    return clientID;
-}
+    public String getClientID() {
+        return clientID;
+    }
+    public int getRedundancy(){return redundancy;}
+    public void setRedundancy(int redundancy){
+        this.redundancy = redundancy;
+    }
 
-public int getJobID() {
-    return jobID;
-}
+    public int getJobID() {
+        return jobID;
+    }
 
-public int getJobDurationTime() {
-    return jobDurationTime;
-}
+    public int getJobDurationTime() {
+        return jobDurationTime;
+    }
 
-public String getJobDeadline() {
-    return jobDeadline;
-}
+    public String getJobDeadline() {
+        return jobDeadline;
+    }
 
-public String isJobCompletion() {
-    return jobCompletion;
-}
+    public String isJobCompletion() {
+        return jobCompletion;
+    }
 
-public void setJobCompletion(String jobCompletion) {
-    this.jobCompletion = jobCompletion;
-}
+    public void setJobCompletion(String jobCompletion) {
+        this.jobCompletion = jobCompletion;
+    }
 
-public int getJobExecutionTime(){
-    return executionTime;
-}
+    public int getJobExecutionTime(){
+        return executionTime;
+    }
 
-public void setExecutionTime(int executeTime){
-    this.executionTime = executeTime;
-}
+    public void setExecutionTime(int executeTime){
+        this.executionTime = executeTime;
+    }
 
-public void addAssignedVehicle(Vehicle vehicle){
+    public void addAssignedVehicle(Vehicle vehicle){
         assignedVehicles.add(vehicle);
-}
-public void removeAssignedVehicle(Vehicle vehicle){
+    }
+    public void removeAssignedVehicle(Vehicle vehicle){
         assignedVehicles.removeIf(n -> n.getVehicleID() == vehicle.getVehicleID());
-}
-public ArrayList<Vehicle> getAssignedVehicles() {
-    return assignedVehicles;
-}
+    }
+    public ArrayList<Vehicle> getAssignedVehicles() {
+        return assignedVehicles;
+    }
 
-public String getTimeCreated(){
+    public String getTimeCreated(){
         return timeCreated;
-}
+    }
 }
 

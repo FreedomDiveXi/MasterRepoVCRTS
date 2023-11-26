@@ -203,8 +203,9 @@ public class CloudController {
         }else{
             data += ",NULL";
         }
+        data += ",'" + getCurrentJobOwner().getUsername() +"'," + job.getRedundancy();
 
-        String sql = "INSERT INTO job_table (timeCreated, clientID, jobID, jobDuration, jobDeadline)" +"values("+data+")";
+        String sql = "INSERT INTO job_table (timeCreated, clientID, jobID, jobDuration, jobDeadline, accountOrigin, redundancy)" +"values("+data+")";
 
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
@@ -215,7 +216,9 @@ public class CloudController {
         connection = DriverManager.getConnection(url,username,password);
         String data ="'" + vehicle.getTimeCreated() + "','" + vehicle.getOwnerID() + "'," + vehicle.getVehicleID() +"," + "'" + vehicle.getModel()+ "'," + "'"+ vehicle.getMake()+ "'," + vehicle.getYear();
 
-        String sql = "INSERT INTO vehicle_table (timeCreated, ownerID, vehicleID, model, make, year)" +"values("+data+")";
+        data += ",'" + getCurrentVehicleOwner().getUsername() +"'";
+
+        String sql = "INSERT INTO vehicle_table (timeCreated, ownerID, vehicleID, model, make, year, accountOrigin)" +"values("+data+")";
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         connection.close();
@@ -311,6 +314,7 @@ public class CloudController {
      */
     private void assignJobToVehicle(Job job) {
         int numVehicles = generateRedundancy();
+        job.setRedundancy(numVehicles);
 
         while(numVehicles > 0){
             if(getAvailableVehicles().isEmpty())
