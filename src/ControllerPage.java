@@ -85,7 +85,7 @@ public class ControllerPage extends JFrame {
 			message += "Client ID: " + data[1] + "<br>Job ID: " + data[2] + "<br>Job Duration:" + data[3] +"<br>Job Deadline: " +data[4];
 		}
 		if (data.length == 6) {
-			message += "Owner ID: " + data[1] + "<br>Vehicle ID: " + data[2] + "<br>Vehicle Model: " + data[3] +"<br>Vehicle Make: " +data[4] + "<br>Vehicle Year: " + data[5];
+			message += "Owner ID: " + data[1] + "<br>Vehicle ID: " + data[2] + "<br>Vehicle Model: " + data[3] +"<br>Vehicle Brand: " +data[4] + "<br>Vehicle Year: " + data[5];
 		}
 		JLabel temp = new JLabel("<html>Do you want to accept the following request:<br>"+message +"</html>");
 
