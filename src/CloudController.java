@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.sql.*;
 
 public class CloudController {
     /**
@@ -27,6 +28,12 @@ public class CloudController {
     private VehicleOwner currentVehicleOwner;
     private Job pendingJob;
     private Vehicle pendingVehicle;
+    private static Connection connectionSQL = null;
+    private static String urlSQL = "jdbc:mysql://localhost:3306/vcrts?useTimezone=true&serverTimezone=UTC";
+    private static String usernameSQL = "root";
+    private static String passwordSQL = "sqlpass2023.";
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private LocalDateTime now;
 
 
     public CloudController(){
@@ -75,6 +82,15 @@ public class CloudController {
      * @return returns the created job owner
      */
     public JobOwner createJobOwner(String username, String password){
+    	try {
+        	connectionSQL = DriverManager.getConnection(urlSQL, usernameSQL, passwordSQL);
+        	String sql = "INSERT INTO jobowner" + "(Username , Password)" + "VALUES ('" + username + "', '" + password + "')";
+        	Statement statement = connectionSQL.createStatement();
+        	statement.executeUpdate(sql);
+        }
+        catch (SQLException e) {
+        	e.getMessage();
+        }
         JobOwner temp = new JobOwner(username,password);
         setCurrentJobOwner(temp);
         writeUser(temp);
@@ -89,6 +105,15 @@ public class CloudController {
      * @return returns the created vehicle owner
      */
     public VehicleOwner createVehicleOwner(String username, String password){
+    	try {
+        	connectionSQL = DriverManager.getConnection(urlSQL, usernameSQL, passwordSQL);
+        	String sql = "INSERT INTO vehicleowner" + "(Username , Password)" + "VALUES ('" + username + "', '" + password + "')";
+        	Statement statement = connectionSQL.createStatement();
+        	statement.executeUpdate(sql);
+        }
+        catch (SQLException e) {
+        	e.getMessage();
+        }
         VehicleOwner temp = new VehicleOwner(username,password);
         setCurrentVehicleOwner(temp);
         writeUser(temp);
@@ -135,8 +160,8 @@ public class CloudController {
      * @param year String provided by gui
      * @return returns the newly created vehicle MUST BE A NUMBER
      */
-    public Vehicle createVehicle(String ownerId, String vehicleId,String model, String make, String year){
-        pendingVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year));
+    public Vehicle createVehicle(String ownerId, String vehicleId, String model, String brand, String year){
+        pendingVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), model, brand, Integer.parseInt(year));
         return pendingVehicle;
     }
 
@@ -153,6 +178,15 @@ public class CloudController {
         assignJobToVehicle(pendingJob);
         getCurrentJobOwner().addJob(pendingJob); // add the job to the current job user
         writeJob(pendingJob);
+        try {
+        	String sql = "INSERT INTO joblist" + "(ClientID , JobID , JobDuration , JobDeadline , Timestamp)" + 
+        					"VALUES ('" + pendingJob.getJobOwnerName() + "', '" + pendingJob.getJobID() + "', '" + pendingJob.getJobDurationTime() + "', '" + pendingJob.getJobDeadline() + "', '" + dtf.format(now) + "')";
+        	Statement statement = connectionSQL.createStatement();
+        	statement.executeUpdate(sql);
+        }
+        catch (SQLException e) {
+        	e.getMessage();
+        }
         pendingJob = null;
         return temp;
     }
@@ -170,6 +204,15 @@ public class CloudController {
         getCurrentVehicleOwner().addVehicleToVehicleUserList(pendingVehicle); // adds the vehicle to the current vehicle user
         // method that writes vehicle to file.
         writeVehicle(pendingVehicle);
+        try {
+        	String sql = "INSERT INTO vehiclelist" + "(ClientID , VehicleID , VehicleModel , VehicleBrand , VehicleYear , Timestamp)" + 
+        					"VALUES ('" + pendingVehicle.getVehicleOwner() + "', '" + pendingVehicle.getVehicleId() + "', '" + pendingVehicle.getModel() + "', '" + pendingVehicle.getBrand() + "', '" + pendingVehicle.getYear() + "', '" + dtf.format(now) + "')";
+        	Statement statement = connectionSQL.createStatement();
+        	statement.executeUpdate(sql);
+        }
+        catch (SQLException e) {
+        	e.getMessage();
+        }
         pendingVehicle = null;
         return temp;
     }
@@ -236,8 +279,7 @@ public class CloudController {
     private void writeJob(Job job){
         try{
             BufferedWriter writer = new BufferedWriter(new FileWriter("JobDatabase.txt",true));
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
+            now = LocalDateTime.now();
 
             String temp = dtf.format(now) + " : "+job.getJobOwnerName() +" : " + job.getJobID() + " : " + job.getJobDurationTime();
 
@@ -261,10 +303,9 @@ public class CloudController {
     private void writeVehicle(Vehicle vehicle){
         try{
             BufferedWriter writer = new BufferedWriter(new FileWriter("VehicleDatabase.txt",true));
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
+            now = LocalDateTime.now();
 
-            String temp = dtf.format(now) + " : " + vehicle.getVehicleOwner() + " : " + vehicle.getVehicleId() + " : " + vehicle.getModel() + " : " + vehicle.getMake() + " : " +vehicle.getYear();
+            String temp = dtf.format(now) + " : " + vehicle.getVehicleOwner() + " : " + vehicle.getVehicleId() + " : " + vehicle.getModel() + " : " + vehicle.getBrand() + " : " +vehicle.getYear();
 
             writer.write(temp);
             writer.newLine();
@@ -438,8 +479,8 @@ public class CloudController {
 
             str.append("Vehicle Owner Name: ").append(currentVehicle.getVehicleOwner()).append("\n");
             str.append("Vehicle Id: ").append(currentVehicle.getVehicleId()).append("\n");
-            str.append("Vehicle make: ").append(currentVehicle.getMake()).append("\n");
             str.append("Vehicle model: ").append(currentVehicle.getModel()).append("\n");
+            str.append("Vehicle brand: ").append(currentVehicle.getBrand()).append("\n");
             str.append("Vehicle year: ").append(currentVehicle.getYear()).append("\n\n");
         }
         return String.valueOf(str);
