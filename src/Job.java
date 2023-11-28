@@ -44,45 +44,47 @@ public class Job {
     }
 
     // Getter and Setter methods
-public String getJobOwnerName() {
-    return jobOwnerName;
-}
+    public String getJobOwnerName() {
+    	return jobOwnerName;
+    }
 
-public int getJobID() {
-    return jobID;
-}
+    public int getJobID() {
+    	return jobID;
+    }
 
-public int getJobDurationTime() {
-    return jobDurationTime;
-}
+    public int getJobDurationTime() {
+    	return jobDurationTime;
+    }
 
-public String getJobDeadline() {
-    return jobDeadline;
-}
+    public String getJobDeadline() {
+    	return jobDeadline;
+    }
 
-public boolean isJobCompletion() {
-    return jobCompletion;
-}
+    public boolean isJobCompletion() {
+    	return jobCompletion;
+    }
 
-public void setJobCompletion(boolean jobCompletion) {
-    this.jobCompletion = jobCompletion;
-}
+    public void setJobCompletion(boolean jobCompletion) {
+    	this.jobCompletion = jobCompletion;
+    }
 
-public int getJobExecutionTime(){
-    return executionTime;
-}
+    public int getJobExecutionTime(){
+    	return executionTime;
+    }
 
-public void setExecutionTime(int executeTime){
-    this.executionTime = executeTime;
-}
+    public void setExecutionTime(int executeTime){
+    	this.executionTime = executeTime;
+    }
 
-public void addAssignedVehicle(Vehicle vehicle){
+    public void addAssignedVehicle(Vehicle vehicle){
         assignedVehicles.add(vehicle);
-}
-public void removeAssignedVehicle(Vehicle vehicle){
+    }
+    
+    public void removeAssignedVehicle(Vehicle vehicle){
         assignedVehicles.removeIf(n -> n.getVehicleId() == vehicle.getVehicleId());
-}
-public ArrayList<Vehicle> getAssignedVehicles() {
-    return assignedVehicles;
-}
+    }
+    
+    public ArrayList<Vehicle> getAssignedVehicles() {
+    	return assignedVehicles;
+    }
 }
