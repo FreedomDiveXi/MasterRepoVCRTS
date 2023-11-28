@@ -34,7 +34,6 @@ public class userLoginGui {
         userLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         userLogin.setVisible(true);
 
-
         jobOwnerButton.addActionListener(new userIsJobOwnerListener());
         vehicleOwnerButton.addActionListener(new userIsVehicleOwnerListener());
         isJobOwner.addActionListener(new goToJobView());
@@ -83,7 +82,6 @@ public class userLoginGui {
             String messageOut = "user-request-ju" + "::" + username.getText() + "::" + password.getText();
             try {
                 clientConnection.sendMessage(messageOut);
-
                 if (clientConnection.receiveMessage().equals("user-accept")) {
                     new jobUserGui(clientConnection);
                 }
