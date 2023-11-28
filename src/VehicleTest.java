@@ -15,13 +15,13 @@ public class VehicleTest {
     @Test
     public void testGetMake() {
         Vehicle vehicle = new Vehicle("Dave", 3, "Toyota", "Camry", 2020);
-        assertEquals("Toyota", vehicle.getMake());
+        assertEquals("Toyota", vehicle.getModel());
     }
 
     @Test
     public void testGetModel() {
         Vehicle vehicle = new Vehicle("Eve", 4, "Toyota", "Camry", 2021);
-        assertEquals("Camry", vehicle.getModel());
+        assertEquals("Camry", vehicle.getBrand());
     }
 
     @Test
@@ -35,8 +35,8 @@ public class VehicleTest {
         Vehicle vehicle7 = new Vehicle("John", 1, "Toyota", "Camry", 2020);
         assertEquals("John", vehicle7.getVehicleOwner());
         assertEquals(1, vehicle7.getVehicleId());
-        assertEquals("Toyota", vehicle7.getMake());
-        assertEquals("Camry", vehicle7.getModel());
+        assertEquals("Toyota", vehicle7.getModel());
+        assertEquals("Camry", vehicle7.getBrand());
         assertEquals(2020, vehicle7.getYear());
         assertNull(vehicle7.getAssignedJob());
 
