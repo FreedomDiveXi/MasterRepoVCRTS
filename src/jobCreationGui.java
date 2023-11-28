@@ -8,7 +8,7 @@ public class jobCreationGui {
     private static final int FRAME_HEIGHT = 500;
     JFrame SubmitJob = new JFrame();
     JPanel panel = new JPanel();
-    JLabel question1 = new JLabel("Client ID");
+    JLabel question1 = new JLabel("Client ID (username)");
     JTextField clientID = new JTextField(50);
     JLabel question2 = new JLabel("Job ID");
     JTextField jobID = new JTextField(50);
