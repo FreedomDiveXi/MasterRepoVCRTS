@@ -8,7 +8,7 @@ public class vehicleCreationGui {
     private static final int FRAME_HEIGHT = 500;
     JFrame SubmitVehicle = new JFrame();
     JPanel panel = new JPanel();
-    JLabel question1 = new JLabel("Owner ID");
+    JLabel question1 = new JLabel("Owner ID (username)");
     JTextField ownerID = new JTextField(50);
     JLabel question2 = new JLabel("Vehicle ID");
     JTextField vehicleID = new JTextField(50);
@@ -64,9 +64,6 @@ public class vehicleCreationGui {
                 vehicleModel.setText("");
                 vehicleMake.setText("");
                 vehicleYear.setText("");
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(submitVehicle,"Vehicle submission has been accepted.", "Accepted", JOptionPane.INFORMATION_MESSAGE);
-                });
             }else if ("rejected-vehicle".contains(request)){
                 SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(submitVehicle,"Vehicle submission was rejected. Please try again.", "Rejection", JOptionPane.INFORMATION_MESSAGE);
