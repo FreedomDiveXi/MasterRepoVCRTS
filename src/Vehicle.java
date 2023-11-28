@@ -6,16 +6,16 @@ import java.util.ArrayList;
 public class Vehicle {
     private int vehicleId;
     private String vehicleOwner;
-    private String make;
+    private String brand;
     private String model;
     private int year;
     private Job assignedJob = null;
 
-    public Vehicle(String vehicleOwner, int vehicleId, String make, String model, int year) {
+    public Vehicle(String vehicleOwner, int vehicleId, String model, String brand, int year) {
         this.vehicleId = vehicleId;
         this.vehicleOwner = vehicleOwner;
-        this.make = make;
         this.model = model;
+        this.brand = brand;
         this.year = year;
     }
 
@@ -27,12 +27,12 @@ public class Vehicle {
         return vehicleId;
     }
 
-    public String getMake() {
-        return make;
-    }
-
     public String getModel() {
         return model;
+    }
+    
+    public String getBrand() {
+        return brand;
     }
 
     public int getYear() {
