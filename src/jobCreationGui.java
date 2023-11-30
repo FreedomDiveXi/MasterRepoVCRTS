@@ -14,7 +14,7 @@ public class jobCreationGui {
     JTextField jobID = new JTextField(50);
     JLabel question3 = new JLabel("Approximately how long will this job take, please just type in the total amount of hours?");
     JTextField jobDuration = new JTextField(50);
-    JLabel question4 = new JLabel("If needed what is this job's deadline, please type in this format month-day-year");
+    JLabel question4 = new JLabel("If needed what is this job's deadline, please type in this format year-month-day");
     JTextField jobDeadline = new JTextField(50);
     JButton submitJob = new JButton("Submit");
     ClientConnection clientConnection;
