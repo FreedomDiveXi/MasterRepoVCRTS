@@ -1,6 +1,7 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,6 +28,16 @@ public class CloudController {
     private VehicleOwner currentVehicleOwner;
     private Job pendingJob;
     private Vehicle pendingVehicle;
+    static Connection connection = null;
+
+    // replace "vcs" with the name of personal database.
+    static String url = "jdbc:mysql://localhost:3306/vcs";
+
+    //default username, replace if needed
+    static String username = "root";
+
+    // replace with sql password
+    static String password = "";
 
 
     public CloudController(){
@@ -46,27 +57,8 @@ public class CloudController {
 
         // used to store the total time it took to process jobs
         totalCompletionTime = 0;
-        init();
     }
 
-    /**
-     * Initializes a set of vehicles to mimic data load in
-     */
-    public void init(){
-        createVehicleOwner("mark","StrongPassword1231");
-        createVehicle("mark", "1000", "civic", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "999", "pilot", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "998", "cr-v", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "997", "accord", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "996", "hr-v", "honda", "2023");
-        acceptVehicle();
-        createVehicle("mark", "995", "civic type-r", "honda", "2023");
-        acceptVehicle();
-    }
 
     /**
      * Creates and returns a new job owner.
@@ -74,11 +66,13 @@ public class CloudController {
      * @param password String value provided by gui
      * @return returns the created job owner
      */
-    public JobOwner createJobOwner(String username, String password){
-        JobOwner temp = new JobOwner(username,password);
+    public JobOwner createJobOwner(String username, String password) throws SQLException {
+        String time = getTime();
+        JobOwner temp = new JobOwner(username,password, time);
         setCurrentJobOwner(temp);
         writeUser(temp);
         allUsers.getUsers().add(temp); // adds user's to the user list
+        uploadToDatabase(getCurrentJobOwner());
         return temp;
     }
 
@@ -88,11 +82,13 @@ public class CloudController {
      * @param password String value provided by gui
      * @return returns the created vehicle owner
      */
-    public VehicleOwner createVehicleOwner(String username, String password){
-        VehicleOwner temp = new VehicleOwner(username,password);
+    public VehicleOwner createVehicleOwner(String username, String password) throws SQLException {
+        String time = getTime();
+        VehicleOwner temp = new VehicleOwner(username,password, time);
         setCurrentVehicleOwner(temp);
         writeUser(temp);
         allUsers.getUsers().add(temp); // adds user's to the user list
+        uploadToDatabase(getCurrentVehicleOwner());
         return temp;
     }
 
@@ -106,7 +102,8 @@ public class CloudController {
      * @return returns the created job without a deadline.
      */
     public Job createJob(String clientId, String jobId, String jobDurationTime){
-        pendingJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime));
+        String time = getTime();
+        pendingJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime),time);
         return pendingJob;
     }
 
@@ -120,7 +117,8 @@ public class CloudController {
      * @return returns the created job with a deadline.
      */
     public Job createJob(String clientId, String jobId, String jobDurationTime, String jobDeadline){
-        pendingJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime), jobDeadline);
+        String time = getTime();
+        pendingJob = new Job(clientId,Integer.parseInt(jobId), Integer.parseInt(jobDurationTime), jobDeadline, time);
         return pendingJob;
     }
 
@@ -136,7 +134,8 @@ public class CloudController {
      * @return returns the newly created vehicle MUST BE A NUMBER
      */
     public Vehicle createVehicle(String ownerId, String vehicleId,String model, String make, String year){
-        pendingVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year));
+        String time = getTime();
+        pendingVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year), time);
         return pendingVehicle;
     }
 
@@ -146,13 +145,14 @@ public class CloudController {
      * Can only accept one job at a time.
      * @return a string acceptance message
      */
-    public String acceptJob(){
+    public String acceptJob() throws SQLException {
         String temp = "Your job ID: " + pendingJob.getJobID() +" has been registered.\n";
 
         addJobToList(getAvailableJobs(), pendingJob);
         assignJobToVehicle(pendingJob);
         getCurrentJobOwner().addJob(pendingJob); // add the job to the current job user
         writeJob(pendingJob);
+        uploadToDatabase(pendingJob);
         pendingJob = null;
         return temp;
     }
@@ -162,158 +162,92 @@ public class CloudController {
      * Can only accept one vehicle at a time.
      * @return a string acceptance message
      */
-    public String acceptVehicle(){
-        String temp = "Your vehicle ID: " + pendingVehicle.getVehicleId() +" has been registered.\n";
+    public String acceptVehicle() throws SQLException {
+        String temp = "Your vehicle ID: " + pendingVehicle.getVehicleID() +" has been registered.\n";
 
         addVehicleToList(getAllVehicles(), pendingVehicle);
         addVehicleToList(getAvailableVehicles(), pendingVehicle);
         getCurrentVehicleOwner().addVehicleToVehicleUserList(pendingVehicle); // adds the vehicle to the current vehicle user
         // method that writes vehicle to file.
         writeVehicle(pendingVehicle);
+        uploadToDatabase(pendingVehicle);
         pendingVehicle = null;
         return temp;
     }
 
-    /**
-     * Rejects a created job. If a job is rejected it's not registered to the system
-     * Can only reject one job at a time.
-     * @return a string rejection message
-     */
-    public String rejectJob(){
-        return "Your job has been denied. Please try again.";
+    public void uploadToDatabase(JobOwner jobOwner) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+        String data ="'" + jobOwner.getTimeCreated() + "','" + jobOwner.getUsername() + "','" + jobOwner.getHashedPassword() + "','job-owner'";
+
+        String sql = "INSERT INTO user_table (timeCreated, userName, password, type)" +"values("+data+")";
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        connection.close();
     }
 
-    /**
-     * Rejects a created vehicle. If a vehicle is rejected it's not registered to the system
-     * Can only reject one vehicle at a time.
-     * @return a string rejection message
-     */
-    public String rejectVehicle(){
-        return "Your vehicle has been denied. Please try again.";
+    public void uploadToDatabase(VehicleOwner vehicleOwner) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+        String data ="'" + vehicleOwner.getTimeCreated() + "','" + vehicleOwner.getUsername() + "','" + vehicleOwner.getHashedPassword() + "','vehicle-owner'";
+
+        String sql = "INSERT INTO user_table (timeCreated, userName, password, type)" +"values("+data+")";
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        connection.close();
     }
 
-    /**
-     * Method will write to user database.
-     * @param vehicleOwner is the current vehicle owner.
-     */
-    private void writeUser(VehicleOwner vehicleOwner){
-        try{
-            BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt", true));
-
-            String temp = vehicleOwner.getUsername() +":" + vehicleOwner.getHashedPassword();
-            writer.write(temp);
-            writer.newLine();
-            writer.close();
-
-        }catch (IOException e){
-            e.printStackTrace();
+    public void uploadToDatabase(Job job) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+        String data = "'" + job.getTimeCreated() + "','"+ job.getClientID()+"'," + job.getJobID() +"," +job.getJobDurationTime();
+        if(job.getJobDeadline() != null){
+            data += ",'" + job.getJobDeadline()+"'";
+        }else{
+            data += ",NULL";
         }
+        data += ",'" + getCurrentJobOwner().getUsername() +"'," + job.getRedundancy();
+
+        String sql = "INSERT INTO job_table (timeCreated, clientID, jobID, jobDuration, jobDeadline, accountOrigin, redundancy)" +"values("+data+")";
+
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        connection.close();
+    }
+
+    public void uploadToDatabase(Vehicle vehicle) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
+        String data ="'" + vehicle.getTimeCreated() + "','" + vehicle.getOwnerID() + "'," + vehicle.getVehicleID() +"," + "'" + vehicle.getModel()+ "'," + "'"+ vehicle.getMake()+ "'," + vehicle.getYear();
+
+        data += ",'" + getCurrentVehicleOwner().getUsername() +"'";
+
+        String sql = "INSERT INTO vehicle_table (timeCreated, ownerID, vehicleID, model, make, year, accountOrigin)" +"values("+data+")";
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        connection.close();
     }
 
     /**
-     * Method will write to user database.
-     * @param jobOwner is the current job owner.
+     * updates a job entry on database
+     * @param currentJob that wants to update value in database
      */
-    private void writeUser(JobOwner jobOwner){
+    private void updateDatabase(Job currentJob) throws SQLException {
+        connection = DriverManager.getConnection(url,username,password);
 
-        try{
-            BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt",true));
-
-            String temp = jobOwner.getUsername() +":" + jobOwner.getHashedPassword();
-            writer.write(temp);
-            writer.newLine();
-            writer.close();
-
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Method will write job to job database.
-     * @param job is the current job.
-     */
-    private void writeJob(Job job){
-        try{
-            BufferedWriter writer = new BufferedWriter(new FileWriter("JobDatabase.txt",true));
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
-
-            String temp = dtf.format(now) + " : "+job.getJobOwnerName() +" : " + job.getJobID() + " : " + job.getJobDurationTime();
-
-            if(job.getJobDeadline() != null)
-                temp += " : " + job.getJobDeadline();
-
-            writer.write(temp);
-            writer.newLine();
-            writer.close();
-
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Method will write to vehicle database.
-     * @param vehicle is the current vehicle.
-     */
-    private void writeVehicle(Vehicle vehicle){
-        try{
-            BufferedWriter writer = new BufferedWriter(new FileWriter("VehicleDatabase.txt",true));
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
-
-            String temp = dtf.format(now) + " : " + vehicle.getVehicleOwner() + " : " + vehicle.getVehicleId() + " : " + vehicle.getModel() + " : " + vehicle.getMake() + " : " +vehicle.getYear();
-
-            writer.write(temp);
-            writer.newLine();
-            writer.close();
-
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
-     * Assigns a job to vehicle(s). The number of vehicles that go to a job will be determined by a redundancy that the
-     * system creates. This method is run on job creation automatically.
-     * If there are no available vehicles it does not assign a vehicle to the job.
-     * Every time we assign a job to vehicle, we remove that vehicle from the available vehicle list and onto the in
-     * use vehicle list. It also copies an image of the job onto the vehicle itself. The job also stores an image of the
-     * assigned vehicle
-     * @param job Job object provided by method calling
-     */
-    private void assignJobToVehicle(Job job) {
-        int numVehicles = generateRedundancy();
-
-        while(numVehicles > 0){
-            if(getAvailableVehicles().isEmpty())
-                break;
-            int lastElement = availableVehicles.size()-1;
-            Vehicle assignedVehicle = availableVehicles.remove(lastElement); // aux vehicle
-
-            assignedVehicle.setAssignedJob(job);
-            job.addAssignedVehicle(assignedVehicle);
-
-            removeVehicleFromList(getAvailableVehicles(), assignedVehicle); // when vehicle assigned removed from available list
-            addVehicleToList(getInUseVehicles(), assignedVehicle);
-            numVehicles--;
-        }
+        //todo temp solution. but a nice way to target the processing job without much effort
+        String sql = "UPDATE job_table SET isCompleted = 'true'," + "executionTime=" + currentJob.getJobExecutionTime()+ ", redundancy = " + currentJob.getRedundancy() + " WHERE timeCreated = '" + currentJob.getTimeCreated() +"'";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.executeUpdate(sql);
+        connection.close();
     }
 
     /**
      * This will begin processing all the jobs within the available job list, and returns a list of strings containing
-     * each jobs execution information.
-     * It first starts the job migration, which moves the available jobs onto the active job list. Then the active job
-     * list will begin processing removing each job from the list at a time. Each time we remove a job, we move the job
-     * into the completed job list, and we release/remove the vehicle(s) associated with the job. Resets total completion
-     * time when done processing jobs in active job list.
+     * each jobs execution information. It first starts the job migration, which moves the available jobs onto the active
+     * job list. Then the active job list will begin processing removing each job from the list at a time. Each time we
+     * remove a job, we move the job into the completed job list, and we release/remove the vehicle(s) associated with
+     * the job. Resets total completion time when done processing jobs in active job list.
      * @return returns a processed job string.
      */
 
-    public String startProcessing() {
+    public String startProcessing() throws SQLException {
         // first migrate the available vehicles to the active job list
         startJobMigration();
         // once everything is on the list and updated we process
@@ -326,6 +260,8 @@ public class CloudController {
 
             addJobToList(getCompletedJobs(),currentJob);
             releaseVehicles(currentJob);
+            currentJob.setJobCompletion("true");
+            updateDatabase(currentJob);
         }
         if(getTotalCompletionTime() == 0){
             str.append("---NO JOBS HAVE BEEN SUBMITTED---");
@@ -341,9 +277,10 @@ public class CloudController {
 
     /**
      * Migrates the jobs from available job list to the active job list so that it can be processed.
+     * System updates the total execution time in the system and stores the time the job was processed on the job itself.
      * Only jobs associated with a vehicle will be migrated onto the active job list.
-     * If the current job happens to have no vehicles associated to it, we try and add a vehicle. If it still doesn't
-     * have a vehicle we return the job back onto the available job list
+     * If the current job happens to have no vehicles associated to it, we try and add a vehicle. If no vehicles are
+     * available we return the job back onto the available job list
      */
     private void startJobMigration(){
         while(isJobsPresent()){
@@ -361,9 +298,36 @@ public class CloudController {
             }
 
             setTotalCompletionTime(currentAvailableJob.getJobDurationTime());
-
             currentAvailableJob.setExecutionTime(getTotalCompletionTime());
             addJobToList(getActiveJobs(),currentAvailableJob);
+        }
+    }
+
+    /**
+     * Assigns a job to vehicle(s). The number of vehicles that go to a job will be determined by a redundancy that the
+     * system creates. This method is run on job creation automatically.
+     * If there are no available vehicles it does not assign a vehicle to the job.
+     * Every time we assign a job to vehicle, we remove that vehicle from the available vehicle list and onto the in
+     * use vehicle list. It also copies an image of the job onto the vehicle itself. The job also stores an image of the
+     * assigned vehicle
+     * @param job Job object provided by method calling
+     */
+    private void assignJobToVehicle(Job job) {
+        int numVehicles = generateRedundancy();
+        job.setRedundancy(numVehicles);
+
+        while(numVehicles > 0){
+            if(getAvailableVehicles().isEmpty())
+                break;
+            int lastElement = availableVehicles.size()-1;
+            Vehicle assignedVehicle = availableVehicles.remove(lastElement); // aux vehicle
+
+            assignedVehicle.setAssignedJob(job);
+            job.addAssignedVehicle(assignedVehicle);
+
+            removeVehicleFromList(getAvailableVehicles(), assignedVehicle); // when vehicle assigned removed from available list
+            addVehicleToList(getInUseVehicles(), assignedVehicle);
+            numVehicles--;
         }
     }
 
@@ -385,34 +349,48 @@ public class CloudController {
     }
 
     /**
-     * Returns a formatted processed job data. Method is exclusive to the job processing algorithm.
-     * @param job Job object passed by method calling.
-     * @return  Returns the processed job data in a formatted String
+     * generates the redundancy of the job. Used to know how many vehicles go to a job. Generating a value from
+     * 0-2 based on the total amount of vehicles available.
+     * @return returns a value 0-2
      */
-    private String formatActiveJobData(Job job){
-        String str = "";
-        str += "=========" + "<br/>";
-        str += "Job Owner Name : " + job.getJobOwnerName() + "<br/>";
-        str += "Job Id: " + job.getJobID() + "<br/>";
-        str += "Job Duration: " + job.getJobDurationTime() + "<br/>";
+    public int generateRedundancy() {
+        if(availableVehicles.isEmpty())
+            return 0;
+        if(availableVehicles.size() < 2)
+            return 1;
+        return (int)Math.floor(Math.random() * (2-1 + 1 ) + 1);
+    }
 
-        if(job.getJobDeadline() != null)
-            str += "Job Deadline: " + job.getJobDeadline() + "<br/>";
+    // testing methods
 
-        str += "Time Executed: " + job.getJobExecutionTime() + "<br/>";
-
-        return str;
+    /**
+     * Initializes a set of vehicles to mimic data load in
+     */
+    public void init() throws SQLException {
+        createVehicleOwner("mark","StrongPassword1231");
+        createVehicle("mark", "1000", "civic", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "999", "pilot", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "998", "cr-v", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "997", "accord", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "996", "hr-v", "honda", "2023");
+        acceptVehicle();
+        createVehicle("mark", "995", "civic type-r", "honda", "2023");
+        acceptVehicle();
     }
 
     /**
      * Prints all the completed jobs.
      * @return A formatted string of the jobs completed
      */
-    public String printCompletedJobs(){
+    private String printCompletedJobs(){
         StringBuilder str = new StringBuilder();
         for(Job currentJob: getCompletedJobs()){
 
-            str.append("Job Owner Name: ").append(currentJob.getJobOwnerName()).append("\n");
+            str.append("Job Owner Name: ").append(currentJob.getClientID()).append("\n");
             str.append("Job Id: ").append(currentJob.getJobID()).append("\n");
             str.append("Job Duration: ")
                     .append(currentJob.getJobDurationTime())
@@ -428,47 +406,102 @@ public class CloudController {
         return String.valueOf(str);
     }
 
+    // helper methods
+
     /**
-     * Prints all the vehicles currently registered
-     * @return A formatted string of all the vehicles registered
+     * Returns a formatted processed job data. Method is exclusive to the job processing algorithm.
+     * @param job Job object passed by method calling.
+     * @return  Returns the processed job data in a formatted String
      */
-    public String printAllVehicles(){
-        StringBuilder str = new StringBuilder();
-        for(Vehicle currentVehicle: getAllVehicles()){
+    private String formatActiveJobData(Job job){
+        String str = "";
+        str += "=========" + "<br/>";
+        str += "Job Owner Name : " + job.getClientID() + "<br/>";
+        str += "Job Id: " + job.getJobID() + "<br/>";
+        str += "Job Duration: " + job.getJobDurationTime() + "<br/>";
 
-            str.append("Vehicle Owner Name: ").append(currentVehicle.getVehicleOwner()).append("\n");
-            str.append("Vehicle Id: ").append(currentVehicle.getVehicleId()).append("\n");
-            str.append("Vehicle make: ").append(currentVehicle.getMake()).append("\n");
-            str.append("Vehicle model: ").append(currentVehicle.getModel()).append("\n");
-            str.append("Vehicle year: ").append(currentVehicle.getYear()).append("\n\n");
-        }
-        return String.valueOf(str);
-    }
+        if(job.getJobDeadline() != null)
+            str += "Job Deadline: " + job.getJobDeadline() + "<br/>";
 
-    public String printAllUsers(){
-        StringBuilder str = new StringBuilder();
+        str += "Time Executed: " + job.getJobExecutionTime() + "<br/>";
 
-        for(User users: allUsers.getUsers()){
-            if(users instanceof JobOwner)
-                str.append(((JobOwner) users).getJobOwnerDetails());
-            if(users instanceof VehicleOwner)
-                str.append(((VehicleOwner) users).getVehicleOwnerDetails());
-        }
-
-        return String.valueOf(str);
+        return str;
     }
 
     /**
-     * generates the redundancy of the job. Used to know how many vehicles go to a job. Generating a value from
-     * 0-2 based on the total amount of vehicles available.
-     * @return returns a value 0-2
+     * Method will write to user database.
+     * @param vehicleOwner is the current vehicle owner.
      */
-    public int generateRedundancy() {
-        if(availableVehicles.isEmpty())
-            return 0;
-        if(availableVehicles.size() < 2)
-            return 1;
-        return (int)Math.floor(Math.random() * (2-1 + 1 ) + 1);
+    private void writeUser(VehicleOwner vehicleOwner){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt", true));
+
+            String temp = vehicleOwner.getTimeCreated() +" : "+vehicleOwner.getUsername() +" : "+ vehicleOwner.getHashedPassword();
+            writer.write(temp);
+            writer.newLine();
+            writer.close();
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method will write to user database.
+     * @param jobOwner is the current job owner.
+     */
+    private void writeUser(JobOwner jobOwner){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("UserDatabase.txt",true));
+
+            String temp = jobOwner.getTimeCreated()+ " : " + jobOwner.getUsername() +" : " + jobOwner.getHashedPassword();
+            writer.write(temp);
+            writer.newLine();
+            writer.close();
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method will write job to job database.
+     * @param job is the current job.
+     */
+    private void writeJob(Job job){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("JobDatabase.txt",true));
+
+            String temp = job.getTimeCreated() + " : "+job.getClientID() +" : " + job.getJobID() + " : " + job.getJobDurationTime();
+            if(job.getJobDeadline() != null)
+                temp += " : " + job.getJobDeadline();
+
+            writer.write(temp);
+            writer.newLine();
+            writer.close();
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Method will write to vehicle database.
+     * @param vehicle is the current vehicle.
+     */
+    private void writeVehicle(Vehicle vehicle){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("VehicleDatabase.txt",true));
+
+            String temp = vehicle.getTimeCreated() + " : " + vehicle.getOwnerID() + " : " + vehicle.getVehicleID() + " : " + vehicle.getModel() + " : " + vehicle.getMake() + " : " +vehicle.getYear();
+            writer.write(temp);
+            writer.newLine();
+            writer.close();
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -505,7 +538,12 @@ public class CloudController {
      * @param vehicle passed in vehicle object
      */
     private void removeVehicleFromList(ArrayList<Vehicle> vehicleList, Vehicle vehicle){
-        vehicleList.removeIf(n-> n.getVehicleId() == vehicle.getVehicleId());
+        vehicleList.removeIf(n-> n.getVehicleID() == vehicle.getVehicleID());
+    }
+    private String getTime(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        return now.format(dtf);
     }
 
     // Getters /setters

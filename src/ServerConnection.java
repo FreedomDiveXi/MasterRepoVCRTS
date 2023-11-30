@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -84,7 +85,7 @@ public class ServerConnection {
                         dispatcher(inputLine);
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | SQLException e) {
                 System.out.println("Error handling client " + clientSocket.getInetAddress().getHostAddress());
                 e.printStackTrace();
             } finally {
@@ -128,7 +129,7 @@ public class ServerConnection {
          * @throws IOException
          */
 
-        public void dispatcher(String request) throws IOException {
+        public void dispatcher(String request) throws IOException, SQLException {
             if(request.equals("accept")){
                 if(objectData[0].equals("user-request-job")){
                     System.out.println("=== Job has been approved. Creating job... ===");
@@ -187,7 +188,7 @@ public class ServerConnection {
             }
 
         }
-        public void acceptIncomingJob(String[] request) {
+        public void acceptIncomingJob(String[] request) throws SQLException {
 			// deadline check
 			if(request.length == 4)
 				controller.createJob(request[1],request[2],request[3]);
@@ -197,7 +198,7 @@ public class ServerConnection {
 			System.out.println(controller.acceptJob());
         }
 
-        public void acceptIncomingVehicle(String[] request) {
+        public void acceptIncomingVehicle(String[] request) throws SQLException {
 			controller.createVehicle(request[1],request[2],request[3],request[4],request[5]);
 			System.out.println(controller.acceptVehicle());
         }

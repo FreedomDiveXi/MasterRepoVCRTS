@@ -1,12 +1,14 @@
 import java.util.ArrayList;
 
 public class Job {
-    private String jobOwnerName;
+    private String clientID;
     private int jobID;
     private int jobDurationTime;
     private String jobDeadline; // date
     private int executionTime;
-    private boolean jobCompletion;
+    private int redundancy;
+    private String timeCreated;
+    private String jobCompletion;
 
     private ArrayList<Vehicle> assignedVehicles;
 
@@ -17,13 +19,15 @@ public class Job {
      * @param jobID
      * @param jobDurationTime
      */
-    public Job(String jobOwnerName, int jobID, int jobDurationTime) {
-        this.jobOwnerName = jobOwnerName;
+    public Job(String clientID, int jobID, int jobDurationTime, String creationTime){
+        this.clientID =  clientID;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
         this.executionTime = 0;
-        jobCompletion = false;
+        timeCreated = creationTime;
+        jobCompletion = "false";
         assignedVehicles = new ArrayList<>();
+        redundancy = 0;
     }
 
     /**
@@ -33,56 +37,67 @@ public class Job {
      * @param jobID
      * @param jobDurationTime
      */
-    public Job(String jobOwnerName, int jobID, int jobDurationTime, String jobDeadline) {
-        this.jobOwnerName = jobOwnerName;
+    public Job(String clientID, int jobID, int jobDurationTime, String jobDeadline, String creationTime) {
+        this.clientID =  clientID;
         this.jobID = jobID;
         this.jobDurationTime = jobDurationTime;
         this.jobDeadline = jobDeadline;
         this.executionTime = 0;
-        jobCompletion = false;
+        timeCreated = creationTime;
+        jobCompletion = "false";
         assignedVehicles = new ArrayList<>();
+        redundancy = 0;
     }
 
     // Getter and Setter methods
-public String getJobOwnerName() {
-    return jobOwnerName;
-}
+    public String getClientID() {
+        return clientID;
+    }
+    public int getRedundancy(){return redundancy;}
+    public void setRedundancy(int redundancy){
+        this.redundancy = redundancy;
+    }
 
-public int getJobID() {
-    return jobID;
-}
+    public int getJobID() {
+        return jobID;
+    }
 
-public int getJobDurationTime() {
-    return jobDurationTime;
-}
+    public int getJobDurationTime() {
+        return jobDurationTime;
+    }
 
-public String getJobDeadline() {
-    return jobDeadline;
-}
+    public String getJobDeadline() {
+        return jobDeadline;
+    }
 
-public boolean isJobCompletion() {
-    return jobCompletion;
-}
+    public String isJobCompletion() {
+        return jobCompletion;
+    }
 
-public void setJobCompletion(boolean jobCompletion) {
-    this.jobCompletion = jobCompletion;
-}
+    public void setJobCompletion(String jobCompletion) {
+        this.jobCompletion = jobCompletion;
+    }
 
-public int getJobExecutionTime(){
-    return executionTime;
-}
+    public int getJobExecutionTime(){
+        return executionTime;
+    }
 
-public void setExecutionTime(int executeTime){
-    this.executionTime = executeTime;
-}
+    public void setExecutionTime(int executeTime){
+        this.executionTime = executeTime;
+    }
 
-public void addAssignedVehicle(Vehicle vehicle){
+    public void addAssignedVehicle(Vehicle vehicle){
         assignedVehicles.add(vehicle);
+    }
+    public void removeAssignedVehicle(Vehicle vehicle){
+        assignedVehicles.removeIf(n -> n.getVehicleID() == vehicle.getVehicleID());
+    }
+    public ArrayList<Vehicle> getAssignedVehicles() {
+        return assignedVehicles;
+    }
+
+    public String getTimeCreated(){
+        return timeCreated;
+    }
 }
-public void removeAssignedVehicle(Vehicle vehicle){
-        assignedVehicles.removeIf(n -> n.getVehicleId() == vehicle.getVehicleId());
-}
-public ArrayList<Vehicle> getAssignedVehicles() {
-    return assignedVehicles;
-}
-}
+

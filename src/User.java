@@ -5,10 +5,12 @@ import java.util.regex.Pattern;
 public class User {
     private String username;
     private String hashedPassword;
+    private String timeCreated;
 
-    public User(String username, String password) {
+    public User(String username, String password, String creationTime) {
         this.username = username;
         this.hashedPassword = password;
+        timeCreated = creationTime;
     }
 
     // Hashes the password for storage using SHA-256
@@ -33,6 +35,8 @@ public class User {
     }
 
     public String getHashedPassword(){ return hashedPassword;}
+
+    public String getTimeCreated(){return timeCreated;}
 
     // Note: We don't provide a method to get hashedPassword for security reasons
 

@@ -3,8 +3,8 @@ import java.util.ArrayList;
 public class VehicleOwner extends User{
 
 	ArrayList <Vehicle> vehicleList;
-	public VehicleOwner(String username, String password) {
-		super(username, password);
+	public VehicleOwner(String username, String password, String creationTime) {
+		super(username, password, creationTime);
 		vehicleList = new ArrayList<>();
 	}
 
@@ -33,7 +33,7 @@ public class VehicleOwner extends User{
 		StringBuilder str = new StringBuilder();
 
 		for (Vehicle currentVehilce: getVehicleList()){
-			str.append("Vehicle Id: "+currentVehilce.getVehicleId() +'\n')
+			str.append("Vehicle Id: "+currentVehilce.getVehicleID() +'\n')
 					.append("Vehicle Model: "+currentVehilce.getModel() +"\n");
 		}
 

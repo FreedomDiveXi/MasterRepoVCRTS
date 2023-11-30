@@ -1,29 +1,26 @@
-import java.util.ArrayList;
-
-// todo remove the unique id from this file, as this should be handled by the
-//  controller
-
 public class Vehicle {
     private int vehicleId;
-    private String vehicleOwner;
+    private String ownerID;
     private String make;
     private String model;
     private int year;
+    private String timeCreated;
     private Job assignedJob = null;
 
-    public Vehicle(String vehicleOwner, int vehicleId, String make, String model, int year) {
+    public Vehicle(String ownerID, int vehicleId, String make, String model, int year, String creationTime) {
         this.vehicleId = vehicleId;
-        this.vehicleOwner = vehicleOwner;
+        this.ownerID = ownerID;
         this.make = make;
         this.model = model;
         this.year = year;
+        timeCreated = creationTime;
     }
 
-    public String getVehicleOwner(){
-        return vehicleOwner;
+    public String getOwnerID(){
+        return ownerID;
     }
 
-	public int getVehicleId() {
+	public int getVehicleID() {
         return vehicleId;
     }
 
@@ -48,6 +45,9 @@ public class Vehicle {
 
     public void removeAssignedJob(){
         assignedJob = null;
+    }
+    public String getTimeCreated(){
+        return timeCreated;
     }
 
 }
