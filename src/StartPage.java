@@ -27,7 +27,6 @@ public class StartPage extends JFrame {
                                   "unoccupied car, so we can utilize the computational power that a car has." +
                                   "</body></html>");
         introduction.setHorizontalAlignment(JLabel.CENTER);
-
         introduction.setMaximumSize(new Dimension(FRAME_WIDTH - 50, Integer.MAX_VALUE));
         introduction.setPreferredSize(new Dimension(FRAME_WIDTH - 50, 100));
 
@@ -56,16 +55,42 @@ public class StartPage extends JFrame {
         @Override
         public void actionPerformed(ActionEvent event) {
             panel.removeAll();
-            panel.setLayout(new GridLayout(0, 1));
-            panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-
+            panel.revalidate();
+            panel.repaint();
+            panel.setLayout(new GridLayout(5, 3, 0, 50));
+            
             question1 = new JLabel("Are you a new user?");
+            question1.setHorizontalAlignment(JLabel.CENTER);
             buttonYes = new JButton("Yes");
             buttonNo = new JButton("No");
-
+            JLabel temp1 = new JLabel("");
+            JLabel temp2 = new JLabel("");
+            JLabel temp3 = new JLabel("");
+            JLabel temp4 = new JLabel("");
+            JLabel temp5 = new JLabel("");
+            JLabel temp6 = new JLabel("");
+            JLabel temp7 = new JLabel("");
+            JLabel temp8 = new JLabel("");
+            JLabel temp9 = new JLabel("");
+            JLabel temp10 = new JLabel("");
+            JLabel temp11 = new JLabel("");
+            JLabel temp12 = new JLabel("");
+            
+            panel.add(temp1);
+            panel.add(temp2);
+            panel.add(temp3);
+            panel.add(temp4);
             panel.add(question1);
+            panel.add(temp5);
+            panel.add(temp6);
             panel.add(buttonYes);
+            panel.add(temp7);
+            panel.add(temp8);
             panel.add(buttonNo);
+            panel.add(temp9);
+            panel.add(temp10);
+            panel.add(temp11);
+            panel.add(temp12);
 
             buttonYes.addActionListener(new AddNewUserListener());
         }
