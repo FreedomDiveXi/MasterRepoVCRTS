@@ -1,12 +1,11 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
 public class StartPage extends JFrame {
-    private static final int FRAME_WIDTH = 600;
-    private static final int FRAME_HEIGHT = 500;
+    private static final int FRAME_WIDTH = 750;
+    private static final int FRAME_HEIGHT = 650;
     private JLabel introduction, question1;
     private JButton buttonYes, buttonNo, goNext;
     private JPanel panel;
