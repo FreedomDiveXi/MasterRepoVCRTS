@@ -1,44 +1,53 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 
 public class userLoginGui {
-    private static final int FRAME_WIDTH = 600;
-    private static final int FRAME_HEIGHT = 500;
+    private static final int FRAME_WIDTH = 750;
+    private static final int FRAME_HEIGHT = 650;
     JFrame userLogin = new JFrame();
     JPanel panel = new JPanel();
-    JLabel question1 = new JLabel("Create a new username (':' is not allowed): ");
-    JTextField username = new JTextField(50);
+    JLabel question1 = new JLabel("Create a new username: ");
+    JTextField username = new JTextField(25);
     JLabel question2 = new JLabel("Create a new password: ");
-    JPasswordField password = new JPasswordField(50);
-    JLabel question3 = new JLabel("Are you a job owner or vehicle owner? Choose only one.");
+    JPasswordField password = new JPasswordField(25);
+    JLabel question3 = new JLabel("Are you a job owner or vehicle owner?");
     JButton jobOwnerButton = new JButton("Job Owner");
     JButton vehicleOwnerButton = new JButton("Vehicle Owner");
-    JLabel question4 = new JLabel();
-    JButton isJobOwner = new JButton("Continue");
-    JButton isVehicleOwner= new JButton("Continue");
+    JLabel question4 = new JLabel("Please select a choice to move forward.");
+    JButton goNext = new JButton("Continue");
     ClientConnection clientConnection;
+    JLabel temp1 = new JLabel("");
+    JLabel temp2 = new JLabel("");
+    JLabel temp3 = new JLabel("");
 
     public userLoginGui(){
+    	question1.setHorizontalAlignment(JLabel.CENTER);
+    	question2.setHorizontalAlignment(JLabel.CENTER);
+    	question3.setHorizontalAlignment(JLabel.CENTER);
+    	question4.setHorizontalAlignment(JLabel.CENTER);
+    	panel.setLayout(new GridLayout(4, 3, 20, 50));
         panel.add(question1);
         panel.add(username);
+        panel.add(temp1);
         panel.add(question2);
         panel.add(password);
+        panel.add(temp2);
         panel.add(question3);
         panel.add(jobOwnerButton);
         panel.add(vehicleOwnerButton);
+        panel.add(question4);
+        panel.add(goNext);
+        panel.add(temp3);
         userLogin.add(panel);
         userLogin.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         userLogin.setTitle("New User");
         userLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         userLogin.setVisible(true);
 
-
         jobOwnerButton.addActionListener(new userIsJobOwnerListener());
         vehicleOwnerButton.addActionListener(new userIsVehicleOwnerListener());
-        isJobOwner.addActionListener(new goToJobView());
-        isVehicleOwner.addActionListener(new goToVehicleView());
     }
     public void setupClient(String id){
         clientConnection = new ClientConnection("localhost",9806);
@@ -53,11 +62,10 @@ public class userLoginGui {
     class userIsJobOwnerListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            panel.add(question4);
-            panel.add(isJobOwner);
-            question4.setText("You have selected job owner.");
-            panel.revalidate();
+        	panel.revalidate();
             panel.repaint();
+            question4.setText("You have selected job owner.");
+            goNext.addActionListener(new goToJobView());
             System.gc();
         }
     }
@@ -66,11 +74,10 @@ public class userLoginGui {
     class userIsVehicleOwnerListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            panel.add(question4);
-            panel.add(isVehicleOwner);
-            question4.setText("You have selected vehicle owner.");
-            panel.revalidate();
+        	panel.revalidate();
             panel.repaint();
+            question4.setText("You have selected vehicle owner.");
+            goNext.addActionListener(new goToVehicleView());
             System.gc();
         }
     }
