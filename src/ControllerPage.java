@@ -1,11 +1,10 @@
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Arrays;
 
 public class ControllerPage extends JFrame {
-	private static final int FRAME_WIDTH = 600;
-	private static final int FRAME_HEIGHT = 500;
+	private static final int FRAME_WIDTH = 750;
+	private static final int FRAME_HEIGHT = 650;
 	private JFrame controllerPage;
 	private JButton completionTime;
 	private JPanel panel;
