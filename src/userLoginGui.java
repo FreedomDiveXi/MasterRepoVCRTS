@@ -4,8 +4,8 @@ import java.awt.event.*;
 import java.io.*;
 
 public class userLoginGui {
-    private static final int FRAME_WIDTH = 750;
-    private static final int FRAME_HEIGHT = 650;
+    private static final int FRAME_WIDTH = 700;
+    private static final int FRAME_HEIGHT = 500;
     JFrame userLogin = new JFrame();
     JPanel panel = new JPanel();
     JLabel question1 = new JLabel("Create a new username: ");
@@ -27,7 +27,7 @@ public class userLoginGui {
     	question2.setHorizontalAlignment(JLabel.CENTER);
     	question3.setHorizontalAlignment(JLabel.CENTER);
     	question4.setHorizontalAlignment(JLabel.CENTER);
-    	panel.setLayout(new GridLayout(4, 3, 20, 50));
+    	panel.setLayout(new GridLayout(4, 3, 5, 75));
         panel.add(question1);
         panel.add(username);
         panel.add(temp1);
