@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
@@ -23,18 +24,27 @@ public class ControllerPage extends JFrame {
 		controllerPage.setSize(FRAME_WIDTH, FRAME_HEIGHT);
 		controllerPage.setTitle("Welcome, Controller");
 		controllerPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		controllerPage.setVisible(true);
 
 		completionTime = new JButton("Calculate completion time");
+		completionTime.setFont(new Font("Sans-Serif",Font.BOLD,16));
 
-		panel = new JPanel();
-		panel.add(completionTime);
+		panel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+
+		gbc.gridx = GridBagConstraints.REMAINDER;
+		gbc.gridy = GridBagConstraints.REMAINDER;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+
+		panel.add(completionTime, gbc);
 		controllerPage.add(panel);
+
 		controllerPage.revalidate();
 		controllerPage.repaint();
 
 		ActionListener calculate = new calculateTimeListener();
 		completionTime.addActionListener(calculate);
+		controllerPage.setVisible(true);
 	}
 
 	public void setupClient(){

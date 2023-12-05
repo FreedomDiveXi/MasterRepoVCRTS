@@ -20,16 +20,18 @@ public class StartPage extends JFrame {
         this.setTitle("Welcome, Client");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        introduction = new JLabel("<html><body>" +
-                                  "This application allows users to complete certain tasks that would require " +
-                                  "an immense amount of power that you simply do not have, or input your own " +
-                                  "unoccupied car, so we can utilize the computational power that a car has." +
-                                  "</body></html>");
-        introduction.setHorizontalAlignment(JLabel.CENTER);
+        String text = "This application allows users to complete certain tasks that would require " +
+                "an immense amount of power that you simply do not have, or input your own " +
+                "unoccupied car, so we can utilize the computational power that a car has.";
+
+        introduction = new JLabel("<html><div style = 'text-align:center;'>"+text+"</div><div style = 'text-align:center; margin-bottom:10px;'>Sounds interesting?</div></html>");
+        
         introduction.setMaximumSize(new Dimension(FRAME_WIDTH - 50, Integer.MAX_VALUE));
         introduction.setPreferredSize(new Dimension(FRAME_WIDTH - 50, 100));
+        introduction.setFont(new Font("Sans-Serif",Font.BOLD,16));
 
-        goNext = new JButton("Continue");
+        goNext = new JButton("Get Started");
+        goNext.setFont(new Font("Sans-Serif", Font.BOLD, 14));
 
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
@@ -60,8 +62,11 @@ public class StartPage extends JFrame {
             
             question1 = new JLabel("Are you a new user?");
             question1.setHorizontalAlignment(JLabel.CENTER);
+            question1.setFont(new Font("Sans-Serif", Font.BOLD, 18));
             buttonYes = new JButton("Yes");
+            buttonYes.setFont(new Font("Sans-Serif", Font.BOLD, 15));
             buttonNo = new JButton("No");
+            buttonNo.setFont(new Font("Sans-Serif", Font.BOLD, 15));
             JLabel temp1 = new JLabel("");
             JLabel temp2 = new JLabel("");
             JLabel temp3 = new JLabel("");

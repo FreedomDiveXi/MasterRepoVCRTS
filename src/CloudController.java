@@ -252,7 +252,7 @@ public class CloudController {
         startJobMigration();
         // once everything is on the list and updated we process
         StringBuilder str = new StringBuilder();
-        str.append("<html>");
+        str.append("<html><div style = 'font-size:12px'; font-weight:600;'>");
         while(!getActiveJobs().isEmpty()){
             Job currentJob= getActiveJobs().remove();
 
@@ -270,7 +270,7 @@ public class CloudController {
                     .append(getTotalCompletionTime())
                     .append("---<br/>");
         }
-        str.append("</html>");
+        str.append("</div></html>");
 
         return String.valueOf(str);
     }
