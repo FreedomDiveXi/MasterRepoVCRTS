@@ -4,8 +4,8 @@ import java.awt.event.*;
 import java.io.*;
 
 public class ControllerPage extends JFrame {
-	private static final int FRAME_WIDTH = 750;
-	private static final int FRAME_HEIGHT = 650;
+	private static final int FRAME_WIDTH = 650;
+	private static final int FRAME_HEIGHT = 500;
 	private JFrame controllerPage;
 	private JButton completionTime;
 	private JPanel panel;
