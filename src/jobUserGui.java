@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class jobUserGui {
-    private static final int FRAME_WIDTH = 600;
+    private static final int FRAME_WIDTH = 700;
     private static final int FRAME_HEIGHT = 500;
     JFrame jobView = new JFrame();
     JPanel main = new JPanel();
