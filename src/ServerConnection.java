@@ -176,7 +176,7 @@ public class ServerConnection {
             }
             if(request.equals("user-request-vehicle")){
                 System.out.println("=== Server has received vehicle. Waiting for approval... ===\n");
-                clientOutputStreams.get("controller").writeUTF("request-confirmation::" + objectData[1] +"::"+objectData[2] +"::"+objectData[3]+"::"+objectData[4] + "::" + objectData[5]);
+                clientOutputStreams.get("controller").writeUTF("request-confirmation::" + objectData[1] +"::"+objectData[2] +"::"+objectData[3]+"::"+objectData[4] + "::" + objectData[5] + "::" + objectData[6]);
 
             }
 
@@ -199,7 +199,7 @@ public class ServerConnection {
         }
 
         public void acceptIncomingVehicle(String[] request) throws SQLException {
-			controller.createVehicle(request[1],request[2],request[3],request[4],request[5]);
+			controller.createVehicle(request[1],request[2],request[3],request[4],request[5],request[6]);
 			System.out.println(controller.acceptVehicle());
         }
     }
