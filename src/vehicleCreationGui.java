@@ -1,10 +1,10 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 
 public class vehicleCreationGui {
-    private static final int FRAME_WIDTH = 600;
+    private static final int FRAME_WIDTH = 700;
     private static final int FRAME_HEIGHT = 500;
     JFrame SubmitVehicle = new JFrame();
     JPanel panel = new JPanel();
@@ -12,18 +12,26 @@ public class vehicleCreationGui {
     JTextField ownerID = new JTextField(50);
     JLabel question2 = new JLabel("Vehicle ID");
     JTextField vehicleID = new JTextField(50);
-    JLabel question3 = new JLabel("What is the vehicle's model?");
+    JLabel question3 = new JLabel("What is your vehicle's model?");
     JTextField vehicleModel = new JTextField(50);
-    JLabel question4 = new JLabel("What is the vehicle's make/brand?");
+    JLabel question4 = new JLabel("What is your vehicle's make/brand?");
     JTextField vehicleMake = new JTextField(50);
-    JLabel question5 = new JLabel("What is the vehicle's year");
+    JLabel question5 = new JLabel("What is your vehicle's year");
     JTextField vehicleYear = new JTextField(50);
     JButton submitVehicle = new JButton("Submit");
     ClientConnection clientConnection;
+    JLabel temp1 = new JLabel("");
 
     public vehicleCreationGui(ClientConnection connection){
         listenForRequests();
         clientConnection = connection;
+        question1.setHorizontalAlignment(JLabel.CENTER);
+    	question2.setHorizontalAlignment(JLabel.CENTER);
+    	question3.setHorizontalAlignment(JLabel.CENTER);
+    	question4.setHorizontalAlignment(JLabel.CENTER);
+    	question5.setHorizontalAlignment(JLabel.CENTER);
+    	panel.setLayout(new GridLayout(6, 2, 5, 45));
+        
         panel.add(question1);
         panel.add(ownerID);
         panel.add(question2);
@@ -34,6 +42,7 @@ public class vehicleCreationGui {
         panel.add(vehicleMake);
         panel.add(question5);
         panel.add(vehicleYear);
+        panel.add(temp1);
         panel.add(submitVehicle);
         SubmitVehicle.add(panel);
         SubmitVehicle.setSize(FRAME_WIDTH, FRAME_HEIGHT);
