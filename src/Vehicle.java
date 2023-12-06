@@ -4,15 +4,17 @@ public class Vehicle {
     private String make;
     private String model;
     private int year;
+    private int residencyTime;
     private String timeCreated;
     private Job assignedJob = null;
 
-    public Vehicle(String ownerID, int vehicleId, String make, String model, int year, String creationTime) {
+    public Vehicle(String ownerID, int vehicleId, String make, String model, int year, int residencyTime, String creationTime) {
         this.vehicleId = vehicleId;
         this.ownerID = ownerID;
         this.make = make;
         this.model = model;
         this.year = year;
+        this.residencyTime = residencyTime;
         timeCreated = creationTime;
     }
 
@@ -34,6 +36,10 @@ public class Vehicle {
 
     public int getYear() {
         return year;
+    }
+    
+    public int getResidencyTime() {
+    	return residencyTime;
     }
 
     public Job getAssignedJob(){
