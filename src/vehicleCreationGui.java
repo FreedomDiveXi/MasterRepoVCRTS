@@ -9,15 +9,17 @@ public class vehicleCreationGui {
     JFrame SubmitVehicle = new JFrame();
     JPanel panel = new JPanel();
     JLabel question1 = new JLabel("Owner ID");
-    JTextField ownerID = new JTextField(50);
+    JTextField ownerID = new JTextField(25);
     JLabel question2 = new JLabel("Vehicle ID");
-    JTextField vehicleID = new JTextField(50);
+    JTextField vehicleID = new JTextField(25);
     JLabel question3 = new JLabel("What is your vehicle's model?");
-    JTextField vehicleModel = new JTextField(50);
+    JTextField vehicleModel = new JTextField(25);
     JLabel question4 = new JLabel("What is your vehicle's make/brand?");
-    JTextField vehicleMake = new JTextField(50);
+    JTextField vehicleMake = new JTextField(25);
     JLabel question5 = new JLabel("What is your vehicle's year");
-    JTextField vehicleYear = new JTextField(50);
+    JTextField vehicleYear = new JTextField(25);
+    JLabel question6 = new JLabel("What is your esimated residency time in hours?");
+    JTextField vehicleResidency = new JTextField(25);
     JButton submitVehicle = new JButton("Submit");
     ClientConnection clientConnection;
     JLabel temp1 = new JLabel("");
@@ -30,7 +32,8 @@ public class vehicleCreationGui {
     	question3.setHorizontalAlignment(JLabel.CENTER);
     	question4.setHorizontalAlignment(JLabel.CENTER);
     	question5.setHorizontalAlignment(JLabel.CENTER);
-    	panel.setLayout(new GridLayout(6, 2, 5, 45));
+    	question6.setHorizontalAlignment(JLabel.CENTER);
+    	panel.setLayout(new GridLayout(7, 2, 5, 25));
         
         panel.add(question1);
         panel.add(ownerID);
@@ -42,6 +45,8 @@ public class vehicleCreationGui {
         panel.add(vehicleMake);
         panel.add(question5);
         panel.add(vehicleYear);
+        panel.add(question6);
+        panel.add(vehicleResidency);
         panel.add(temp1);
         panel.add(submitVehicle);
         SubmitVehicle.add(panel);
@@ -73,6 +78,7 @@ public class vehicleCreationGui {
                 vehicleModel.setText("");
                 vehicleMake.setText("");
                 vehicleYear.setText("");
+                vehicleResidency.setText("");
                 SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(submitVehicle,"Vehicle submission has been accepted.", "Accepted", JOptionPane.INFORMATION_MESSAGE);
                 });
@@ -88,7 +94,7 @@ public class vehicleCreationGui {
         @Override
         public void actionPerformed(ActionEvent event) {
             try {
-                String messageOut = "user-request-vehicle:: " + ownerID.getText() + "::" + vehicleID.getText() + "::" + vehicleModel.getText() + "::" + vehicleMake.getText() + "::" + vehicleYear.getText();
+                String messageOut = "user-request-vehicle:: " + ownerID.getText() + "::" + vehicleID.getText() + "::" + vehicleModel.getText() + "::" + vehicleMake.getText() + "::" + vehicleYear.getText() + "::" + vehicleResidency.getText();
                 clientConnection.sendMessage(messageOut);
 
             } catch (Exception e) {
