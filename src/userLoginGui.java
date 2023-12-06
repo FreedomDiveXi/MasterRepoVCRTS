@@ -28,6 +28,7 @@ public class userLoginGui {
     	question3.setHorizontalAlignment(JLabel.CENTER);
     	question4.setHorizontalAlignment(JLabel.CENTER);
     	panel.setLayout(new GridLayout(4, 3, 5, 75));
+    	
         panel.add(question1);
         panel.add(username);
         panel.add(temp1);
