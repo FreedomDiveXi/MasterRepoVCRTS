@@ -31,7 +31,7 @@ public class CloudController {
     static Connection connection = null;
 
     // replace "vcs" with the name of personal database.
-    static String url = "jdbc:mysql://localhost:3306/vcs";
+    static String url = "jdbc:mysql://localhost:3306/vcrts?useTimezone=true&serverTimezone=UTC";
 
     //default username, replace if needed
     static String username = "root";
@@ -133,9 +133,9 @@ public class CloudController {
      * @param year String provided by gui
      * @return returns the newly created vehicle MUST BE A NUMBER
      */
-    public Vehicle createVehicle(String ownerId, String vehicleId,String model, String make, String year){
+    public Vehicle createVehicle(String ownerId, String vehicleId,String model, String make, String year, String residencyTime){
         String time = getTime();
-        pendingVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year), time);
+        pendingVehicle = new Vehicle(ownerId, Integer.parseInt(vehicleId), make, model, Integer.parseInt(year), Integer.parseInt(residencyTime), time);
         return pendingVehicle;
     }
 
@@ -214,11 +214,11 @@ public class CloudController {
 
     public void uploadToDatabase(Vehicle vehicle) throws SQLException {
         connection = DriverManager.getConnection(url,username,password);
-        String data ="'" + vehicle.getTimeCreated() + "','" + vehicle.getOwnerID() + "'," + vehicle.getVehicleID() +"," + "'" + vehicle.getModel()+ "'," + "'"+ vehicle.getMake()+ "'," + vehicle.getYear();
+        String data ="'" + vehicle.getTimeCreated() + "','" + vehicle.getOwnerID() + "'," + vehicle.getVehicleID() +"," + "'" + vehicle.getModel()+ "'," + "'"+ vehicle.getMake()+ "'," + vehicle.getYear() + "," + vehicle.getResidencyTime();
 
         data += ",'" + getCurrentVehicleOwner().getUsername() +"'";
 
-        String sql = "INSERT INTO vehicle_table (timeCreated, ownerID, vehicleID, model, make, year, accountOrigin)" +"values("+data+")";
+        String sql = "INSERT INTO vehicle_table (timeCreated, ownerID, vehicleID, model, make, year, residency, accountOrigin)" +"values("+data+")";
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         connection.close();
@@ -368,17 +368,17 @@ public class CloudController {
      */
     public void init() throws SQLException {
         createVehicleOwner("mark","StrongPassword1231");
-        createVehicle("mark", "1000", "civic", "honda", "2023");
+        createVehicle("mark", "1000", "civic", "honda", "2023", "5");
         acceptVehicle();
-        createVehicle("mark", "999", "pilot", "honda", "2023");
+        createVehicle("mark", "999", "pilot", "honda", "2023", "5");
         acceptVehicle();
-        createVehicle("mark", "998", "cr-v", "honda", "2023");
+        createVehicle("mark", "998", "cr-v", "honda", "2023", "3");
         acceptVehicle();
-        createVehicle("mark", "997", "accord", "honda", "2023");
+        createVehicle("mark", "997", "accord", "honda", "2023", "3");
         acceptVehicle();
-        createVehicle("mark", "996", "hr-v", "honda", "2023");
+        createVehicle("mark", "996", "hr-v", "honda", "2023", "8");
         acceptVehicle();
-        createVehicle("mark", "995", "civic type-r", "honda", "2023");
+        createVehicle("mark", "995", "civic type-r", "honda", "2023", "8");
         acceptVehicle();
     }
 
@@ -494,7 +494,7 @@ public class CloudController {
         try{
             BufferedWriter writer = new BufferedWriter(new FileWriter("VehicleDatabase.txt",true));
 
-            String temp = vehicle.getTimeCreated() + " : " + vehicle.getOwnerID() + " : " + vehicle.getVehicleID() + " : " + vehicle.getModel() + " : " + vehicle.getMake() + " : " +vehicle.getYear();
+            String temp = vehicle.getTimeCreated() + " : " + vehicle.getOwnerID() + " : " + vehicle.getVehicleID() + " : " + vehicle.getModel() + " : " + vehicle.getMake() + " : " +vehicle.getYear() + " : " + vehicle.getResidencyTime();
             writer.write(temp);
             writer.newLine();
             writer.close();
